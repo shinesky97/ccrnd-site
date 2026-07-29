@@ -1,0 +1,41 @@
+---
+layout: default
+title: 문의
+permalink: /contact/
+---
+<div class="page-head">
+  <div class="wrap"><h1>문의하기</h1></div>
+</div>
+
+<section style="border-top:0;padding-top:32px">
+  <div class="wrap contact">
+    <div class="c-info">
+      <h2>정산·세무·회계 문의</h2>
+      <p>문의를 남겨주시면 이메일로 즉시 전송되며, 손슬기 한국공인회계사가 직접 신속히 회신드립니다.</p>
+      <dl class="c-rows">
+        <div><dt>ADDRESS</dt><dd>{{ site.contact.address }}</dd></div>
+        <div><dt>EMAIL</dt><dd>{{ site.contact.email }}</dd></div>
+        <div><dt>TEL</dt><dd>{{ site.contact.tel }}</dd></div>
+        <div><dt>HOURS</dt><dd>{{ site.contact.hours }}</dd></div>
+      </dl>
+    </div>
+    <form action="https://formsubmit.co/{{ site.contact.email }}" method="POST">
+      <input type="hidden" name="_subject" value="[ccrnd.com] 홈페이지 문의">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://www.ccrnd.com/contact/?sent=1">
+      <div class="f-row">
+        <div><label for="f-name">이름 / 기관명</label><input id="f-name" name="이름_기관명" type="text" required placeholder="홍길동 (○○대학교 산학협력단)"></div>
+        <div><label for="f-tel">연락처</label><input id="f-tel" name="연락처" type="tel" placeholder="010-0000-0000"></div>
+      </div>
+      <div><label for="f-mail">이메일</label><input id="f-mail" name="email" type="email" required placeholder="name@example.com"></div>
+      <div><label for="f-msg">문의 내용</label><textarea id="f-msg" name="문의내용" required placeholder="사업명, 사업 규모, 정산 시기 등을 함께 적어주시면 더 정확한 답변이 가능합니다."></textarea></div>
+      <button class="f-submit" type="submit">문의 보내기</button>
+    </form>
+    <script>
+      if (new URLSearchParams(location.search).get('sent') === '1') {
+        alert('문의가 정상적으로 전송되었습니다. 빠르게 회신드리겠습니다.');
+        history.replaceState(null, '', location.pathname);
+      }
+    </script>
+  </div>
+</section>

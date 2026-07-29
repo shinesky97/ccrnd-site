@@ -1,0 +1,93 @@
+# ───────────────────────── 사이트 기본 정보 ─────────────────────────
+title: 손슬기 한국공인회계사
+tagline: 사업비 정산·세무·회계 인사이트
+description: >-
+  손슬기 한국공인회계사. 국고보조금·RISE·연구비 정산검증과 세무·회계 실무 정보를
+  나눕니다. 부적절한 집행은 예방하고, 부당한 불인정은 막아냅니다.
+author: 손슬기
+email: seulgison@atcc.co.kr
+url: "https://www.ccrnd.com"
+lang: ko
+
+# 연락처 (푸터·문의 페이지에서 사용)
+contact:
+  email: seulgison@atcc.co.kr
+  tel: "02-518-3675"
+  address: 서울특별시 강남구 선릉로131길 16, 7층
+  hours: 평일 09:00 – 18:00
+
+# ───────────────────────── 콘텐츠 분류 ─────────────────────────
+# key      : 글 front matter의 category 값 / URL slug
+# name     : 화면 표기 이름
+# short    : 라벨용 짧은 이름
+# color    : 라벨 강조색 (CSS 변수명)
+# desc     : 카테고리 목록 페이지 설명
+categories_meta:
+  - key: settlement
+    name: 사업비·정산 실무
+    short: 정산실무
+    color: inju
+    desc: 국고보조금·RISE·연구비 정산검증 실무, 자주 지적되는 불인정 사례와 증빙 포인트.
+  - key: tax
+    name: 세무 정보
+    short: 세무
+    color: blue
+    desc: 종합소득세·부가세·법인세·연말정산 등 실무 세무 정보와 절세 포인트.
+  - key: accounting
+    name: 회계·결산 정보
+    short: 회계결산
+    color: green
+    desc: 결산 실무, K-IFRS, 재무제표 읽는 법 등 회계 정보.
+  - key: notice
+    name: 공지·자료실
+    short: 공지
+    color: ink
+    desc: 서식 배포, 법령 개정 소식, 공지사항.
+
+# ───────────────────────── 네비게이션 ─────────────────────────
+nav:
+  - name: 소개
+    url: /about/
+  - name: 인사이트
+    url: /insights/
+  - name: 자료실
+    url: /downloads/
+  - name: 문의하기
+    url: /contact/
+    cta: true
+
+# ───────────────────────── Jekyll 빌드 설정 ─────────────────────────
+permalink: /insights/:title/
+paginate: 6
+paginate_path: /insights/page:num/
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-paginate
+
+feed:
+  path: /feed.xml
+
+# 기본값: 모든 _posts 글에 post 레이아웃 자동 적용
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: 손슬기
+
+exclude:
+  - DESIGN.md
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - .sass-cache

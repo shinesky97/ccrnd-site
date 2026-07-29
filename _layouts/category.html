@@ -1,0 +1,51 @@
+---
+layout: default
+---
+{%- comment -%}
+  카테고리별 글 목록.
+  page.category 가 비어있으면(전체) 모든 글을, 있으면 해당 분류만 표시.
+{%- endcomment -%}
+<div class="page-head">
+  <div class="wrap">
+    <h1>인사이트</h1>
+    <p class="lead">사업비 정산·세무·회계 실무에서 자주 마주치는 질문과 사례를 정리합니다.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:32px">
+  <div class="wrap">
+    <nav class="tabs" aria-label="분류">
+      <a href="{{ '/insights/' | relative_url }}" {% if page.category == nil %}aria-current="page"{% endif %}>전체</a>
+      {%- for c in site.categories_meta -%}
+      <a href="{{ '/insights/' | append: c.key | append: '/' | relative_url }}"
+         {% if page.category == c.key %}aria-current="page"{% endif %}>{{ c.name }}</a>
+      {%- endfor -%}
+    </nav>
+
+    {%- if page.category -%}
+      {%- assign meta = site.categories_meta | where: "key", page.category | first -%}
+      <p class="tab-desc">{{ meta.desc }}</p>
+      {%- assign list = site.posts | where: "category", page.category -%}
+    {%- else -%}
+      <p class="tab-desc">전체 글을 최신순으로 보여드립니다.</p>
+      {%- assign list = site.posts -%}
+    {%- endif -%}
+
+    {% if list.size > 0 %}
+    <ul class="post-list">
+      {%- for post in list -%}
+      {%- assign pcat = site.categories_meta | where: "key", post.category | first -%}
+      <li><a href="{{ post.url | relative_url }}">
+        <span class="cat c-{{ post.category | default: 'notice' }}">{{ pcat.short | default: '인사이트' }}</span>
+        <span class="t">{{ post.title }}
+          {% if post.summary %}<small>{{ post.summary | truncate: 60 }}</small>{% endif %}
+        </span>
+        <span class="d">{{ post.date | date: "%Y.%m.%d" }}</span>
+      </a></li>
+      {%- endfor -%}
+    </ul>
+    {% else %}
+    <div class="empty">아직 등록된 글이 없습니다. 곧 채워집니다.</div>
+    {% endif %}
+  </div>
+</section>
