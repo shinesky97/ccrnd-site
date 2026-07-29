@@ -1,0 +1,10 @@
+# Jekyll 빌드 산출물 (GitHub Pages가 서버에서 다시 빌드하므로 커밋하지 않음)
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+
+# 로컬 의존성
+.bundle/
+vendor/
+Gemfile.lock
