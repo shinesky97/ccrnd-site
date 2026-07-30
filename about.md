@@ -5,7 +5,7 @@ permalink: /about/
 lead: 사업비 정산검증을 중심으로 세무·회계 실무 전반을 다루는 공인회계사입니다.
 ---
 
-<div class="about-photo" style="background-image:url('/assets/img/profile.jpg')"></div>
+<div class="about-photo" style="background-image:url('/assets/img/portrait.jpg')"></div>
 
 ## 공인회계사 손슬기
 
@@ -34,6 +34,12 @@ lead: 사업비 정산검증을 중심으로 세무·회계 실무 전반을 다
 - 수행기관 대상 집행 가이드라인·정산 실무 교육 진행
 
 <div class="about-consult" style="background-image:url('/assets/img/consult.jpg')" role="img" aria-label="상담 장면"></div>
+
+<figure class="about-video">
+  <video autoplay muted loop playsinline poster="/assets/img/profile.jpg">
+    <source src="/assets/video/intro.mp4" type="video/mp4">
+  </video>
+</figure>
 
 ## 연락처
 

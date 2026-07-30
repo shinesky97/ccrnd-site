@@ -2,11 +2,8 @@
 layout: default
 title: null
 ---
-<!-- HERO : 인물 영상/사진 -->
-<section class="hero-cine">
-  <video class="hero-video" autoplay muted loop playsinline poster="{{ '/assets/img/portrait.jpg' | relative_url }}">
-    <source src="{{ '/assets/video/intro.mp4' | relative_url }}" type="video/mp4">
-  </video>
+<!-- HERO : 프리미엄 이미지 배경 -->
+<section class="hero-cine" style="background-image:url('{{ '/assets/img/hero.jpg' | relative_url }}')">
   <div class="hero-cine-overlay"></div>
   <div class="wrap hero-cine-inner">
     <div class="doc-meta light">

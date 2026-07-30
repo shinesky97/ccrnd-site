@@ -289,8 +289,7 @@ footer.site{border-top:2px solid var(--ink);padding:36px 0 48px;font-size:.83rem
 
 /* ───── 시네마틱 히어로 (영상/사진 배경) ───── */
 :root{--gold:#C9A227;--gold-soft:#E0BE52}
-.hero-cine{position:relative;overflow:hidden;min-height:clamp(460px,72vh,680px);display:flex;align-items:center;padding:0;border-top:0}
-.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;background:var(--ink)}
+.hero-cine{position:relative;overflow:hidden;min-height:clamp(460px,72vh,680px);display:flex;align-items:center;padding:0;border-top:0;background:var(--ink) center/cover no-repeat}
 .hero-cine-overlay{position:absolute;inset:0;z-index:1;
   background:linear-gradient(105deg,rgba(15,22,36,.90) 0%,rgba(15,22,36,.72) 46%,rgba(15,22,36,.42) 100%);}
 .hero-cine-inner{position:relative;z-index:2;padding:64px 24px}
@@ -315,6 +314,8 @@ footer.site{border-top:2px solid var(--ink);padding:36px 0 48px;font-size:.83rem
 /* ───── 소개 페이지 사진 ───── */
 .about-photo{width:240px;aspect-ratio:3/4;background:var(--paper-deep) center top/cover no-repeat;border:1px solid var(--rule);float:right;margin:0 0 20px 28px}
 .about-consult{width:100%;aspect-ratio:16/8;background:var(--paper-deep) center/cover no-repeat;border:1px solid var(--rule);margin:12px 0}
+.about-video{margin:16px auto;max-width:400px}
+.about-video video{width:100%;display:block;border:1px solid var(--rule);background:var(--ink)}
 @media(max-width:600px){.about-photo{float:none;width:100%;max-width:280px;margin:0 auto 20px}}
 
 /* ───── 유틸 ───── */
