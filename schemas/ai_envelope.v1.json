@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai_envelope.v1",
+  "title": "AI 구조화 출력 공통 봉투",
+  "description": "모든 AI 태스크의 structured_output이 준수해야 하는 공통 스키마. task_type별 스키마는 이 봉투를 확장한다. 검증 실패 시 저장 금지(재처리 또는 사용자 검토 상태로 전환).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conclusion",
+    "confidence",
+    "evidence_refs",
+    "source_locations",
+    "missing_information",
+    "requires_professional_judgment",
+    "reviewer_approval_required"
+  ],
+  "properties": {
+    "conclusion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "결론 또는 제안. 자료 부족 시 '자료 부족'/'추가 확인 필요'/'담당자 판단 필요'를 명시"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "low이면 자동으로 NEEDS_REVIEW 분류"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^evid:[0-9a-f-]+$" },
+      "description": "evidence_items 참조. 비어 있으면 자동 검토대상"
+    },
+    "source_locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file"],
+        "properties": {
+          "file": { "type": "string" },
+          "sheet": { "type": "string" },
+          "cell_range": { "type": "string" },
+          "page": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "calculations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "formula", "result"],
+        "properties": {
+          "label": { "type": "string" },
+          "formula": { "type": "string" },
+          "inputs": { "type": "object" },
+          "result": { "type": "string", "description": "Decimal 문자열 (float 금지)" }
+        }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "missing_information": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "부족한 자료 목록. 추정으로 메우지 않는다"
+    },
+    "exceptions": { "type": "array", "items": { "type": "string" } },
+    "proposed_follow_up": { "type": "array", "items": { "type": "string" } },
+    "requires_professional_judgment": { "type": "boolean" },
+    "reviewer_approval_required": { "type": "boolean" }
+  }
+}
