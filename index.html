@@ -2,38 +2,41 @@
 layout: default
 title: null
 ---
-<!-- HERO -->
-<div class="hero">
-  <div class="wrap">
-    <div class="doc-meta">
+<!-- HERO : 인물 영상/사진 -->
+<section class="hero-cine">
+  <video class="hero-video" autoplay muted loop playsinline poster="{{ '/assets/img/portrait.jpg' | relative_url }}">
+    <source src="{{ '/assets/video/intro.mp4' | relative_url }}" type="video/mp4">
+  </video>
+  <div class="hero-cine-overlay"></div>
+  <div class="wrap hero-cine-inner">
+    <div class="doc-meta light">
       <span>SON SEULGI · CERTIFIED PUBLIC ACCOUNTANT</span>
       <span>SEOUL</span>
     </div>
     <h1>부적절한 집행은 <em>예방</em>하고,<br>부당한 불인정은 <span class="no">막아냅니다.</span></h1>
     <p class="hero-body">
-      손슬기 한국공인회계사입니다. 국고보조금·RISE 사업·연구개발비 정산검증을 전문으로,
+      공인회계사 손슬기입니다. 국고보조금·연구개발비 정산검증을 중심으로,
       집행 단계의 예방부터 정산 단계의 소명까지 함께합니다. 실무에서 쌓은 정산·세무·회계
       인사이트를 이곳에 나눕니다.
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="{{ '/insights/' | relative_url }}">인사이트 보기</a>
-      <a class="btn btn-ghost" href="{{ '/contact/' | relative_url }}">상담 문의</a>
+      <a class="btn btn-ghost light" href="{{ '/contact/' | relative_url }}">상담 문의</a>
     </div>
   </div>
-  {% include seal.html %}
-</div>
+</section>
 
 <!-- 프로필 -->
 <section id="profile">
   <div class="wrap">
     <div class="sec-head">
       <span class="sec-no">PROFILE</span>
-      <h2 class="sec-title">손슬기 한국공인회계사</h2>
+      <h2 class="sec-title">공인회계사 손슬기</h2>
     </div>
     <div class="profile">
-      <div class="profile-photo">프로필 사진<br>(추후 등록)</div>
+      <div class="profile-photo" style="background-image:url('{{ '/assets/img/profile.jpg' | relative_url }}')"></div>
       <div class="profile-body">
-        <p>사업비 정산검증을 중심으로, 세무와 회계 실무 전반을 다루는 한국공인회계사입니다.
+        <p>사업비 정산검증을 중심으로, 세무와 회계 실무 전반을 다루는 공인회계사입니다.
           수많은 정산 이슈를 직접 해결해 온 경험을 바탕으로, 수행기관이 놓치기 쉬운
           집행 기준과 증빙 요건을 알기 쉽게 정리해 드립니다.</p>
         <ul class="cred">
@@ -57,10 +60,10 @@ title: null
     <div class="svc">
       <div class="svc-item">
         <h3><span>FIELD 01</span>사업비 정산검증</h3>
-        <p>국고보조금·지자체 보조사업의 집행 적정성을 검증합니다. E나라도움 기반 인건비·간접비 검증에 강점이 있습니다.</p>
+        <p>국고보조금·지자체 보조사업의 집행 적정성을 검증합니다. 인건비·간접비 등 쟁점 비목의 정산검증에 강점이 있습니다.</p>
         <ul>
           <li>보조금 정산보고서 검증</li>
-          <li>RISE 등 대형 사업 월별 모니터링</li>
+          <li>대형 보조사업 월별 모니터링</li>
           <li>불인정 사전 예방 점검</li>
         </ul>
       </div>
@@ -83,6 +86,16 @@ title: null
         </ul>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- 다크 배너 : 상담 유도 -->
+<section class="band" style="background-image:url('{{ '/assets/img/bg-fintech.jpg' | relative_url }}')">
+  <div class="band-overlay"></div>
+  <div class="wrap band-inner">
+    <h2>숫자로 신뢰를 드립니다.</h2>
+    <p>정산 지적이 걱정되거나, 세무·회계 판단이 필요하신가요?<br>공인회계사 손슬기가 직접 검토하고 답변드립니다.</p>
+    <a class="btn btn-gold" href="{{ '/contact/' | relative_url }}">상담 문의하기</a>
   </div>
 </section>
 
