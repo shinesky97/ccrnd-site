@@ -1,9 +1,22 @@
 # AI 기반 회계감사 지원 시스템 — 초기 설계서 (Initial Design)
 
-- 문서 버전: 0.1 (초안)
-- 작성일: 2026-07-29
-- 상태: **회계사(발주자) 검토 대기** — 본 문서 승인 전에는 코드를 작성하지 않는다.
-- 근거 문서: 발주자 요구사항 명세 (2026-07-29 접수)
+- 문서 버전: 0.2
+- 작성일: 2026-07-29 / 개정일: 2026-07-30
+- 상태: **발주자 검토 완료, 핵심 결정사항 확정** — 상세 설계 문서 작성 및 MVP 1 착수 가능
+- 근거 문서: 발주자 요구사항 명세 (2026-07-29 접수), 발주자 결정사항 (2026-07-30 접수)
+
+## 확정된 결정사항 (2026-07-30)
+
+| # | 항목 | 결정 |
+|---|---|---|
+| 1 | 적용 회계기준 기본값 | **일반기업회계기준(K-GAAP)**. K-IFRS는 확장 옵션 |
+| 2 | 전체 중요성 계산 기본 공식 | **(자산총액 + 매출총액) ÷ 2 × 1%**. 수행중요성·명백히 경미한 기준의 기본 비율(75% / 5%)은 제안값이며, 모든 값은 여전히 Partner 승인 필수 |
+| 3 | 표본 수 추천 공식 | Claude 추천안 채택: **비통계적 보증계수 방식** (상세: docs/audit-methodology.md §7) |
+| 4 | 파일 저장소 | **원천자료 저장과 산출물 백업 모두 Google Drive** (S3 대체). 저장소 추상화 계층으로 구현 |
+| 5 | AI 데이터 송신 정책 | **원문 그대로 송신**. 단, 상충점과 권고사항은 docs/security-model.md §4 참조 (주민등록번호 등 고유식별정보 자동 마스킹은 기본 유지 권고, 로그 마스킹은 원 요구사항대로 유지) |
+| 6 | 저장소 분리 | **별도 저장소(ai-audit-assistant, 비공개)로 분리** 확정. 생성 완료 시 본 브랜치의 문서·구조를 그대로 이전 |
+
+미결 사항: §10의 A4(이상분개 임계값), A5(조서번호 체계), A6(완료 체크리스트 정본), B7(배포 환경), B9(작업 큐 — 권장안: Postgres 경량 큐), B10(OCR), B11(사용자 규모), C12~C14, D16. 이들은 MVP 1 진행 중 기본안으로 제안 후 확정한다.
 
 ---
 
@@ -63,7 +76,7 @@
 - **감사 워크플로우**: 요구사항 §3의 A~K 11개 모듈
 - **계정과목**: 요구사항 §3.F의 20개 계정 영역 (MVP 단계별 순차 지원)
 - **언어**: 한국어 우선, 계정과목 한/영 매핑 테이블 유지
-- **회계·감사기준**: K-IFRS 및 일반기업회계기준(K-GAAP), 대한민국 회계감사기준(ISA 기반) — 어느 것을 우선할지는 §10 결정사항
+- **회계·감사기준**: 일반기업회계기준(K-GAAP) 기본, K-IFRS 확장 옵션. 대한민국 회계감사기준(ISA 기반)
 
 ---
 
@@ -72,6 +85,7 @@
 이 구분은 시스템 전체의 헌법이다. 코드 레벨에서는 각 산출물에
 `requires_professional_judgment: bool`과 `reviewer_approval_required: bool` 필드로 구현되며,
 승인 게이트(approval gate)를 통과하지 않은 판단은 후속 단계에서 참조할 수 없다.
+정본은 docs/human-review-policy.md 이다.
 
 ### 2.1 완전 자동화 가능 (AI/시스템 수행 → 회계사 검토는 사후적)
 
@@ -158,14 +172,15 @@
 └───────┬───────────────┬───────────────────┬─────────────────────┘
         │               │                   │
 ┌───────▼──────┐ ┌──────▼──────────┐ ┌──────▼───────────────┐
-│ PostgreSQL   │ │ Task Queue      │ │ Object Storage       │
-│ (업무 데이터  │ │ (Celery+Redis)  │ │ (로컬 dev / S3 호환) │
-│  + 감사로그)  │ │ 파싱·분석·AI    │ │ 원본 read-only +     │
-│              │ │ 비동기 작업      │ │ 해시 검증            │
+│ PostgreSQL   │ │ Task Queue      │ │ Storage              │
+│ (업무 데이터  │ │ (비동기 작업:   │ │ (dev: 로컬 /         │
+│  + 감사로그)  │ │  파싱·분석·AI)  │ │  운영: Google Drive) │
+│              │ │                 │ │ 원본 read-only +     │
+│              │ │                 │ │ 해시 검증            │
 └──────────────┘ └─────────────────┘ └──────────────────────┘
                         │
                  ┌──────▼──────────┐
-                 │ Anthropic API   │  ← 송신 전 PII 마스킹 게이트,
+                 │ Anthropic API   │  ← 송신 정책: security-model.md §4,
                  │ (Claude)        │     요청/응답 원문·모델·프롬프트버전 저장
                  └─────────────────┘
 ```
@@ -195,7 +210,7 @@
 | ORM | SQLAlchemy | 적합 (2.x + Alembic 마이그레이션) | **채택** |
 | Task queue | Celery | 적합하나 초기 규모에는 무겁다. **대안: 동일 Postgres를 브로커로 쓰는 경량 큐(예: procrastinate/dramatiq)** — 인프라 1개(Redis) 절감, 트랜잭션 일관성 유리. 단, Celery는 레퍼런스가 풍부 | MVP 1: **Postgres 기반 경량 큐 권장**, 규모 확대 시 Celery 전환 가능한 인터페이스로 추상화. §10 결정사항 |
 | Frontend | React 또는 Next.js | **Next.js(App Router) + TypeScript** 권장 — 폼·테이블 중심 업무 UI, 코드 분할, 국문 UI | **Next.js 채택** |
-| 파일 저장 | 로컬/S3 분리 | 적합. 스토리지 인터페이스 추상화 + MinIO(dev)/S3(운영) | **채택** |
+| 파일 저장 | 로컬/S3 분리 | **발주자 결정으로 Google Drive 채택** (원천자료 + 산출물 백업). StorageInterface 추상화: dev=로컬 파일시스템, 운영=Google Drive API(서비스 계정 + 전용 공유드라이브). 원본 불변성은 해시 기록 + 앱 수정 API 부재 + 주기적 해시 재검증으로 보강 | **Google Drive 채택** |
 | Excel | openpyxl, pandas | 적합. 대용량 원장은 `read_only` 스트리밍 + 청크 처리 | **채택** |
 | PDF | 텍스트 추출 + 페이지 근거 | pypdf/pdfplumber. 스캔 PDF는 OCR 필요 여부만 플래그(초기엔 OCR 미포함, §10 결정사항) | **채택(+OCR은 보류)** |
 | DOCX | python-docx | 적합 | **채택** |
@@ -207,7 +222,7 @@
 
 ### 3.4 AI 호출 계약 (모든 AI 태스크 공통)
 
-모든 AI 태스크는 다음 봉투(envelope)로 저장된다:
+모든 AI 태스크는 다음 봉투(envelope)로 저장된다 (스키마: schemas/ai_envelope.v1.json):
 
 ```json
 {
@@ -215,17 +230,17 @@
   "prompt_version": "risk-cand-v1.3",
   "model": "claude-...",
   "input_refs": ["doc:123#sheet=시산표!A1:F200"],
-  "raw_response": "...(원문, PII 마스킹 후)",
+  "raw_response": "...(원문, 저장 시 PII 마스킹)",
   "structured_output": {
     "conclusion": "...",
     "confidence": "high | medium | low",
     "evidence_refs": ["evid:456", "..."],
     "source_locations": [{"file": "...", "sheet": "...", "cell_range": "..."}],
-    "calculations": [...],
-    "assumptions": [...],
-    "missing_information": [...],
-    "exceptions": [...],
-    "proposed_follow_up": [...],
+    "calculations": [],
+    "assumptions": [],
+    "missing_information": [],
+    "exceptions": [],
+    "proposed_follow_up": [],
     "requires_professional_judgment": true,
     "reviewer_approval_required": true
   },
@@ -237,7 +252,7 @@
 
 - `schema_valid = false` → 저장하지 않고 재처리 큐 또는 사용자 검토 상태로 전환
 - `confidence = low` 또는 `evidence_refs = []` → 자동으로 `NEEDS_REVIEW` 분류
-- 송신 전 PII 마스킹 게이트 통과 필수 (주민등록번호·계좌번호·개인 연락처 패턴)
+- AI 송신 정책은 security-model.md §4 (원문 송신 확정 + 고유식별정보 마스킹 권고)
 
 ---
 
@@ -249,7 +264,7 @@
 [Client User/감사팀 업로드]
       │
       ▼
-(1) 원본 저장  ──►  Object Storage (read-only, SHA-256 해시 기록)
+(1) 원본 저장  ──►  Storage (read-only, SHA-256 해시 기록)
       │
       ▼
 (2) 형식 검증  ──►  실패 시: ingestion_issues 기록 + 업로더에게 반려
@@ -332,8 +347,7 @@ CLEARED → (유의적 영역) PARTNER_APPROVAL_REQUIRED → COMPLETED → LOCKE
 
 ## 5. 핵심 데이터베이스 테이블
 
-전체 스키마는 구현 단계에서 `docs/data-model.md`로 상세화한다. 여기서는 핵심 테이블과 관계만 정의한다.
-금액 컬럼은 전부 `NUMERIC(20, 2)` (Decimal), 시각은 `TIMESTAMPTZ`.
+필드 수준 정의는 docs/data-model.md 참조. 금액 컬럼은 전부 `NUMERIC(20, 2)` (Decimal), 시각은 `TIMESTAMPTZ`.
 
 ### 5.1 조직·업무
 
@@ -362,7 +376,7 @@ CLEARED → (유의적 영역) PARTNER_APPROVAL_REQUIRED → COMPLETED → LOCKE
 
 | 테이블 | 핵심 컬럼 | 비고 |
 |---|---|---|
-| `materiality` | engagement_id, basis(매출/세전이익/총자산/순자산), benchmark_amount, rate, overall, performance, trivial_threshold, proposed_by(system), approved_by, approved_at, version | 승인 전 값은 어디에서도 참조 불가 |
+| `materiality` | engagement_id, basis(avg_assets_revenue 기본), benchmark_amount, rate, overall, performance, trivial_threshold, proposed_by(system), approved_by, approved_at, version | 승인 전 값은 어디에서도 참조 불가 |
 | `risks` | risk_id, engagement_id, account, assertion, description, rationale, inherent_risk, control_risk, is_significant, is_fraud_risk, related_controls, planned_response, required_evidence, assignee, reviewer, status, proposed_by(ai/human), approved_by | 요구사항 §3.D 필드 전체 |
 | `analytical_results` | engagement_id, analysis_type, account, current, prior, variance, variance_pct, threshold_rule, flagged, evidence_refs | 분석적 절차 |
 | `anomalies` | engagement_id, source(je_test 등), rule_id, gl_entry_ref, amount, pct_of_materiality, detection_rule, evidence_refs, proposed_follow_up, status | 이상항목 |
@@ -380,7 +394,7 @@ CLEARED → (유의적 영역) PARTNER_APPROVAL_REQUIRED → COMPLETED → LOCKE
 | `working_papers` | wp_no, engagement_id, title, purpose, related_risks(FK[]), related_assertions, population_ref, sample_ref, procedures_performed, source_documents(FK[]), results, exceptions, further_procedures, conclusion, conclusion_evidence_refs(FK[] — **비어 있으면 완료 전이 불가**), preparer, prepared_at, reviewer, reviewed_at, review_notes, note_resolutions, attachments, version, status | 요구사항 §4 전체 필드 |
 | `wp_versions` | wp_id, version, snapshot(JSONB), changed_by, change_reason | LOCKED 후 변경은 새 버전 |
 | `review_notes` | wp_id, author, note, status(open/resolved), resolved_by, resolution | 검토의견 및 해소 |
-| `report_drafts` | engagement_id, framework(재무보고기준), auditing_standards, statements_covered, balance_date, period, mgmt_responsibility, tcwg_responsibility, auditor_responsibility, **opinion_type(기본값 없음, NULL 시 생성 불가)**, modification_basis, eom_om_paragraphs(JSONB), going_concern_paragraph, kam(JSONB, 확장용), report_date, auditor_info, partner_final_approval_by/at, status | 요구사항 §3.K 필수 입력 전체 |
+| `report_drafts` | engagement_id, framework(기본 K-GAAP), auditing_standards, statements_covered, balance_date, period, mgmt_responsibility, tcwg_responsibility, auditor_responsibility, **opinion_type(기본값 없음, NULL 시 생성 불가)**, modification_basis, eom_om_paragraphs(JSONB), going_concern_paragraph, kam(JSONB, 확장용), report_date, auditor_info, partner_final_approval_by/at, status | 요구사항 §3.K 필수 입력 전체 |
 | `completion_checklist` | engagement_id, item_code, required(bool), status, evidence_ref, checked_by | 전 항목 통과 전 보고서 생성 차단 |
 
 ### 5.5 AI·로그·승인
@@ -448,7 +462,7 @@ CLEARED → (유의적 영역) PARTNER_APPROVAL_REQUIRED → COMPLETED → LOCKE
 | 1-6 | 중요성 입력·계산안·승인 게이트 | materiality 승인 워크플로우 |
 | 1-7 | 전기 대비 변동분석 + 중요계정 자동 식별 | analytical_results |
 | 1-8 | 이상분개 탐지 (규칙 엔진: 휴일·정수·중복·결산 전후 등) | anomalies + 근거 링크 |
-| 1-9 | AI 계층: 봉투·스키마 검증·PII 마스킹 게이트 → 위험 후보 생성 | risks(제안 상태) |
+| 1-9 | AI 계층: 봉투·스키마 검증·마스킹 게이트 → 위험 후보 생성 | risks(제안 상태) |
 | 1-10 | 계정별 감사프로그램 초안 생성 (템플릿 + 위험 매핑) | audit_programs |
 | 1-11 | 감사조서 초안 생성 + 근거링크 하드 블록 | working_papers |
 | 1-12 | 검토·승인 워크플로우 (상태기계 전체) + 미해결사항 대시보드 | 상태 전이 + 대시보드 |
@@ -457,7 +471,7 @@ CLEARED → (유의적 영역) PARTNER_APPROVAL_REQUIRED → COMPLETED → LOCKE
 (정상, 차대불일치, 중복분개, 결산일 후 매출, 음수 채권, 거래처명 불일치, 단위 혼재, FS↔TB 불일치)이
 전부 의도된 결과를 산출하고, 근거 없는 조서 완료가 차단됨을 통합테스트로 증명.
 
-### MVP 2 — "핵심 실증절차" 
+### MVP 2 — "핵심 실증절차"
 매출·매출채권 감사 → 현금·금융기관조회 → 표본선정(승인 게이트 포함) → 유형자산 → 매입채무·차입금 → 감사차이 관리(수정분개·SUM 자동 생성).
 
 ### MVP 3 — "완료와 보고"
@@ -488,14 +502,14 @@ CLEARED → (유의적 영역) PARTNER_APPROVAL_REQUIRED → COMPLETED → LOCKE
 | 8 | 단위 혼재(원/천원/백만원) | 자릿수 분포·상호 대사 기반 탐지 → 확정은 담당자. 문서별 단위 메타데이터 필수 |
 | 9 | 열이름 변경·서식 다양성 | 열 매핑 프로파일 + 미매핑 열은 ingestion_issue로 반려(추측 매핑 금지) |
 | 10 | 파일 손상·중복 업로드 | 해시 중복 탐지, 파싱 실패 시 명시적 반려 |
-| 11 | 원본 훼손 | 원본은 객체저장소에 불변 저장, 애플리케이션에 수정 API 부재, 해시 재검증 |
+| 11 | 원본 훼손 | 원본은 저장소에 불변 저장, 애플리케이션에 수정 API 부재, 해시 재검증 |
 | 12 | 재현 불가능한 표본·계산 | seed·계산식·필터 조건 전부 저장. 속성 테스트로 재현성 검증 |
 
 ### 8.3 보안·정보보호 위험
 
 | # | 위험 | 통제방안 |
 |---|---|---|
-| 13 | 고객정보·개인정보의 외부 유출 (AI API 포함) | 송신 전 PII 마스킹 게이트(주민번호·계좌·연락처 패턴), 전송 필드 화이트리스트. 로그·audit_trail도 마스킹 후 저장 |
+| 13 | 고객정보·개인정보의 외부 유출 (AI API 포함) | 발주자 결정으로 AI 송신은 원문 허용. 단 ① 주민등록번호 등 고유식별정보는 송신 전 자동 마스킹 기본 유지(권고, 설정으로 제어), ② 로그·audit_trail은 원 요구사항대로 마스킹 후 저장, ③ 감사계약 시 제3자 처리위탁 고지 필요(docs/security-model.md §4) |
 | 14 | API key·비밀번호 노출 | 환경변수/시크릿 매니저만 사용. pre-commit + hook로 시크릿 패턴 커밋 차단 |
 | 15 | 권한 상승·업무 간 데이터 접근 | role × engagement 이중 스코프, 모든 API에 스코프 검사, Client User 라우트 물리적 분리 |
 | 16 | 감사로그 변조 | append-only + 해시 체인 + DB 권한에서 UPDATE/DELETE 제거 |
@@ -515,21 +529,20 @@ CLEARED → (유의적 영역) PARTNER_APPROVAL_REQUIRED → COMPLETED → LOCKE
 ## 9. 예상 폴더 구조
 
 ```
-ccrnd-site/
-├── CLAUDE.md                        # 핵심 원칙·금지사항만 간결히 (환각 금지, 승인 게이트, Decimal, 원본 불변 등)
+ai-audit-assistant/
+├── CLAUDE.md                        # 핵심 원칙·금지사항만 간결히
 ├── README.md
 ├── docs/
 │   ├── initial-design.md            # 본 문서
 │   ├── product-requirements.md      # 요구사항 정본
-│   ├── audit-methodology.md         # 워크플로우 A~K, 주장·절차 매핑
+│   ├── audit-methodology.md         # 워크플로우 A~K, 주장·절차 매핑, 표본 공식
 │   ├── data-model.md                # 전체 ERD·테이블 정의
-│   ├── security-model.md            # RBAC, PII 마스킹, 로그 정책
-│   ├── human-review-policy.md       # §2 자동화/승인 구분의 정본
+│   ├── security-model.md            # RBAC, 마스킹, 로그 정책, AI 송신 정책
+│   ├── human-review-policy.md       # 자동화/승인 구분의 정본
 │   └── report-generation-policy.md  # 보고서 필수 입력·의견 선택 정책
 ├── schemas/                         # AI 구조화 출력 JSON Schema (버전 관리)
 │   ├── ai_envelope.v1.json
 │   ├── risk_candidate.v1.json
-│   ├── anomaly_finding.v1.json
 │   └── ...
 ├── backend/
 │   ├── app/
@@ -548,6 +561,7 @@ ccrnd-site/
 │   │   ├── workflow/                # 상태기계, 승인 게이트, 자기승인 차단
 │   │   ├── working_papers/          # 조서 생성·버전·근거링크 검증
 │   │   ├── reporting/               # 보고서 템플릿·초안 (의견 쓰기 경로 없음)
+│   │   ├── storage/                 # StorageInterface: Local / GoogleDrive
 │   │   ├── models/                  # SQLAlchemy 모델
 │   │   ├── api/                     # 라우터 (team / client 분리)
 │   │   └── audit_trail/             # append-only 로그·해시체인
@@ -564,7 +578,7 @@ ccrnd-site/
 │   ├── integration/                 # 업로드→대사→조서 파이프라인
 │   ├── quality_scenarios/           # 요구사항 §10의 12종 시나리오
 │   └── conftest.py
-├── sample-data/                     # §10 테스트 데이터 (가공의 회사, 실데이터 금지)
+├── sample-data/                     # 테스트 데이터 (가공의 회사, 실데이터 금지)
 │   ├── normal/
 │   ├── unbalanced_tb/
 │   ├── duplicate_je/
@@ -585,56 +599,48 @@ ccrnd-site/
 └── .env.example                     # 실제 키 없음
 ```
 
-참고: 현재 저장소에 있는 `index.html`(기존 사이트)은 이 프로젝트와 무관해 보이므로,
-처리 방침(별도 폴더로 이동/삭제/유지)은 §10 결정사항에 포함.
-
 ---
 
 ## 10. 구현 전 발주자가 결정해야 하는 사항
 
-구현 착수 전 아래 결정이 필요하다. 각 항목에 권장안을 표시했다.
+**2026-07-30 결정 완료**: A1(회계기준=일반기업회계기준), A2(중요성 공식=(자산총액+매출총액)/2×1%),
+A3(표본 공식=Claude 추천안 위임 → 비통계적 보증계수 방식 채택), B8(AI 송신=원문),
+파일 저장소=Google Drive, D15(별도 저장소 분리). 상단 "확정된 결정사항" 표 참조.
 
-### A. 감사 방법론 관련 (필수)
+### 미결 사항 (MVP 1 진행 중 기본안 제안 후 확정)
 
-1. **적용 회계기준 우선순위** — K-IFRS와 일반기업회계기준 중 초기 버전의 기본값.
-   *권장: 일반기업회계기준(비상장 중소 피감사회사가 주 대상이라면) — 확인 필요.*
-2. **중요성 계산안의 기준·비율 범위** — 시스템이 "계산안"으로 보여줄 기준(매출·세전이익·총자산·순자산)별
-   비율 범위(예: 세전이익 3~10%)를 어떤 값으로 세팅할지. 법인(회계법인) 내부 방법론이 있으면 그 값 사용.
-3. **표본 수 추천 공식** — 추천안 산출에 사용할 방식(감사기준 예시표, 법인 내부 표, 통계 공식).
+#### A. 감사 방법론 관련
+
 4. **이상분개 탐지 규칙의 기본 임계값** — 예: "결산일 전후 N일", "정수 금액 기준", "비업무시간 정의(휴일 목록 포함)".
+   기본안: audit-methodology.md §5.
 5. **조서번호 체계** — 법인에서 사용하는 채번 규칙(예: A-100, B-200 계열)이 있으면 그대로 반영.
 6. **완료 체크리스트 항목의 정본** — 감사기준 기반 기본안을 시스템이 제시하되, 법인 정책 반영 필요.
 
-### B. 시스템·인프라 관련
+#### B. 시스템·인프라 관련
 
 7. **배포 환경** — 온프레미스(법인 내부 서버) vs 클라우드(국내 리전). 고객정보 보관 위치 정책과 직결.
    *권장: 초기엔 단일 서버 Docker Compose, 위치는 발주자 정책 따름.*
-8. **AI 데이터 송신 정책** — Anthropic API로 보낼 수 있는 데이터의 범위(마스킹 후 전문 vs 집계값만).
-   피감사회사와의 계약상 제3자 제공 이슈 검토 필요. *권장: 마스킹 + 필드 화이트리스트 방식.*
 9. **작업 큐 선택** — Celery+Redis vs Postgres 기반 경량 큐. *권장: MVP 1은 Postgres 기반 경량 큐(§3.3).*
 10. **스캔 PDF의 OCR 지원 여부** — 초기 버전 포함 여부. *권장: MVP 3 이후로 연기, 우선 "OCR 필요" 플래그만.*
 11. **사용자 규모와 동시 업무 수** — 인프라 사이징과 멀티테넌시(법인 1개 vs 여러 법인) 설계에 영향.
     *권장: 단일 법인 가정으로 시작.*
 
-### C. 데이터·보안 관련
+#### C. 데이터·보안 관련
 
-12. **개인정보 마스킹 범위의 확정** — 주민번호·계좌번호 외에 급여 데이터의 개인 식별 정보 처리 수준.
+12. **개인정보 마스킹 범위의 확정** — 고유식별정보 외에 급여 데이터의 개인 식별 정보 처리 수준 (security-model.md §6).
 13. **자료 보존 연한** — 감사조서 보존 의무(외감법상 8년 등)에 맞춘 보존·파기 정책.
 14. **Client User 포털의 MVP 포함 여부** — MVP 1에서는 감사팀 업로드만으로 시작할지.
     *권장: 클라이언트 포털은 MVP 2 이후.*
 
-### D. 저장소 관련
+#### D. 저장소 관련
 
-15. **기존 `index.html`의 처리** — 현 저장소(ccrnd-site)에 있는 기존 사이트 파일을 유지/이동/삭제할지,
-    또는 본 프로젝트를 별도 저장소로 분리할지.
 16. **브랜치·배포 전략** — main 보호, PR 리뷰 정책.
 
 ---
 
 ## 다음 단계
 
-1. 발주자가 본 문서를 검토하고 §10의 결정사항에 답변
-2. 결정 반영하여 `docs/product-requirements.md`, `docs/human-review-policy.md`, `docs/data-model.md` 상세화
-3. MVP 1 구현 착수 (1-1 프로젝트 골격부터, §7의 순서대로)
-
-> 본 문서 승인 전에는 코드를 작성하지 않는다.
+1. ~~발주자가 본 문서를 검토하고 §10의 결정사항에 답변~~ (완료, 2026-07-30)
+2. ~~결정 반영하여 상세 정책 문서 작성~~ (완료 — docs/ 참조)
+3. 별도 저장소(ai-audit-assistant) 생성 및 이전
+4. MVP 1 구현 착수 (1-1 프로젝트 골격부터, §7의 순서대로)
