@@ -35,10 +35,10 @@ lead: 필요하신 자료·견적을 요청해 주세요. 공인회계사 손슬
     <a class="dl-get" href="mailto:seulgison@atcc.co.kr?subject=[ccrnd.com]%20부가세%20신고%20체크리스트%20요청">자료 요청 →</a>
   </li>
   <li>
-    <span class="badge bg-settlement">체크리스트</span>
-    <span class="dl-name">사업비 정산 증빙서류 체크리스트
-      <small>비목별로 반드시 갖춰야 할 증빙과 자주 지적되는 항목을 정리했습니다.</small></span>
-    <a class="dl-get" href="mailto:seulgison@atcc.co.kr?subject=[ccrnd.com]%20정산%20증빙%20체크리스트%20요청">자료 요청 →</a>
+    <span class="badge bg-settlement">견적</span>
+    <span class="dl-name">사업비 정산 견적서 요청
+      <small>국고보조금·연구개발비 등 사업비 정산검증 견적을 안내해 드립니다.</small></span>
+    <a class="dl-get" href="mailto:seulgison@atcc.co.kr?subject=[ccrnd.com]%20사업비%20정산%20견적서%20요청&body=사업명%3A%20%0A사업%20규모%2F기간%3A%20%0A수행기관%3A%20%0A연락처%3A%20">견적 요청 →</a>
   </li>
   <li>
     <span class="badge bg-accounting">상담</span>
