@@ -91,3 +91,5 @@ exclude:
   - Gemfile.lock
   - vendor
   - .sass-cache
+  - scripts
+  - .pages.yml
