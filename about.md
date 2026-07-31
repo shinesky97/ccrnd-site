@@ -47,3 +47,15 @@ lead: 사업비 정산검증을 중심으로 세무·회계 실무 전반을 다
 - **업무시간** — 평일 09:00 – 18:00
 
 [문의하기 →](/contact/){: .res-link}
+
+## 방문자 메시지
+
+<div class="ticker" aria-label="최근 방문자 메시지">
+  <div class="ticker-track">
+    {%- assign gb = site.data.guestbook | sort: "date" | reverse -%}
+    {%- for e in gb limit: 8 -%}<span class="ticker-item">“{{ e.message | truncate: 44 }}” <b>— {{ e.name }}</b></span>{%- endfor -%}
+    {%- for e in gb limit: 8 -%}<span class="ticker-item">“{{ e.message | truncate: 44 }}” <b>— {{ e.name }}</b></span>{%- endfor -%}
+  </div>
+</div>
+
+[방명록 전체 보기 →](/guestbook/){: .res-link}

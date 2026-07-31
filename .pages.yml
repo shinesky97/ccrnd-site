@@ -48,3 +48,21 @@ content:
       - name: body
         label: 본문
         type: rich-text
+
+  - name: guestbook
+    label: 방명록 (검토·게시)
+    type: file
+    path: _data/guestbook.yml
+    list: true
+    fields:
+      - name: name
+        label: 이름 / 상호
+        type: string
+      - name: message
+        label: 메시지
+        type: text
+      - name: date
+        label: 날짜
+        type: date
+        options:
+          format: yyyy-MM-dd
