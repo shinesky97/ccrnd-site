@@ -8,3 +8,8 @@ _site/
 .bundle/
 vendor/
 Gemfile.lock
+
+# Node (에세이 자동화 스크립트용)
+node_modules/
+package.json
+package-lock.json

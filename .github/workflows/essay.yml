@@ -1,0 +1,50 @@
+name: 에세이 자동 초안 (AI)
+
+# 매주 토요일 08:00 KST (= 금요일 23:00 UTC) + 수동 실행
+on:
+  schedule:
+    - cron: '0 23 * * 5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  essay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Anthropic SDK 설치
+        run: npm install @anthropic-ai/sdk
+
+      - name: 에세이 초안 생성
+        id: gen
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/essay-draft.mjs
+
+      - name: 초안 PR 생성 (검토 후 병합)
+        if: steps.gen.outputs.created == '1'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: essay/auto-draft
+          delete-branch: true
+          add-paths: |
+            _posts/**
+            scripts/essay-topics.json
+          commit-message: "에세이 초안 자동 생성 (AI)"
+          title: "✍️ 에세이 초안 — 검토 후 병합하세요"
+          body: |
+            테마 백로그에서 다음 주제를 골라 AI가 작성한 **에세이 초안**입니다.
+
+            - 내용을 **반드시 검토·수정**한 뒤 병합하면 사이트에 게시됩니다.
+            - 게시하지 않으려면 이 PR을 닫으세요. (그럴 경우 해당 주제는 다시 사용하도록
+              `scripts/essay-topics.json`에서 `used`를 `false`로 되돌리면 됩니다.)
+
+            _AI 생성 · 발행 전 검토 필수_

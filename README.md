@@ -125,3 +125,28 @@ Workflow permissions** 에서:
 2. **Allow GitHub Actions to create and approve pull requests** 체크 → Save
 
 (이 설정을 안 하면 워크플로우가 뉴스는 모으지만 PR 생성에서 실패합니다.)
+
+---
+
+## 분야별 에세이 자동화 (AI 초안 · 검토 후 발행)
+
+`.github/workflows/essay.yml` + `scripts/essay-draft.mjs` 가 **매주 토요일 아침**에
+`scripts/essay-topics.json` 의 **다음 미사용 주제**를 골라, Claude(`claude-opus-5`)로
+설명형 **에세이 초안**을 작성하고 **PR로 올립니다.**
+
+- 초안을 **반드시 검토·수정**한 뒤 병합하면 게시됩니다. (닫으면 게시 안 됨)
+- 즉시 테스트: **Actions → "에세이 자동 초안 (AI)" → Run workflow**
+- 주제 추가: `scripts/essay-topics.json` 배열에 `{ "used": false, "category": "...",
+  "title": "...", "outline": "..." }` 추가 (category: `tax`/`accounting`/`settlement`)
+- 주기 변경: 워크플로우의 `cron` 값 수정
+
+### ⚠️ 최초 1회 설정 (필수) — Anthropic API 키
+
+에세이 생성에는 Anthropic API 키가 필요합니다. 저장소
+**Settings → Secrets and variables → Actions → New repository secret** 에서:
+
+- **Name**: `ANTHROPIC_API_KEY`
+- **Secret**: (console.anthropic.com 에서 발급한 API 키)
+
+키가 없으면 워크플로우가 초안을 만들지 못합니다(뉴스 자동화는 키 없이 동작).
+글당 비용은 소액입니다. 위 "뉴스 브리핑"의 **PR 자동 생성 권한 설정**도 동일하게 필요합니다.
