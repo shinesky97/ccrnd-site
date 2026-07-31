@@ -1,0 +1,56 @@
+---
+layout: default
+title: 방명록
+permalink: /guestbook/
+---
+<div class="page-head">
+  <div class="wrap">
+    <h1>방명록</h1>
+    <p class="lead">다녀가신 감상이나 응원, 간단한 문의를 남겨주세요. 확인 후 정성껏 회신드립니다.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:32px">
+  <div class="wrap gb-grid">
+
+    <!-- 남기기 -->
+    <div class="gb-write">
+      <h2 class="gb-h">글 남기기</h2>
+      <form action="https://formsubmit.co/{{ site.contact.email }}" method="POST">
+        <input type="hidden" name="_subject" value="[ccrnd.com] 방명록">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://www.ccrnd.com/guestbook/?sent=1">
+        <div><label for="g-name">이름 / 상호</label><input id="g-name" name="이름" type="text" required placeholder="예: 홍길동 (○○상사)"></div>
+        <div><label for="g-msg">메시지</label><textarea id="g-msg" name="메시지" required placeholder="따뜻한 한마디를 남겨주세요."></textarea></div>
+        <button class="f-submit" type="submit">남기기</button>
+      </form>
+      <p class="gb-note">※ 남겨주신 글은 확인 후 방명록에 게시됩니다.</p>
+    </div>
+
+    <!-- 목록 -->
+    <div class="gb-listwrap">
+      <h2 class="gb-h">방문자 메시지</h2>
+      {% if site.data.guestbook and site.data.guestbook.size > 0 %}
+      <ul class="gb-list">
+        {%- assign entries = site.data.guestbook | sort: "date" | reverse -%}
+        {%- for e in entries -%}
+        <li class="gb-item">
+          <p class="gb-msg">{{ e.message }}</p>
+          <div class="gb-meta"><span class="gb-name">{{ e.name }}</span><span class="gb-date">{{ e.date | date: "%Y.%m.%d" }}</span></div>
+        </li>
+        {%- endfor -%}
+      </ul>
+      {% else %}
+      <div class="empty">아직 남겨진 글이 없습니다. 첫 글을 남겨주세요!</div>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+<script>
+  if (new URLSearchParams(location.search).get('sent') === '1') {
+    alert('방명록이 정상적으로 전송되었습니다. 확인 후 게시하겠습니다. 감사합니다!');
+    history.replaceState(null, '', location.pathname);
+  }
+</script>

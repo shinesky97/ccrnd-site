@@ -52,6 +52,8 @@ nav:
     url: /insights/
   - name: 자료실
     url: /downloads/
+  - name: 방명록
+    url: /guestbook/
   - name: 문의하기
     url: /contact/
     cta: true
