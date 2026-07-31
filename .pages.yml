@@ -1,0 +1,50 @@
+# Pages CMS 설정 (https://pagescms.org)
+# app.pagescms.org 에서 GitHub 로그인 → 이 저장소 선택 → 글 작성
+media:
+  input: assets/img
+  output: /assets/img
+  extensions: [jpg, jpeg, png, webp, gif, svg]
+
+content:
+  - name: posts
+    label: 인사이트 글
+    type: collection
+    path: _posts
+    filename: '{year}-{month}-{day}-{fields.title}.md'
+    view:
+      fields: [date, title, category]
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: 제목
+        type: string
+        required: true
+      - name: date
+        label: 날짜
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: category
+        label: 분류
+        type: select
+        required: true
+        options:
+          values:
+            - { value: settlement, label: '사업비·정산 실무' }
+            - { value: tax, label: '세무 정보' }
+            - { value: accounting, label: '회계·결산 정보' }
+            - { value: notice, label: '공지·자료실' }
+      - name: tags
+        label: 태그
+        type: string
+        list: true
+      - name: summary
+        label: 요약 (목록·공유 시 표시)
+        type: text
+      - name: body
+        label: 본문
+        type: rich-text

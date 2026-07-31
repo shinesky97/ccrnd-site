@@ -33,8 +33,6 @@ lead: 사업비 정산검증을 중심으로 세무·회계 실무 전반을 다
 - 정부 보조사업·공익법인·공동주택 외부회계감사 상시 수행
 - 수행기관 대상 집행 가이드라인·정산 실무 교육 진행
 
-<div class="about-consult" style="background-image:url('/assets/img/consult.jpg')" role="img" aria-label="상담 장면"></div>
-
 <figure class="about-video">
   <video autoplay muted loop playsinline poster="/assets/img/profile.jpg">
     <source src="/assets/video/intro.mp4" type="video/mp4">
