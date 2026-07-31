@@ -108,6 +108,11 @@ title: null
       {%- for post in site.posts limit: 6 -%}
         {% include post-card.html post=post %}
       {%- endfor -%}
+      <div class="pcard pcard-video" aria-hidden="true">
+        <video autoplay muted loop playsinline poster="{{ '/assets/img/bg-fintech.jpg' | relative_url }}">
+          <source src="{{ '/assets/video/insight1.mp4' | relative_url }}" type="video/mp4">
+        </video>
+      </div>
     </div>
     <a class="sec-more" href="{{ '/insights/' | relative_url }}">전체 인사이트 보기 →</a>
     {% else %}
