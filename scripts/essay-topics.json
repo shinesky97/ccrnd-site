@@ -1,0 +1,146 @@
+[
+  {
+    "used": false,
+    "category": "tax",
+    "title": "프리랜서·N잡러가 알아야 할 3.3% 원천징수와 환급의 원리",
+    "outline": "3.3%가 무엇인지, 왜 떼는지, 5월 종합소득세 신고로 정산·환급되는 구조, 경비 인정으로 환급 늘리는 법"
+  },
+  {
+    "used": false,
+    "category": "tax",
+    "title": "간이과세 vs 일반과세, 무엇을 선택해야 할까",
+    "outline": "매출 기준, 세액 계산 차이, 매입세액공제 유불리, 업종·거래상대에 따른 선택 기준"
+  },
+  {
+    "used": false,
+    "category": "tax",
+    "title": "개인사업자 경비, 어디까지 인정될까 — 자주 헷갈리는 항목",
+    "outline": "사업 관련성 원칙, 차량·통신비·접대비·가사관련비용의 인정 범위, 증빙과 안분"
+  },
+  {
+    "used": false,
+    "category": "tax",
+    "title": "연말정산에서 놓치기 쉬운 공제 5가지",
+    "outline": "월세·의료비·교육비·기부금·연금계좌, 요건과 흔한 실수"
+  },
+  {
+    "used": false,
+    "category": "tax",
+    "title": "부가가치세, 매입세액공제와 불공제의 경계",
+    "outline": "공제 요건(세금계산서·사업관련), 대표적 불공제 항목(접대비·비영업용 승용차 등)"
+  },
+  {
+    "used": false,
+    "category": "tax",
+    "title": "법인 대표의 가지급금, 왜 위험한가",
+    "outline": "가지급금의 의미, 인정이자·대손 불인정 등 세무 리스크, 정리 방법"
+  },
+  {
+    "used": false,
+    "category": "tax",
+    "title": "사업자가 챙겨야 할 1년 세무 일정",
+    "outline": "부가세(1·7월)·원천세(매월/반기)·종합소득세(5월)·법인세(3월) 등 달력형 정리"
+  },
+  {
+    "used": false,
+    "category": "tax",
+    "title": "세금계산서, 제때 안 주고받으면 생기는 일",
+    "outline": "발급 시기, 지연·미발급 가산세, 수정세금계산서 사유와 방법"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "손익분기점(BEP), 숫자로 우리 사업을 이해하기",
+    "outline": "고정비·변동비 구분, BEP 계산, 목표이익을 위한 매출 역산, 실무 활용"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "감가상각, 왜 필요하고 어떻게 계산할까",
+    "outline": "취득원가·내용연수·잔존가치, 정액법/정률법, 세무상 의미"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "현금은 있는데 이익이 안 난다? 흑자도산의 신호 읽기",
+    "outline": "이익과 현금의 차이, 운전자본·매출채권·재고, 현금흐름 관리"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "결산 전 셀프 점검 — 시산표에서 재무제표까지",
+    "outline": "시산표 대차 일치, 계정 재분류, 미수·미지급·선급·선수 정리, 정합성 체크"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "K-IFRS와 일반기업회계기준, 무엇이 다른가",
+    "outline": "적용 대상, 공정가치·리스·수익인식 등 주요 차이, 중소기업 관점"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "재고자산 평가, 이익을 바꾸는 선택",
+    "outline": "선입선출·평균법, 저가법, 평가손실과 이익·세금 영향"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "충당부채와 우발부채, 재무제표의 '숨은 빚' 읽기",
+    "outline": "인식 요건, 판단 사례(소송·보증·복구), 주석 공시"
+  },
+  {
+    "used": false,
+    "category": "accounting",
+    "title": "공사·용역의 수익인식, 진행률은 어떻게 잡나",
+    "outline": "진행기준의 개념, 진행률 산정(원가기준 등), 과대·과소 계상 리스크"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "보조사업 인건비, 참여율 관리 실전",
+    "outline": "참여율 합 100% 원칙, 월별 관리표, 타 사업 중복, 실지급 일치"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "간접비 계상 한도, 어떻게 계산하고 관리하나",
+    "outline": "간접비의 개념, 비율·한도, 초과분 불인정, 사전 확인 습관"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "정산 증빙, 무엇을 어떻게 갖춰야 하나",
+    "outline": "비목별 필수 증빙, 계좌이체·세금계산서 일치, 자주 나오는 미비 사례"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "국고보조금 집행, 자주 나오는 불인정 유형",
+    "outline": "기간 외·목적 외 집행, 안분 없는 공통비, 증빙 불일치, 예방 포인트"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "정산 지적을 받았을 때 — 이의신청과 소명 절차",
+    "outline": "지적 유형 이해, 근거 자료 정리, 이의신청 흐름, 대응 원칙"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "연구개발비 정산, 연구기관이 놓치기 쉬운 점",
+    "outline": "인건비·연구활동비·재료비 요건, 계상 시점, 증빙과 규정 확인"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "회의비·출장비 정산, 인정받는 집행의 조건",
+    "outline": "사업 관련성, 참석자·목적 기록, 한도와 증빙, 흔한 지적"
+  },
+  {
+    "used": false,
+    "category": "settlement",
+    "title": "집행 단계에서 시작되는 정산 — 사전 예방 체크리스트",
+    "outline": "집행 품의 적요, 비목·한도 확인, 증빙 동시 확보, 월별 모니터링"
+  }
+]
