@@ -89,3 +89,39 @@ GitHub 저장소 **Settings → Pages** 에서:
 
 > 현재 작업은 `claude/accountant-homepage-design-zu1ce3` 브랜치에 올라가 있습니다.
 > `main` 에 병합한 뒤 위 Pages 설정을 적용하면 게시됩니다.
+
+---
+
+## 글쓰기 관리자 (Pages CMS)
+
+터미널·마크다운 없이 웹에서 글을 쓸 수 있습니다.
+
+1. [app.pagescms.org](https://app.pagescms.org) 접속 → **GitHub 로그인**
+2. `shinesky97/ccrnd-site` 저장소 선택 (최초 1회 권한 허용)
+3. **인사이트 글 → 새 글** → 제목·날짜·분류·본문 입력 → **Save/Publish**
+   → 자동으로 `_posts/`에 커밋되고, 몇 분 뒤 사이트에 게시됩니다.
+
+설정은 저장소의 `.pages.yml` 에 정의되어 있습니다.
+
+---
+
+## 분야별 뉴스 브리핑 자동화 (검토 후 발행)
+
+`.github/workflows/news-digest.yml` + `scripts/news-digest.mjs` 가
+**월·수·금 아침**에 세무·회계·정부보조사업 분야 최신 뉴스(Google News RSS)를
+수집해 **브리핑 초안**을 만들고, **PR로 올립니다.**
+
+- PR 내용을 확인하고 **병합(Merge)** 하면 사이트에 게시됩니다. (그냥 닫으면 게시 안 됨)
+- 즉시 테스트: **Actions 탭 → "뉴스 브리핑 자동 초안" → Run workflow**
+- 수집 주기 변경: 워크플로우의 `cron` 값 수정
+- 중복 방지 기록: `_data/news_seen.json` (최근 500건 URL)
+
+### ⚠️ 최초 1회 설정 (필수)
+
+PR을 자동으로 열 수 있도록, 저장소 **Settings → Actions → General →
+Workflow permissions** 에서:
+
+1. **Read and write permissions** 선택
+2. **Allow GitHub Actions to create and approve pull requests** 체크 → Save
+
+(이 설정을 안 하면 워크플로우가 뉴스는 모으지만 PR 생성에서 실패합니다.)
