@@ -32,10 +32,44 @@ permalink: /contact/
       <button class="f-submit" type="submit">문의 보내기</button>
     </form>
     <script>
-      if (new URLSearchParams(location.search).get('sent') === '1') {
+      var p = new URLSearchParams(location.search);
+      if (p.get('sent') === '1') {
         alert('문의가 정상적으로 전송되었습니다. 빠르게 회신드리겠습니다.');
         history.replaceState(null, '', location.pathname);
       }
+      if (p.get('card') === '1') {
+        alert('입력하신 이메일로 명함을 보내드렸습니다. 받은 편지함(또는 스팸함)을 확인해 주세요.');
+        history.replaceState(null, '', location.pathname);
+      }
     </script>
+  </div>
+</section>
+
+<!-- 명함 받기 -->
+<section id="card">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-no">명함</span>
+      <h2 class="sec-title">명함 받기</h2>
+    </div>
+    <div class="cardget">
+      <a class="cardget-img" href="{{ '/assets/card/son-seulgi-card.jpg' | relative_url }}" target="_blank" rel="noopener">
+        <img src="{{ '/assets/card/son-seulgi-card.jpg' | relative_url }}" alt="공인회계사 손슬기 명함">
+      </a>
+      <div class="cardget-form">
+        <p>이메일을 남기고 버튼을 누르면 <strong>공인회계사 손슬기의 명함</strong>을 받아보실 수 있습니다.</p>
+        <form action="https://formsubmit.co/{{ site.contact.email }}" method="POST">
+          <input type="hidden" name="_subject" value="[ccrnd.com] 명함 받기 요청">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_autoresponse" value="안녕하세요, 공인회계사 손슬기입니다. 요청하신 명함은 다음 링크에서 확인·저장하실 수 있습니다 — 명함 이미지: https://www.ccrnd.com/assets/card/son-seulgi-card.jpg / 홈페이지: https://www.ccrnd.com . 언제든 편하게 연락 주세요. 감사합니다.">
+          <input type="hidden" name="_next" value="https://www.ccrnd.com/contact/?card=1">
+          <label for="card-email">이메일</label>
+          <input id="card-email" name="email" type="email" required placeholder="name@example.com">
+          <button class="f-submit" type="submit">명함 받기</button>
+        </form>
+        <p class="cardget-note">※ 입력하신 이메일로 명함 링크가 자동 발송됩니다. 바로 저장하려면 <a href="{{ '/assets/card/son-seulgi-card.jpg' | relative_url }}" download>여기</a>를 누르세요.</p>
+      </div>
+    </div>
   </div>
 </section>
