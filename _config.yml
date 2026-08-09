@@ -2,12 +2,23 @@
 title: 공인회계사 손슬기
 tagline: 회계감사·세무기장 · 사업비 정산 스페셜리스트
 description: >-
-  공인회계사 손슬기. 회계감사와 세무기장·신고를 중심으로, 국고보조금·연구개발비
-  사업비 정산검증에 강점을 가진 스페셜리스트입니다. 실무 정보를 나눕니다.
+  공인회계사 손슬기 (손슬기 회계사) — 회계감사와 세무기장·신고를 중심으로,
+  국고보조금·연구개발비 사업비 정산검증에 강점을 가진 스페셜리스트입니다.
+  회계감사·세무·정산 실무 정보를 나눕니다.
 author: 손슬기
 email: seulgison@atcc.co.kr
 url: "https://www.ccrnd.com"
 lang: ko
+timezone: Asia/Seoul
+
+# 검색 노출용 키워드 (SEO)
+keywords: 손슬기, 손슬기 회계사, 공인회계사 손슬기, 회계사 손슬기, 회계감사, 외부감사, 세무기장, 세무신고, 사업비 정산, 국고보조금 정산, 연구개발비 정산, 정산검증
+
+# 검색엔진 소유확인 코드 — 발급받은 뒤 아래 두 줄의 주석(#)을 풀고 코드를 채워 넣으세요.
+#   구글:  https://search.google.com/search-console  → 'HTML 태그' 방식 content 값
+#   네이버: https://searchadvisor.naver.com          → '사이트 소유확인' meta content 값
+# google_site_verification: 여기에_구글_코드_붙여넣기
+# naver_verification: 여기에_네이버_코드_붙여넣기
 
 # 연락처 (푸터·문의 페이지에서 사용)
 contact:
