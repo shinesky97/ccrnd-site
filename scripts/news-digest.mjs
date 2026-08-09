@@ -5,9 +5,22 @@
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 
 const CATEGORIES = [
-  { key: 'tax',        label: '세무',           tag: '세무',   query: '세무 OR 종합소득세 OR 부가가치세 OR 법인세 OR 연말정산' },
-  { key: 'accounting', label: '회계·결산',       tag: '회계',   query: '회계 OR 결산 OR 재무제표 OR "K-IFRS" OR 외부감사' },
-  { key: 'settlement', label: '정부보조사업 정산', tag: '보조금', query: '국고보조금 OR 보조사업 정산 OR 연구개발비 정산 OR 정산검증' },
+  {
+    key: 'tax', label: '세무', tag: '세무',
+    query: '세무 OR 종합소득세 OR 부가가치세 OR 법인세 OR 연말정산',
+    // 제목에 아래 키워드가 있어야 채택 (엉뚱한 연예·스포츠 기사 배제)
+    must: /세무|세금|절세|법인세|종합소득세|종소세|부가가치세|부가세|양도소득세|양도세|상속세|증여세|연말정산|국세|원천징수|세제|세액|과세/,
+  },
+  {
+    key: 'accounting', label: '회계·결산', tag: '회계',
+    query: '회계 OR 결산 OR 재무제표 OR "K-IFRS" OR 외부감사',
+    must: /회계|재무제표|외부감사|감사인|K-IFRS|IFRS|재무상태표|손익계산서|공인회계사|회계법인|감리|재무보고|결산.*(법인|기업|회사|재무|회계)|(법인|기업|회사|재무|회계).*결산/,
+  },
+  {
+    key: 'settlement', label: '정부보조사업 정산', tag: '보조금',
+    query: '국고보조금 OR 보조사업 정산 OR 연구개발비 정산 OR 정산검증',
+    must: /보조금|보조사업|국고|정산|연구개발비|R&D|교부금|지원금|부정수급|환수|보조금관리/,
+  },
 ];
 
 const SEEN_PATH = '_data/news_seen.json';
@@ -73,7 +86,9 @@ for (const cat of CATEGORIES) {
     console.error(`[${cat.key}] ${e.message}`);
     continue;
   }
-  const fresh = items.filter((it) => !seenSet.has(it.link)).slice(0, MAX_PER_CAT);
+  const fresh = items
+    .filter((it) => !seenSet.has(it.link) && (!cat.must || cat.must.test(it.title)))
+    .slice(0, MAX_PER_CAT);
   if (fresh.length === 0) { console.log(`[${cat.key}] 새 뉴스 없음`); continue; }
   fresh.forEach((it) => seenSet.add(it.link));
 
@@ -84,7 +99,7 @@ for (const cat of CATEGORIES) {
     `date: ${date}`,
     `category: ${cat.key}`,
     `tags: [뉴스, ${cat.tag}]`,
-    `summary: "${cat.label} 분야 최신 뉴스 ${fresh.length}건을 모았습니다. (자동 수집 · 검토 후 게시)"`,
+    `summary: "${cat.label} 분야 최신 뉴스 ${fresh.length}건을 모았습니다. (매일 자동 수집·발행)"`,
     'author: 손슬기',
     '---',
     '',

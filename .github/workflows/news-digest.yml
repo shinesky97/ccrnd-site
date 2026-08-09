@@ -1,18 +1,19 @@
-name: 뉴스 브리핑 자동 초안
+name: 뉴스 브리핑 자동 발행
 
-# 월·수·금 08:00 KST (= 전날 23:00 UTC)에 실행 + 수동 실행 가능
+# 매일 07:00 KST(= 전날 22:00 UTC)에 실행 + 수동 실행 가능
 on:
   schedule:
-    - cron: '0 23 * * 0,2,4'
+    - cron: '0 22 * * *'
   workflow_dispatch: {}
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   digest:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
     steps:
       - uses: actions/checkout@v4
 
@@ -24,21 +25,11 @@ jobs:
         id: gen
         run: node scripts/news-digest.mjs
 
-      - name: 초안 PR 생성 (검토 후 병합)
+      - name: 새 글 자동 커밋·발행
         if: steps.gen.outputs.created != '0' && steps.gen.outputs.created != ''
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: news/auto-digest
-          delete-branch: true
-          add-paths: |
-            _posts/**
-            _data/news_seen.json
-          commit-message: "뉴스 브리핑 초안 자동 생성"
-          title: "📰 뉴스 브리핑 초안 — 검토 후 병합하세요"
-          body: |
-            분야별 최신 뉴스를 자동 수집한 **브리핑 초안**입니다.
-
-            - 내용을 확인하고, 필요 시 수정·삭제한 뒤 **병합(Merge)** 하면 사이트에 게시됩니다.
-            - 게시하지 않으려면 이 PR을 그냥 닫으면 됩니다.
-
-            _자동 생성 · 발행 전 검토 단계_
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _posts _data/news_seen.json
+          git commit -m "뉴스 브리핑 자동 발행 ($(date +%Y-%m-%d))"
+          git push
