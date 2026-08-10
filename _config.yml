@@ -18,7 +18,7 @@ keywords: 손슬기, 손슬기 회계사, 공인회계사 손슬기, 회계사 �
 #   구글:  https://search.google.com/search-console  → 'HTML 태그' 방식 content 값
 #   네이버: https://searchadvisor.naver.com          → '사이트 소유확인' meta content 값
 # google_site_verification: 여기에_구글_코드_붙여넣기
-# naver_verification: 여기에_네이버_코드_붙여넣기
+naver_verification: "6e309b26c3b59517e13354296c2bd2650a489598"
 
 # 연락처 (푸터·문의 페이지에서 사용)
 contact:
