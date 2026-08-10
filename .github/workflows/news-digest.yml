@@ -1,4 +1,4 @@
-name: 뉴스 브리핑 자동 발행
+name: 뉴스 브리핑 + 해설 글 자동 발행
 
 # 매일 07:00 KST(= 전날 22:00 UTC)에 실행 + 수동 실행 가능
 on:
@@ -21,15 +21,26 @@ jobs:
         with:
           node-version: 20
 
-      - name: 뉴스 수집·초안 생성
-        id: gen
+      - name: 뉴스 수집·브리핑 생성
+        id: news
         run: node scripts/news-digest.mjs
 
+      - name: Anthropic SDK 설치
+        run: npm install --no-save @anthropic-ai/sdk
+
+      - name: 오늘의 토픽으로 해설 글 생성
+        id: article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/daily-article.mjs
+
       - name: 새 글 자동 커밋·발행
-        if: steps.gen.outputs.created != '0' && steps.gen.outputs.created != ''
+        if: >-
+          (steps.news.outputs.created != '0' && steps.news.outputs.created != '') ||
+          (steps.article.outputs.created != '0' && steps.article.outputs.created != '')
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add _posts _data/news_seen.json
-          git commit -m "뉴스 브리핑 자동 발행 ($(date +%Y-%m-%d))"
+          git add _posts _data/news_seen.json scripts/essay-topics.json
+          git commit -m "뉴스 브리핑·해설 글 자동 발행 ($(date +%Y-%m-%d))"
           git push

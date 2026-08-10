@@ -1,9 +1,8 @@
-name: 에세이 자동 초안 (AI)
+name: 에세이 자동 초안 (AI · 수동)
 
-# 매주 토요일 08:00 KST (= 금요일 23:00 UTC) + 수동 실행
+# 매일 해설 글 자동화(news-digest.yml)로 대체됨.
+# 백로그 주제로 '검토 후 발행' 초안이 필요할 때만 수동 실행.
 on:
-  schedule:
-    - cron: '0 23 * * 5'
   workflow_dispatch: {}
 
 permissions:

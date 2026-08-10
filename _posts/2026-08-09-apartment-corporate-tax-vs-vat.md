@@ -99,6 +99,12 @@ author: 손슬기
 원천징수·법인세 신고 누락이 없도록 관리해야 합니다.
 </div>
 
+## 함께 읽기 — 공동주택 세무 시리즈
+
+- [공동주택 수익사업, 사업자등록부터 세금 신고까지 절차 총정리](/insights/apartment-profit-business-registration/)
+- [아파트 잡수입 세금 처리 — 재활용품·알뜰장터·중계기 임대료](/insights/apartment-misc-income-tax/)
+- [공동주택 관리비 부가가치세 면세 — 국민주택규모 85㎡와 위탁관리](/insights/apartment-management-fee-vat-exemption/)
+
 본 글은 일반적인 실무 기준을 정리한 것으로, 구체적 사안은 관리 형태·규모·계약
 내용과 **최신 법령**에 따라 달라질 수 있습니다. 공동주택 결산·세무 검토가
 필요하시면 [문의](/contact/)로 상담해 주세요.
