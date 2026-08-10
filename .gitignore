@@ -13,3 +13,6 @@ Gemfile.lock
 node_modules/
 package.json
 package-lock.json
+
+# 자동화 임시 파일 (뉴스→해설글 토픽 전달용)
+.news-today.json
