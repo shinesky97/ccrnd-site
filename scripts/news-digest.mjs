@@ -77,7 +77,6 @@ const seenSet = new Set(seen);
 const date = process.env.RUN_DATE || today();
 const ymd = date.replace(/-/g, '');
 let created = 0;
-const todayItems = {}; // 오늘 뽑힌 분야별 기사 (daily-article.mjs가 토픽 선정에 사용)
 
 for (const cat of CATEGORIES) {
   let items;
@@ -92,7 +91,6 @@ for (const cat of CATEGORIES) {
     .slice(0, MAX_PER_CAT);
   if (fresh.length === 0) { console.log(`[${cat.key}] 새 뉴스 없음`); continue; }
   fresh.forEach((it) => seenSet.add(it.link));
-  todayItems[cat.key] = fresh.map((it) => ({ title: it.title, source: it.source }));
 
   const lines = [
     '---',
@@ -123,9 +121,6 @@ for (const cat of CATEGORIES) {
 
 // 최근 500개 URL만 유지
 writeFileSync(SEEN_PATH, JSON.stringify([...seenSet].slice(-500), null, 2) + '\n');
-
-// 오늘 뽑힌 기사 목록을 임시 파일로 넘김 (daily-article.mjs가 소비, 커밋 대상 아님)
-writeFileSync('.news-today.json', JSON.stringify({ date, categories: todayItems }, null, 2) + '\n');
 
 if (process.env.GITHUB_OUTPUT) {
   writeFileSync(process.env.GITHUB_OUTPUT, `created=${created}\n`, { flag: 'a' });
