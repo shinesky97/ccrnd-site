@@ -106,7 +106,6 @@ exclude:
   - .sass-cache
   - scripts
   - .pages.yml
-  - .news-today.json
   - package.json
   - package-lock.json
   - node_modules
