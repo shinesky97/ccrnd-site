@@ -150,15 +150,40 @@ def detect_period_columns(ws, scan_rows=8):
     return None
 
 
-def plan_trial_sheet(src, out, insert_history_col=True):
+def plan_trial_sheet(src, out, prior_year=None, insert_history_col=True):
     """정산표 이월 (발주자 수작업 3·4·5단계):
     3) CF·FN: 당기값 → 전기 위치로 값복사
     4) AR: 전기값 우측에 열 삽입 + 당기수치 값복사 (열 삽입은 Excel 엔진 필요)
     5) BS·PL(존재 시): 당기 → 전기 값복사
+    +) 상단 헤더의 기수·연도 라벨 갱신 ('제 21(당)기'→'제 22(당)기', '2025'→'2026',
+       '2024 감사후'→'2025 감사후')
     열 탐지 실패 시트는 수동 목록으로 남긴다.
     """
     plan = Plan(src, out)
     wb = load_workbook(src, read_only=True, data_only=True)
+
+    # 헤더 라벨 갱신 (상단 10행 한정 — 데이터 영역 오염 방지)
+    if prior_year:
+        for ws in wb.worksheets:
+            for row in ws.iter_rows(min_row=1, max_row=10):
+                for c in row:
+                    v = c.value
+                    if isinstance(v, str) and len(v) <= 60 and (
+                            GISU_PAT.search(v) or str(prior_year) in v
+                            or str(prior_year - 1) in v):
+                        new, changed = bump_period_label(v)
+                        if changed:
+                            plan.add(op='set_cell', sheet=ws.title,
+                                     cell=c.coordinate, value=new, old=v)
+                    elif isinstance(v, int) and v in (prior_year, prior_year - 1):
+                        plan.add(op='set_cell', sheet=ws.title,
+                                 cell=c.coordinate, value=v + 1, old=str(v))
+                    elif isinstance(v, datetime) and v.year in (prior_year, prior_year - 1):
+                        try:
+                            plan.add(op='set_cell', sheet=ws.title, cell=c.coordinate,
+                                     value=v.replace(year=v.year + 1), old=str(v)[:10])
+                        except ValueError:   # 2/29 등
+                            pass
 
     def copy_cur_to_prv(sheet_name):
         ws = wb[sheet_name]
@@ -179,16 +204,57 @@ def plan_trial_sheet(src, out, insert_history_col=True):
     if 'AR' in wb.sheetnames:
         ws = wb['AR']
         det = detect_period_columns(ws)
-        if det and insert_history_col:
-            at = det['prv'] + 1
-            plan.add(op='note', text=f"AR: {get_column_letter(det['prv'])} 우측에 열 삽입 후 "
-                                     f"당기수치({get_column_letter(det['cur'])}) 값복사")
-            plan.add(op='insert_col', sheet='AR', at=at)
-            plan.add(op='copy_col_values', sheet='AR',
-                     src_col=det['cur'], dst_col=at,
-                     row_from=det['header_row'] + 1, row_to=ws.max_row)
-            plan.warnings.append('AR 열 삽입은 Excel(xlwings) 엔진에서만 실행됩니다.')
-        elif not det:
+        if det:
+            r1, r2 = det['header_row'] + 1, ws.max_row
+            # 당기 금액 2단(세부/본란) → 전기 금액 2단 값복사 (수작업 5단계)
+            for off in (0, 1):
+                plan.add(op='copy_col_values', sheet='AR',
+                         src_col=det['cur'] + off, dst_col=det['prv'] + off,
+                         row_from=r1, row_to=r2)
+            plan.add(op='note', text=f"AR: 당기 금액 {get_column_letter(det['cur'])}~"
+                                     f"{get_column_letter(det['cur'] + 1)} → 전기 금액 "
+                                     f"{get_column_letter(det['prv'])}~"
+                                     f"{get_column_letter(det['prv'] + 1)} 값복사")
+            if prior_year:
+                # '전기 감사후' 이력 갱신 + 당기 수정분개(차변/대변) 초기화 (수작업 4단계)
+                cols = {}
+                wb2 = load_workbook(src, read_only=True)   # 수식 문자열 확인용
+                ws2 = wb2['AR']
+                for row in ws.iter_rows(min_row=1, max_row=10):
+                    for c in row:
+                        if isinstance(c.value, str):
+                            s = c.value.replace(' ', '')
+                            if s == f'{prior_year}감사후':
+                                cols['q'] = c.column
+                            elif s == f'{prior_year - 1}감사후':
+                                cols['m'] = c.column
+                            elif s == '차변':
+                                cols['dr'] = c.column
+                            elif s == '대변':
+                                cols['cr'] = c.column
+                if 'q' in cols and 'm' in cols:
+                    plan.add(op='copy_col_values', sheet='AR',
+                             src_col=cols['q'], dst_col=cols['m'],
+                             row_from=r1, row_to=r2)
+                    plan.add(op='note', text=f"AR: {prior_year} 감사후 값"
+                                             f"({get_column_letter(cols['q'])}) → 전기 감사후 "
+                                             f"이력열({get_column_letter(cols['m'])}) 값복사")
+                else:
+                    plan.manual.append("AR: '감사후' 이력 열 탐지 실패 — 수동 갱신 필요")
+                cleared = 0
+                for key in ('dr', 'cr'):
+                    if key in cols:
+                        for r in range(r1, r2 + 1):
+                            v = ws2.cell(row=r, column=cols[key]).value
+                            if v is not None and not (isinstance(v, str) and v.startswith('=')):
+                                plan.add(op='clear_cell', sheet='AR',
+                                         cell=f"{get_column_letter(cols[key])}{r}",
+                                         old=str(v)[:20])
+                                cleared += 1
+                if cleared:
+                    plan.add(op='note', text=f'AR: 전기 수정분개(차변/대변) {cleared}셀 초기화')
+                wb2.close()
+        else:
             plan.manual.append('AR: 당기/전기 열 탐지 실패 — 수동 처리 필요')
     wb.close()
     plan.warnings.append('정산표 열 구조는 업체별로 다를 수 있음 — Dry-run에서 탐지 결과를 '

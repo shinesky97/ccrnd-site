@@ -8,6 +8,18 @@ from .engine import pick_engine
 from .util import ensure_tool_dir, jsonl_append, now_iso, safe_out_path, sha256_file
 
 
+def exclude_tool_outputs(scan, dec):
+    """도구가 생성한 당기 산출물이 '전기 후보'로 재식별되는 것을 방지."""
+    outs = {decisions.output_name(dec, k)
+            for k in ('일반조서', '계정별조서', '정산표', 'DSD')}
+    for kind, entries in scan['found'].items():
+        scan['found'][kind] = [
+            e for e in entries
+            if not any(os.path.basename(e['path']).startswith(os.path.splitext(o)[0])
+                       for o in outs)]
+    return scan
+
+
 def _pick_prior(entries, prior_year):
     """전기 연도와 일치하는 파일 선택. 모호하면 None (사용자 지정 필요)."""
     if not entries:
@@ -24,6 +36,7 @@ def build_plans(folder, dec, scan=None, allow_insert=True):
     """실행 계획 수립. (plans, dsd_job, problems) 반환.
     allow_insert=False면 정산표 열 삽입 단계를 제외한다(openpyxl 엔진 호환)."""
     scan = scan or identify.scan_folder(folder)
+    scan = exclude_tool_outputs(scan, dec)
     pre = dec['사전']
     prior_year = int(pre['전기_연도'])
     prior_fye = date.fromisoformat(str(pre['전기_결산일']))
@@ -50,11 +63,8 @@ def build_plans(folder, dec, scan=None, allow_insert=True):
 
     e = _pick_prior(scan['found']['trial_sheet'], prior_year)
     if e:
-        plan = roll_xlsx.plan_trial_sheet(e['path'], out_path('정산표'),
-                                          insert_history_col=allow_insert)
-        if not allow_insert:
-            plan.manual.append('AR 이력 열 삽입은 제외됨(Excel 엔진 아님) — 수동 삽입 필요')
-        plans.append(('정산표', plan))
+        plans.append(('정산표', roll_xlsx.plan_trial_sheet(
+            e['path'], out_path('정산표'), prior_year=prior_year)))
     else:
         problems.append('전기 정산표를 특정하지 못함')
 

@@ -57,7 +57,8 @@ class OpenpyxlEngine:
         from openpyxl import load_workbook
         from .util import patch_openpyxl_korean
         patch_openpyxl_korean()
-        shutil.copy2(plan.src, plan.out)
+        if os.path.abspath(plan.src) != os.path.abspath(plan.out):
+            shutil.copy2(plan.src, plan.out)
         wb = load_workbook(plan.out)          # 수식 보존 로드
         vwb = None                            # 값 조회용 (copy_col_values)
         applied = 0
@@ -93,7 +94,8 @@ class XlwingsEngine:
 
     def execute(self, plan):
         import xlwings as xw
-        shutil.copy2(plan.src, plan.out)
+        if os.path.abspath(plan.src) != os.path.abspath(plan.out):
+            shutil.copy2(plan.src, plan.out)
         applied = 0
         with xw.App(visible=False, add_book=False) as app:
             app.display_alerts = False
