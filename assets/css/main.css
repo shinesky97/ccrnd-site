@@ -373,7 +373,12 @@ footer.site{border-top:2px solid var(--ink);padding:36px 0 48px;font-size:.83rem
 .cbot-panel{position:absolute;right:0;bottom:64px;width:340px;max-width:calc(100vw - 40px);
   background:var(--paper);border:1px solid var(--rule);border-radius:16px;overflow:hidden;
   box-shadow:0 16px 40px rgba(27,36,52,.24);display:flex;flex-direction:column}
-.cbot-head{background:var(--ink);color:#fff;padding:16px 18px}
+.cbot-panel[hidden]{display:none}
+.cbot-head{background:var(--ink);color:#fff;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cbot-close{flex:none;width:30px;height:30px;border:none;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.14);color:#fff;font-size:.95rem;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
+.cbot-close:hover{background:rgba(255,255,255,.28)}
 .cbot-head strong{display:block;font-family:var(--serif);font-size:1.05rem}
 .cbot-head span{font-size:.82rem;color:#C9CEDA}
 .cbot-log{padding:16px;max-height:46vh;min-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
