@@ -55,6 +55,7 @@ lead: 회계감사와 세무기장·신고를 중심으로, 사업비 정산검�
 
 [문의하기 →](/contact/){: .res-link}
 
+{% comment %} 방명록 숨김 — 나중에 다시 쓰려면 이 comment/endcomment 두 줄을 지우세요.
 ## 방문자 메시지
 
 <div class="ticker" aria-label="최근 방문자 메시지">
@@ -66,3 +67,4 @@ lead: 회계감사와 세무기장·신고를 중심으로, 사업비 정산검�
 </div>
 
 [방명록 전체 보기 →](/guestbook/){: .res-link}
+{% endcomment %}
