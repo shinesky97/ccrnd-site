@@ -358,3 +358,36 @@ footer.site{border-top:2px solid var(--ink);padding:36px 0 48px;font-size:.83rem
 
 /* ───── 유틸 ───── */
 .empty{padding:48px 0;color:var(--muted);font-size:.95rem;text-align:center;border:1px dashed var(--rule)}
+
+/* ───── FAQ 챗봇 위젯 ───── */
+.cbot{position:fixed;right:20px;bottom:20px;z-index:900;font-family:var(--sans)}
+.cbot-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-width:88px;height:52px;padding:0 20px;border:none;border-radius:26px;cursor:pointer;
+  background:var(--blue);color:#fff;font-size:1rem;font-weight:700;font-family:var(--sans);
+  box-shadow:0 6px 20px rgba(27,36,52,.22);transition:background .15s,transform .15s}
+.cbot-toggle:hover{background:var(--blue-soft);transform:translateY(-1px)}
+.cbot-toggle-close{display:none}
+.cbot-on .cbot-toggle{min-width:52px;width:52px;padding:0}
+.cbot-on .cbot-toggle-open{display:none}
+.cbot-on .cbot-toggle-close{display:inline;font-size:1.1rem}
+.cbot-panel{position:absolute;right:0;bottom:64px;width:340px;max-width:calc(100vw - 40px);
+  background:var(--paper);border:1px solid var(--rule);border-radius:16px;overflow:hidden;
+  box-shadow:0 16px 40px rgba(27,36,52,.24);display:flex;flex-direction:column}
+.cbot-head{background:var(--ink);color:#fff;padding:16px 18px}
+.cbot-head strong{display:block;font-family:var(--serif);font-size:1.05rem}
+.cbot-head span{font-size:.82rem;color:#C9CEDA}
+.cbot-log{padding:16px;max-height:46vh;min-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.cbot-msg{max-width:86%;padding:10px 13px;border-radius:14px;font-size:.9rem;line-height:1.55}
+.cbot-bot{align-self:flex-start;background:var(--paper-deep);color:var(--ink);border-bottom-left-radius:4px}
+.cbot-user{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.cbot-links{display:flex;flex-direction:column;gap:6px;margin-top:9px}
+.cbot-links a{font-size:.85rem;font-weight:600;color:var(--blue);border:1px solid var(--rule);
+  border-radius:8px;padding:7px 10px;background:#fff;transition:border-color .15s,color .15s}
+.cbot-links a:hover{color:var(--inju);border-color:var(--inju)}
+.cbot-quick{display:flex;flex-wrap:wrap;gap:7px;padding:0 16px 14px}
+.cbot-chip{border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:16px;
+  padding:6px 13px;font-size:.83rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .15s,color .15s}
+.cbot-chip:hover{background:var(--blue);color:#fff}
+.cbot-foot{padding:11px 16px;border-top:1px solid var(--rule);font-size:.72rem;color:var(--muted);background:var(--paper-deep)}
+.cbot-foot a{color:var(--blue);font-weight:700}
+@media(max-width:480px){.cbot-panel{width:calc(100vw - 32px)}}

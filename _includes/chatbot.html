@@ -1,0 +1,114 @@
+<!-- 무료 FAQ 챗봇 (서버 불필요·전 페이지 공통) -->
+<div id="cbot" class="cbot" aria-live="polite">
+  <button id="cbot-toggle" class="cbot-toggle" aria-expanded="false" aria-controls="cbot-panel">
+    <span class="cbot-toggle-open">💬 상담</span>
+    <span class="cbot-toggle-close" aria-hidden="true">✕</span>
+  </button>
+
+  <div id="cbot-panel" class="cbot-panel" role="dialog" aria-label="상담 챗봇" hidden>
+    <div class="cbot-head">
+      <div>
+        <strong>공인회계사 손슬기</strong>
+        <span>무엇을 도와드릴까요?</span>
+      </div>
+    </div>
+    <div id="cbot-log" class="cbot-log"></div>
+    <div id="cbot-quick" class="cbot-quick"></div>
+    <div class="cbot-foot">
+      <a href="{{ '/contact/' | relative_url }}">✉️ 바로 문의하기</a>
+      <span>· 답변은 안내용이며, 정확한 상담은 문의를 이용해 주세요.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var BASE = "{{ '/' | relative_url }}".replace(/\/$/, '');
+  var u = function (p) { return BASE + p; };
+
+  // 지식베이스: 질문 버튼 → 답변(+연결 링크)
+  var TOPICS = [
+    { key: 'audit', label: '회계감사', a:
+      '외감법상 <b>외부감사(법정감사)</b>를 중심으로 공익법인·정부보조사업·<b>공동주택(아파트) 외부회계감사</b>를 수행합니다. ' +
+      '아파트는 300세대 이상 등 의무관리 대상이면 매 회계연도 종료 후 <b>10월 31일까지</b> 회계감사를 받아야 합니다.',
+      links: [['회계감사 견적 요청', '/downloads/'], ['자세히 보기', '/about/']] },
+    { key: 'tax', label: '세무기장·신고', a:
+      '월 기장부터 <b>부가가치세·종합소득세·법인세</b> 신고, 절세 자문까지 사업자의 세무를 안정적으로 관리해 드립니다.',
+      links: [['기장·신고 상담', '/contact/'], ['세무 자료 요청', '/downloads/']] },
+    { key: 'settlement', label: '사업비 정산', a:
+      '국고보조금·연구개발비 <b>정산검증 스페셜리스트</b>입니다. 집행 단계 예방부터 정산 소명까지, 대형 보조사업 월별 모니터링도 지원합니다.',
+      links: [['정산 견적 요청', '/downloads/'], ['정산 인사이트', '/insights/']] },
+    { key: 'fee', label: '비용·견적', a:
+      '감사·기장·정산은 <b>규모와 범위에 따라</b> 비용이 달라집니다. 기관명·사업내용·대상기간·연락처를 남겨주시면 검토 후 견적을 회신드립니다.',
+      links: [['견적 요청하기', '/downloads/'], ['문의하기', '/contact/']] },
+    { key: 'card', label: '명함 받기', a:
+      '이메일을 남기시면 <b>공인회계사 손슬기의 명함</b>을 보내드립니다.',
+      links: [['명함 받기', '/contact/#card']] },
+    { key: 'contact', label: '상담 문의', a:
+      '이메일 {{ site.contact.email }} · 전화 {{ site.contact.tel }} · {{ site.contact.hours }}. ' +
+      '아래 버튼으로 문의를 남기시면 직접 신속히 회신드립니다.',
+      links: [['문의 남기기', '/contact/']] }
+  ];
+
+  var log = document.getElementById('cbot-log');
+  var quick = document.getElementById('cbot-quick');
+  var panel = document.getElementById('cbot-panel');
+  var toggle = document.getElementById('cbot-toggle');
+  var greeted = false;
+
+  function esc(s){ return s; }
+  function bubble(who, html) {
+    var d = document.createElement('div');
+    d.className = 'cbot-msg cbot-' + who;
+    d.innerHTML = html;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+  function renderQuick() {
+    quick.innerHTML = '';
+    TOPICS.forEach(function (t) {
+      var b = document.createElement('button');
+      b.className = 'cbot-chip';
+      b.type = 'button';
+      b.textContent = t.label;
+      b.addEventListener('click', function () { answer(t); });
+      quick.appendChild(b);
+    });
+  }
+  function answer(t) {
+    bubble('user', esc(t.label));
+    setTimeout(function () {
+      var html = t.a;
+      if (t.links && t.links.length) {
+        html += '<div class="cbot-links">' + t.links.map(function (l) {
+          return '<a href="' + u(l[1]) + '">' + l[0] + ' →</a>';
+        }).join('') + '</div>';
+      }
+      bubble('bot', html);
+    }, 180);
+  }
+  function greet() {
+    if (greeted) return;
+    greeted = true;
+    bubble('bot', '안녕하세요, 공인회계사 손슬기입니다. 아래에서 궁금하신 주제를 골라주세요. 🙂');
+    renderQuick();
+  }
+  function open() {
+    panel.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    document.getElementById('cbot').classList.add('cbot-on');
+    greet();
+  }
+  function close() {
+    panel.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    document.getElementById('cbot').classList.remove('cbot-on');
+  }
+  toggle.addEventListener('click', function () {
+    panel.hidden ? open() : close();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !panel.hidden) close();
+  });
+})();
+</script>
