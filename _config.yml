@@ -63,8 +63,9 @@ nav:
     url: /insights/
   - name: 자료실
     url: /downloads/
-  - name: 방명록
-    url: /guestbook/
+  # 방명록 메뉴 숨김 (나중에 다시 쓰려면 아래 두 줄의 주석을 푸세요)
+  # - name: 방명록
+  #   url: /guestbook/
   - name: 문의하기
     url: /contact/
     cta: true
