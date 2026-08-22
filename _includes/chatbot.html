@@ -11,6 +11,7 @@
         <strong>공인회계사 손슬기</strong>
         <span>무엇을 도와드릴까요?</span>
       </div>
+      <button id="cbot-close" class="cbot-close" type="button" aria-label="대화창 닫기">✕</button>
     </div>
     <div id="cbot-log" class="cbot-log"></div>
     <div id="cbot-quick" class="cbot-quick"></div>
@@ -107,6 +108,7 @@
   toggle.addEventListener('click', function () {
     panel.hidden ? open() : close();
   });
+  document.getElementById('cbot-close').addEventListener('click', close);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !panel.hidden) close();
   });
