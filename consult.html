@@ -59,16 +59,32 @@ description: 공인회계사 손슬기에게 비공개로 상담을 신청하세
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       btn.disabled = true; btn.textContent = '접수 중…';
+      const data = {
+        name:  document.getElementById('c-name').value.trim(),
+        tel:   document.getElementById('c-tel').value.trim(),
+        email: document.getElementById('c-email').value.trim(),
+        title: document.getElementById('c-title').value.trim(),
+        message: document.getElementById('c-msg').value.trim()
+      };
       try {
-        await addDoc(collection(db, 'consultations'), {
-          name:  document.getElementById('c-name').value.trim(),
-          tel:   document.getElementById('c-tel').value.trim(),
-          email: document.getElementById('c-email').value.trim(),
-          title: document.getElementById('c-title').value.trim(),
-          message: document.getElementById('c-msg').value.trim(),
-          read: false,
-          created: serverTimestamp()
-        });
+        await addDoc(collection(db, 'consultations'), { ...data, read: false, created: serverTimestamp() });
+        // 관리자에게 이메일 알림 (무료·FormSubmit). 실패해도 접수는 유효하므로 막지 않음.
+        try {
+          await fetch('https://formsubmit.co/ajax/{{ site.contact.email }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              _subject: '[ccrnd.com] 새 상담 접수: ' + (data.title || '(제목 없음)'),
+              _template: 'table',
+              이름_기관: data.name,
+              연락처: data.tel || '-',
+              이메일: data.email || '-',
+              제목: data.title,
+              상담내용: data.message,
+              안내: '전체 내역은 https://www.ccrnd.com/admin/ 에서 확인하세요.'
+            })
+          });
+        } catch (_) { /* 알림 실패는 무시 */ }
         form.hidden = true;
         done.hidden = false;
         window.scrollTo({ top: 0, behavior: 'smooth' });
