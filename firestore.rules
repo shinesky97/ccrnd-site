@@ -19,7 +19,7 @@ service cloud.firestore {
                     && request.resource.data.read == false;
 
       allow read, update, delete: if request.auth != null
-                    && request.auth.token.email == 'ADMIN_EMAIL_여기에';
+                    && request.auth.token.email == 'seulgison@atcc.co.kr';
     }
   }
 }

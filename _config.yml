@@ -28,7 +28,7 @@ firebase:
   authDomain: "ccrnd-dadb8.firebaseapp.com"
   projectId: "ccrnd-dadb8"
   appId: "1:395690103643:web:5de9f3859b2eee00db007e"
-  adminEmail: ""   # 게시판을 열람할 관리자(손슬기) 이메일 — 아직 미정, ③단계에서 정하면 채움
+  adminEmail: "seulgison@atcc.co.kr"   # 게시판을 열람할 관리자(손슬기) 이메일
 
 # 연락처 (푸터·문의 페이지에서 사용)
 contact:
