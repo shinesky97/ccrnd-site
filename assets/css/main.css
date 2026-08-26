@@ -396,3 +396,33 @@ footer.site{border-top:2px solid var(--ink);padding:36px 0 48px;font-size:.83rem
 .cbot-foot{padding:11px 16px;border-top:1px solid var(--rule);font-size:.72rem;color:var(--muted);background:var(--paper-deep)}
 .cbot-foot a{color:var(--blue);font-weight:700}
 @media(max-width:480px){.cbot-panel{width:calc(100vw - 32px)}}
+
+/* ───── 상담신청 폼 / 관리자 게시판 ───── */
+.consult-intro{background:var(--paper-deep);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;margin-bottom:22px;color:var(--ink)}
+.form-card{display:flex;flex-direction:column;gap:16px}
+.form-card .f-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-card label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+.form-card input,.form-card textarea{width:100%;padding:12px 14px;border:1px solid var(--rule);border-radius:9px;font:inherit;background:#fff;color:var(--ink)}
+.form-card textarea{min-height:150px;resize:vertical}
+.form-card input:focus,.form-card textarea:focus{outline:none;border-color:var(--blue)}
+.consult-note{font-size:.8rem;color:var(--muted)}
+.consult-done{text-align:center;padding:40px 0}
+.consult-done h2{font-family:var(--serif);color:var(--blue);margin-bottom:10px}
+.consult-done p{color:var(--muted);margin-bottom:20px}
+@media(max-width:560px){.form-card .f-row{grid-template-columns:1fr}}
+
+.board-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.board-count{font-weight:700;color:var(--muted)}
+.board-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:12px}
+table.board{width:100%;border-collapse:collapse;font-size:.92rem;min-width:560px}
+table.board th,table.board td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--rule)}
+table.board thead th{background:var(--paper-deep);color:var(--muted);font-size:.8rem;font-weight:700}
+.board-title{cursor:pointer;font-weight:600}
+.board-title:hover{color:var(--blue)}
+.board-row.unread .board-title{font-weight:800}
+.board-title .dot{color:var(--inju);font-size:.6rem;vertical-align:middle;margin-right:6px}
+.board-del{border:none;background:none;cursor:pointer;font-size:1rem;opacity:.6}
+.board-del:hover{opacity:1}
+.board-detail .bd-in{background:var(--paper-deep);border-radius:8px;padding:14px 16px}
+.bd-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--rule)}
+.bd-msg{white-space:normal;line-height:1.7}

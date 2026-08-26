@@ -1,0 +1,129 @@
+---
+layout: default
+title: 상담 관리자
+permalink: /admin/
+sitemap: false
+description: 관리자 전용 상담 게시판입니다.
+---
+<div class="page-head">
+  <div class="wrap"><h1>상담 관리자</h1></div>
+</div>
+
+<section style="border-top:0;padding-top:32px">
+  <div class="wrap">
+
+    <div id="admin-setup" class="callout" hidden>
+      관리자 게시판이 아직 설정되지 않았습니다. Firebase 설정 완료 후 이용하실 수 있습니다.
+    </div>
+
+    <!-- 로그인 -->
+    <form id="admin-login" class="form-card" hidden style="max-width:420px">
+      <h2 style="margin-bottom:14px">관리자 로그인</h2>
+      <div><label for="a-email">이메일</label><input id="a-email" type="email" required autocomplete="username"></div>
+      <div><label for="a-pw">비밀번호</label><input id="a-pw" type="password" required autocomplete="current-password"></div>
+      <button class="f-submit" type="submit">로그인</button>
+      <p id="a-err" class="consult-note" style="color:var(--inju)"></p>
+    </form>
+
+    <!-- 게시판 -->
+    <div id="admin-board" hidden>
+      <div class="board-top">
+        <span id="board-count" class="board-count"></span>
+        <button id="a-logout" class="btn btn-ghost" type="button">로그아웃</button>
+      </div>
+      <div class="board-wrap">
+        <table class="board">
+          <thead>
+            <tr><th style="width:64px">번호</th><th>제목</th><th style="width:120px">등록자</th><th style="width:110px">등록일</th><th style="width:70px">관리</th></tr>
+          </thead>
+          <tbody id="board-body"></tbody>
+        </table>
+      </div>
+      <div id="board-empty" class="empty" hidden>아직 접수된 상담이 없습니다.</div>
+    </div>
+
+  </div>
+</section>
+
+{% include firebase-init.html %}
+<script type="module">
+  const setup = document.getElementById('admin-setup');
+  const loginForm = document.getElementById('admin-login');
+  const board = document.getElementById('admin-board');
+  if (!window.CCRND_FB_READY) { setup.hidden = false; }
+  else {
+    const V = "10.12.0";
+    const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+    const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } =
+      await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+    const { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } =
+      await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+
+    const app = initializeApp(window.CCRND_FB);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const ADMIN = window.CCRND_FB.adminEmail;
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const fmt = (ts) => { if (!ts || !ts.toDate) return '-'; const d = ts.toDate(); const p = n => String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; };
+
+    let unsub = null;
+    const err = document.getElementById('a-err');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault(); err.textContent = '';
+      try {
+        await signInWithEmailAndPassword(auth, document.getElementById('a-email').value.trim(), document.getElementById('a-pw').value);
+      } catch (_) { err.textContent = '로그인에 실패했습니다. 이메일·비밀번호를 확인해 주세요.'; }
+    });
+    document.getElementById('a-logout').addEventListener('click', () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      if (user && (!ADMIN || user.email === ADMIN)) {
+        loginForm.hidden = true; setup.hidden = true; board.hidden = false;
+        watch(db, { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, esc, fmt });
+      } else {
+        if (unsub) { unsub(); unsub = null; }
+        board.hidden = true; loginForm.hidden = false;
+        if (user && ADMIN && user.email !== ADMIN) { err.textContent = '이 계정은 열람 권한이 없습니다.'; signOut(auth); }
+      }
+    });
+
+    function watch(db, fb) {
+      const body = document.getElementById('board-body');
+      const empty = document.getElementById('board-empty');
+      const count = document.getElementById('board-count');
+      const q = fb.query(fb.collection(db, 'consultations'), fb.orderBy('created', 'desc'));
+      unsub = fb.onSnapshot(q, (snap) => {
+        body.innerHTML = '';
+        empty.hidden = snap.size > 0;
+        count.textContent = `총 ${snap.size}건`;
+        let n = snap.size;
+        snap.forEach((d) => {
+          const c = d.data(); const num = n--;
+          const tr = document.createElement('tr');
+          tr.className = 'board-row' + (c.read ? '' : ' unread');
+          tr.innerHTML =
+            `<td>${num}</td>` +
+            `<td class="board-title">${c.read ? '' : '<b class="dot">●</b>'}${fb.esc(c.title) || '(제목 없음)'}</td>` +
+            `<td>${fb.esc(c.name)}</td>` +
+            `<td>${fb.fmt(c.created)}</td>` +
+            `<td><button class="board-del" title="삭제">🗑</button></td>`;
+          const detail = document.createElement('tr');
+          detail.className = 'board-detail'; detail.hidden = true;
+          detail.innerHTML =
+            `<td colspan="5"><div class="bd-in">` +
+            `<div class="bd-meta"><span>연락처: ${fb.esc(c.tel) || '-'}</span><span>이메일: ${fb.esc(c.email) || '-'}</span></div>` +
+            `<div class="bd-msg">${fb.esc(c.message).replace(/\n/g,'<br>')}</div></div></td>`;
+          tr.querySelector('.board-title').addEventListener('click', async () => {
+            detail.hidden = !detail.hidden;
+            if (!detail.hidden && !c.read) { try { await fb.updateDoc(fb.doc(db,'consultations',d.id), { read:true }); } catch(_){} }
+          });
+          tr.querySelector('.board-del').addEventListener('click', async () => {
+            if (confirm('이 상담글을 삭제할까요?')) { try { await fb.deleteDoc(fb.doc(db,'consultations',d.id)); } catch(_){ alert('삭제 실패'); } }
+          });
+          body.appendChild(tr); body.appendChild(detail);
+        });
+      }, () => { document.getElementById('board-count').textContent = '열람 권한이 없거나 불러오기에 실패했습니다.'; });
+    }
+  }
+</script>

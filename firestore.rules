@@ -1,0 +1,25 @@
+rules_version = '2';
+
+// 비공개 상담 게시판 보안 규칙
+// - 접수(작성): 누구나 가능하되 필드/길이를 검증 (스팸·악용 방지)
+// - 열람·수정·삭제: 관리자(손슬기) 로그인 계정만 가능
+// ※ 아래 'ADMIN_EMAIL_여기에'를 실제 관리자 이메일로 반드시 바꾸세요.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /consultations/{docId} {
+
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 60
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() <= 120
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() <= 4000
+                    && request.resource.data.read == false;
+
+      allow read, update, delete: if request.auth != null
+                    && request.auth.token.email == 'ADMIN_EMAIL_여기에';
+    }
+  }
+}
