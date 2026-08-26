@@ -20,7 +20,7 @@ description: 회계감사·세무기장·사업비 정산 상담 문의 — 공�
         <div><dt>HOURS</dt><dd>{{ site.contact.hours }}</dd></div>
       </dl>
     </div>
-    <form action="https://formsubmit.co/{{ site.contact.email }}" method="POST">
+    <form id="contact-form" action="https://formsubmit.co/{{ site.contact.email }}" method="POST">
       <input type="hidden" name="_subject" value="[ccrnd.com] 홈페이지 문의">
       <input type="hidden" name="_captcha" value="false">
       <input type="hidden" name="_next" value="https://www.ccrnd.com/contact/?sent=1">
@@ -74,3 +74,40 @@ description: 회계감사·세무기장·사업비 정산 상담 문의 — 공�
     </div>
   </div>
 </section>
+
+{% include firebase-init.html %}
+<script type="module">
+  // 문의 내용을 게시판(Firestore)에도 보관. 이메일 발송은 기존 FormSubmit 그대로 유지.
+  const form = document.getElementById('contact-form');
+  if (form && window.CCRND_FB_READY) {
+    const V = "10.12.0";
+    const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+    const { getFirestore, collection, addDoc, serverTimestamp } =
+      await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+    const db = getFirestore(initializeApp(window.CCRND_FB));
+
+    form.addEventListener('submit', async (e) => {
+      if (form.dataset.saved) return;          // 저장 후 네이티브 제출 허용
+      e.preventDefault();
+      const btn = form.querySelector('.f-submit');
+      if (btn) { btn.disabled = true; btn.textContent = '전송 중…'; }
+      // 게시판 보관은 best-effort (실패해도 이메일 전송은 진행) · 최대 3초 대기
+      try {
+        await Promise.race([
+          addDoc(collection(db, 'consultations'), {
+            name:  (document.getElementById('f-name').value || '').trim(),
+            tel:   (document.getElementById('f-tel').value || '').trim(),
+            email: (document.getElementById('f-mail').value || '').trim(),
+            title: '홈페이지 문의',
+            message: (document.getElementById('f-msg').value || '').trim(),
+            read: false,
+            created: serverTimestamp()
+          }),
+          new Promise((r) => setTimeout(r, 3000))
+        ]);
+      } catch (_) { /* 보관 실패는 무시 */ }
+      form.dataset.saved = '1';
+      form.submit();                            // FormSubmit로 이메일 발송 + ?sent=1 이동
+    });
+  }
+</script>

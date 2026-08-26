@@ -73,8 +73,6 @@ nav:
     url: /insights/
   - name: 자료실
     url: /downloads/
-  - name: 상담신청
-    url: /consult/
   # 방명록 메뉴 숨김 (나중에 다시 쓰려면 아래 두 줄의 주석을 푸세요)
   # - name: 방명록
   #   url: /guestbook/
