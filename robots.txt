@@ -4,9 +4,11 @@ permalink: /robots.txt
 ---
 User-agent: *
 Allow: /
+Disallow: /admin/
 
 # 네이버 검색 로봇
 User-agent: Yeti
 Allow: /
+Disallow: /admin/
 
 Sitemap: {{ site.url }}/sitemap.xml

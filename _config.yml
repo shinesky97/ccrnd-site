@@ -20,6 +20,16 @@ keywords: 공동주택 회계감사, 아파트 외부회계감사, 아파트 회
 # google_site_verification: 여기에_구글_코드_붙여넣기
 naver_verification: "6e309b26c3b59517e13354296c2bd2650a489598"
 
+# ── 비공개 상담 게시판(Firebase) 설정 ──
+# Firebase 콘솔 → 프로젝트 설정 → '내 앱'(웹)에서 복사한 값을 채워 넣으세요.
+# (이 값들은 공개돼도 안전합니다. 실제 보안은 Firestore 보안규칙 + 로그인으로 지켜집니다.)
+firebase:
+  apiKey: "AIzaSyB-TAseS6p8EMeypEy2d2DqCPaKm-C4VNQ"
+  authDomain: "ccrnd-dadb8.firebaseapp.com"
+  projectId: "ccrnd-dadb8"
+  appId: "1:395690103643:web:5de9f3859b2eee00db007e"
+  adminEmail: "seulgison@atcc.co.kr"   # 게시판을 열람할 관리자(손슬기) 이메일
+
 # 연락처 (푸터·문의 페이지에서 사용)
 contact:
   email: seulgison@atcc.co.kr
@@ -63,6 +73,8 @@ nav:
     url: /insights/
   - name: 자료실
     url: /downloads/
+  - name: 상담신청
+    url: /consult/
   # 방명록 메뉴 숨김 (나중에 다시 쓰려면 아래 두 줄의 주석을 푸세요)
   # - name: 방명록
   #   url: /guestbook/
@@ -110,3 +122,5 @@ exclude:
   - package.json
   - package-lock.json
   - node_modules
+  - firestore.rules
+  - docs
