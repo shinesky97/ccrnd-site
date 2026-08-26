@@ -24,11 +24,11 @@ naver_verification: "6e309b26c3b59517e13354296c2bd2650a489598"
 # Firebase 콘솔 → 프로젝트 설정 → '내 앱'(웹)에서 복사한 값을 채워 넣으세요.
 # (이 값들은 공개돼도 안전합니다. 실제 보안은 Firestore 보안규칙 + 로그인으로 지켜집니다.)
 firebase:
-  apiKey: ""
-  authDomain: ""
-  projectId: ""
-  appId: ""
-  adminEmail: ""   # 게시판을 열람할 관리자(손슬기) 이메일
+  apiKey: "AIzaSyB-TAseS6p8EMeypEy2d2DqCPaKm-C4VNQ"
+  authDomain: "ccrnd-dadb8.firebaseapp.com"
+  projectId: "ccrnd-dadb8"
+  appId: "1:395690103643:web:5de9f3859b2eee00db007e"
+  adminEmail: ""   # 게시판을 열람할 관리자(손슬기) 이메일 — 아직 미정, ③단계에서 정하면 채움
 
 # 연락처 (푸터·문의 페이지에서 사용)
 contact:
