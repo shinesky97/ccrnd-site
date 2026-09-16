@@ -426,3 +426,16 @@ table.board thead th{background:var(--paper-deep);color:var(--muted);font-size:.
 .board-detail .bd-in{background:var(--paper-deep);border-radius:8px;padding:14px 16px}
 .bd-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--rule)}
 .bd-msg{white-space:normal;line-height:1.7}
+
+/* ───── 부동산 세제 최신판 플로팅 아이콘 (챗봇 위에 스택) ───── */
+.re-fab{position:fixed;right:20px;bottom:84px;z-index:899;display:inline-flex;align-items:center;gap:7px;
+  height:48px;padding:0 18px;border-radius:24px;background:var(--gold);color:var(--ink);
+  font-family:var(--sans);font-weight:700;font-size:.9rem;box-shadow:0 6px 20px rgba(27,36,52,.22);
+  transition:transform .15s,background .15s}
+.re-fab:hover{transform:translateY(-1px);background:var(--gold-soft)}
+.re-fab-ico{font-size:1.05rem;line-height:1}
+@media(max-width:480px){.re-fab{padding:0;width:48px;justify-content:center}.re-fab-txt{display:none}}
+
+/* 부동산 세제 최신판 페이지 */
+.re-updated{font-family:var(--mono);font-size:.82rem;color:var(--muted);background:var(--paper-deep);
+  border:1px solid var(--rule);border-radius:8px;padding:10px 14px;margin-bottom:8px}
