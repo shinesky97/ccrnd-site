@@ -3,38 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }} | {{ site.tagline }}{% endif %}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}?v={{ site.time | date: '%Y%m%d%H%M%S' }}">
 {%- if site.keywords and site.keywords != "" -%}<meta name="keywords" content="{{ site.keywords }}">{%- endif -%}
-{%- comment -%} Google Search Console 소유확인: _config.yml의 google_site_verification 주석을 풀고 코드를 넣으면 jekyll-seo-tag가 자동으로 <meta name="google-site-verification"> 을 출력합니다. {%- endcomment -%}
 {%- if site.naver_verification and site.naver_verification != "" -%}<meta name="naver-site-verification" content="{{ site.naver_verification }}">{%- endif -%}
 {%- feed_meta -%}
 {%- seo -%}
-{%- unless page.custom_jsonld -%}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "AccountingService",
-  "name": "회계법인 창천 정산검증센터",
-  "alternateName": ["위탁정산 회계법인", "정산검증 회계법인", "회계법인 창천"],
-  "description": "연구개발비 위탁정산, 국고보조금·지자체보조금 정산검증, RISE·기금사업 정산을 수행하는 정산검증 전문 회계법인",
-  "url": "{{ site.url }}{{ page.url }}",
+  "@type": "Accountant",
+  "name": "공인회계사 손슬기",
+  "alternateName": ["손슬기 회계사", "손슬기 공인회계사"],
+  "founder": { "@type": "Person", "name": "손슬기", "jobTitle": "공인회계사(KICPA)" },
+  "url": "{{ site.url }}",
   "email": "{{ site.contact.email }}",
   "telephone": "{{ site.contact.tel }}",
   "areaServed": "KR",
-  "knowsAbout": ["연구개발비 정산", "국고보조금 정산검증", "지자체 보조금 정산", "RISE 사업비 정산", "기금사업 정산", "출연사업 정산", "수의계약"],
+  "knowsAbout": ["회계감사", "외부감사", "세무기장", "세무신고", "사업비 정산검증", "국고보조금 정산", "연구개발비 정산"],
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "{{ site.contact.address }}",
-    "addressLocality": "서울 강남구",
+    "addressLocality": "서울",
     "addressCountry": "KR"
   }
 }
 </script>
-{%- endunless -%}
 </head>
 <body>
 

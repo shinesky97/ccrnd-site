@@ -1,18 +1,18 @@
 # ───────────────────────── 사이트 기본 정보 ─────────────────────────
-title: 회계법인 창천 정산검증센터
-tagline: 위탁정산·정산검증 전문 회계법인
+title: 공인회계사 손슬기
+tagline: 회계감사·세무기장 · 사업비 정산 스페셜리스트
 description: >-
-  공공기관·전문기관의 사업비 정산을 대행·검증하는 정산검증 전문 회계법인입니다.
-  연구개발비 위탁정산, 국고보조금·지자체보조금 정산검증, RISE·지역사업, 기금·출연사업
-  정산을 수의계약으로 수행합니다. 견적·제안서 24시간 내 회신.
-author: 회계법인 창천 정산검증센터
+  공인회계사 손슬기 (손슬기 회계사) — 회계감사와 세무기장·신고를 중심으로,
+  국고보조금·연구개발비 사업비 정산검증에 강점을 가진 스페셜리스트입니다.
+  회계감사·세무·정산 실무 정보를 나눕니다.
+author: 손슬기
 email: seulgison@atcc.co.kr
 url: "https://www.ccrnd.com"
 lang: ko
 timezone: Asia/Seoul
 
-# 검색 노출용 키워드 (SEO) — 타깃 검색어 우선순위대로 배치
-keywords: 위탁정산 회계법인, 연구개발비 정산 회계법인, 정산검증 회계법인, 사업비 정산 용역, 국고보조금 정산검증, 정부보조금 정산 회계법인, R&D 정산, RISE 사업비 정산, 지자체 보조금 정산검증, 테크노파크 정산, 기금사업 정산검증, 수의계약 회계법인, 정산 수수료
+# 검색 노출용 키워드 (SEO) — 검색량·전환의도·경쟁강도를 함께 고려해 우선순위 배치
+keywords: 공동주택 회계감사, 아파트 외부회계감사, 아파트 회계감사 비용, 세무기장, 기장료, 종합소득세 신고, 부가가치세 신고, 법인세 신고, 사업비 정산, 국고보조금 정산, 연구개발비 정산검증, 입주자대표회의 세무, 공인회계사 손슬기, 손슬기 회계사
 
 # 검색엔진 소유확인 코드 — 발급받은 뒤 아래 두 줄의 주석(#)을 풀고 코드를 채워 넣으세요.
 #   구글:  https://search.google.com/search-console  → 'HTML 태그' 방식 content 값
@@ -30,13 +30,12 @@ firebase:
   appId: "1:395690103643:web:5de9f3859b2eee00db007e"
   adminEmail: "seulgison@atcc.co.kr"   # 게시판을 열람할 관리자(손슬기) 이메일
 
-# 연락처 (푸터·문의·CTA에서 사용)
+# 연락처 (푸터·문의 페이지에서 사용)
 contact:
   email: seulgison@atcc.co.kr
-  tel: "010-4353-2560"
-  address: 서울특별시 강남구 선릉로131길 16
+  tel: "02-518-3675"
+  address: 서울특별시 강남구 선릉로131길 16, 7층
   hours: 평일 09:00 – 18:00
-  cta: 견적서·제안서 24시간 내 회신
 
 # ───────────────────────── 콘텐츠 분류 ─────────────────────────
 # key      : 글 front matter의 category 값 / URL slug
@@ -68,14 +67,15 @@ categories_meta:
 
 # ───────────────────────── 네비게이션 ─────────────────────────
 nav:
-  - name: 연구개발비 정산
-    url: /rnd-settlement/
-  - name: 보조금 정산검증
-    url: /subsidy-verification/
-  - name: 수의계약 안내
-    url: /private-contract/
+  - name: 소개
+    url: /about/
   - name: 인사이트
     url: /insights/
+  - name: 자료실
+    url: /downloads/
+  # 방명록 메뉴 숨김 (나중에 다시 쓰려면 아래 두 줄의 주석을 푸세요)
+  # - name: 방명록
+  #   url: /guestbook/
   - name: 문의하기
     url: /contact/
     cta: true
@@ -111,7 +111,6 @@ defaults:
 exclude:
   - DESIGN.md
   - README.md
-  - SEO-CHECKLIST.md
   - Gemfile
   - Gemfile.lock
   - vendor

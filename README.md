@@ -1,18 +1,9 @@
-# 회계법인 창천 정산검증센터 홈페이지
+# 공인회계사 손슬기 홈페이지
 
-공공기관·전문기관의 **사업비 정산·정산검증**을 대행·검증하는 정산검증 전문 회계법인
-홈페이지입니다. **Jekyll + GitHub Pages** 로 빌드되는 정적 사이트이며, 커스텀 도메인은
-`www.ccrnd.com` 입니다.
+사업비 정산·세무·회계 인사이트를 나누는 개인 홈페이지입니다.
+**Jekyll + GitHub Pages** 로 빌드되는 정적 사이트이며, 커스텀 도메인은 `www.ccrnd.com` 입니다.
 
-주요 서비스 랜딩:
-- `/rnd-settlement/` 연구개발비 위탁정산
-- `/subsidy-verification/` 국고·지자체 보조금 정산검증
-- `/rise-settlement/` RISE·지역사업 사업비 정산
-- `/fund-settlement/` 기금사업·출연사업 정산
-- `/private-contract/` 수의계약 절차 안내
-
-전체 설계 배경은 [`DESIGN.md`](DESIGN.md), SEO 작업 내역·등록 체크리스트는
-[`SEO-CHECKLIST.md`](SEO-CHECKLIST.md) 를 참고하세요.
+전체 설계 배경은 [`DESIGN.md`](DESIGN.md) 를 참고하세요.
 
 ---
 
@@ -98,33 +89,6 @@ GitHub 저장소 **Settings → Pages** 에서:
 
 > 현재 작업은 `claude/accountant-homepage-design-zu1ce3` 브랜치에 올라가 있습니다.
 > `main` 에 병합한 뒤 위 Pages 설정을 적용하면 게시됩니다.
-
----
-
-## 검색엔진 등록 (SEO · 최초 1회)
-
-색인·상위노출의 출발점입니다. 사이트 배포 후 아래 두 곳에 등록하세요.
-
-### 1) 구글 Search Console
-1. <https://search.google.com/search-console> 접속 → **속성 추가** → **URL 접두어**에
-   `https://www.ccrnd.com` 입력
-2. 소유확인: **HTML 태그** 방식 선택 → 나오는 `content="..."` 값 복사 →
-   `_config.yml` 의 `google_site_verification:` 주석(`#`)을 풀고 값 붙여넣기 → 배포 →
-   Search Console에서 **확인** 클릭
-   (jekyll-seo-tag 가 자동으로 `<meta name="google-site-verification">` 을 출력합니다)
-3. **Sitemaps** 메뉴 → `sitemap.xml` 제출
-4. **URL 검사** 에 주요 페이지(랜딩 5종·홈) 주소를 넣고 **색인 생성 요청**
-
-### 2) 네이버 서치어드바이저
-1. <https://searchadvisor.naver.com> 접속 → **웹마스터 도구** → 사이트 `https://www.ccrnd.com` 등록
-2. 소유확인: **HTML 태그** 방식의 `content` 값 복사 →
-   `_config.yml` 의 `naver_verification:` 에 붙여넣기 → 배포 → **소유확인**
-   (현재 값이 이미 들어가 있으면 그대로 두면 됩니다)
-3. **요청 → 사이트맵 제출** 에 `https://www.ccrnd.com/sitemap.xml` 등록
-4. (선택) **RSS 제출** 에 `https://www.ccrnd.com/feed.xml`
-
-> `robots.txt` 는 `/admin/` 만 차단하고 나머지는 전면 허용하며, `sitemap.xml` 위치를
-> 안내합니다. 랜딩·인사이트는 모두 색인 대상, 관리자 페이지는 색인 제외입니다.
 
 ---
 
