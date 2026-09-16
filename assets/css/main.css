@@ -426,3 +426,49 @@ table.board thead th{background:var(--paper-deep);color:var(--muted);font-size:.
 .board-detail .bd-in{background:var(--paper-deep);border-radius:8px;padding:14px 16px}
 .bd-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--rule)}
 .bd-msg{white-space:normal;line-height:1.7}
+
+/* ───── 리브랜딩: 브랜드 로고 ───── */
+.brand-name em{font-style:normal;color:var(--blue)}
+@media(max-width:720px){.brand-name{font-size:1rem}.brand-name em{display:inline}}
+
+/* ───── 랜딩 페이지 (정산검증 서비스) ───── */
+.ph-eyebrow{display:inline-block;font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;color:var(--inju);margin-bottom:12px}
+.ph-lead{margin-top:14px;color:var(--muted);font-size:1.05rem;max-width:40em;line-height:1.7}
+.landing{padding:40px 0 0;border-top:0}
+.landing-body{font-size:1.03rem;line-height:1.85}
+.landing-body table{width:100%;border-collapse:collapse;font-size:.92rem;margin:.6em 0}
+.landing-body th,.landing-body td{padding:11px 13px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.landing-body thead th{background:var(--paper-deep);color:var(--muted);font-size:.8rem;font-weight:700}
+
+/* FAQ */
+.faq{margin-top:56px;border-top:2px solid var(--ink);padding-top:32px}
+.faq-title{font-family:var(--serif);font-size:1.4rem;font-weight:700;margin-bottom:20px}
+.faq-item{border:1px solid var(--rule);border-radius:10px;margin-bottom:10px;background:#fff;overflow:hidden}
+.faq-item summary{cursor:pointer;padding:16px 20px;font-weight:600;list-style:none;position:relative;padding-right:44px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--inju);font-size:1.3rem;font-weight:400}
+.faq-item[open] summary::after{content:'−'}
+.faq-item[open] summary{border-bottom:1px solid var(--rule)}
+.faq-a{padding:16px 20px;color:var(--muted);line-height:1.75;font-size:.95rem}
+.faq-a a{color:var(--blue);border-bottom:1px solid var(--blue)}
+
+/* 관련 서비스 */
+.landing .related{margin-top:48px}
+.landing .related ul{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0}
+.landing .related li a{display:block;padding:14px 16px;border:1px solid var(--rule);border-radius:9px;font-weight:600;color:var(--blue);background:var(--paper-deep);transition:border-color .15s,color .15s}
+.landing .related li a:hover{color:var(--inju);border-color:var(--inju)}
+@media(max-width:560px){.landing .related ul{grid-template-columns:1fr}}
+
+/* CTA 밴드 */
+.cta-band{background:var(--ink);color:#fff;padding:56px 0;margin-top:64px;border-top:0}
+.cta-inner{text-align:center}
+.cta-inner h2{font-family:var(--serif);font-weight:900;font-size:clamp(1.5rem,3.4vw,2.1rem);color:#fff}
+.cta-inner p{margin:16px auto 0;color:rgba(255,255,255,.82);max-width:38em;line-height:1.7}
+.cta-actions{margin:28px 0 18px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cta-sub{font-family:var(--mono);font-size:.78rem;color:rgba(255,255,255,.6)!important}
+
+/* 클릭 가능한 서비스 카드 (홈 대응업무) */
+.svc-link{display:block;position:relative}
+.svc-link .svc-more{display:inline-block;margin-top:16px;font-family:var(--mono);font-size:.78rem;color:var(--blue)}
+.svc-link:hover .svc-more{color:var(--inju)}
+.svc-link:hover h3{color:var(--blue)}
