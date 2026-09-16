@@ -1,0 +1,61 @@
+---
+layout: default
+---
+<div class="page-head">
+  <div class="wrap">
+    {%- if page.eyebrow -%}<span class="ph-eyebrow">{{ page.eyebrow }}</span>{%- endif -%}
+    <h1>{{ page.h1 | default: page.title }}</h1>
+    {%- if page.lead -%}<p class="ph-lead">{{ page.lead }}</p>{%- endif -%}
+  </div>
+</div>
+
+<section class="landing">
+  <div class="wrap-narrow">
+    <article class="article-body landing-body">
+      {{ content }}
+    </article>
+
+    {%- if page.faq -%}
+    <section class="faq" aria-label="자주 묻는 질문">
+      <h2 class="faq-title">자주 묻는 질문</h2>
+      {%- for f in page.faq -%}
+      <details class="faq-item">
+        <summary>{{ f.q }}</summary>
+        <div class="faq-a">{{ f.a }}</div>
+      </details>
+      {%- endfor -%}
+    </section>
+    {%- endif -%}
+
+    {%- if page.related -%}
+    <nav class="related" aria-label="관련 서비스">
+      <h2 class="faq-title">관련 서비스</h2>
+      <ul>
+        {%- for r in page.related -%}
+        <li><a href="{{ r.url | relative_url }}">{{ r.name }} →</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+    {%- endif -%}
+  </div>
+</section>
+
+{% include cta.html %}
+
+{%- if page.faq -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for f in page.faq -%}
+    {
+      "@type": "Question",
+      "name": {{ f.q | jsonify }},
+      "acceptedAnswer": { "@type": "Answer", "text": {{ f.a | jsonify }} }
+    }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
