@@ -17,7 +17,7 @@
   --green:#2E6B54;
   --rule:#D9DBD4;
   --muted:#5C6572;
-  --serif:'Noto Serif KR', serif;
+  --serif:'Pretendard Variable', Pretendard, -apple-system, sans-serif;
   --sans:'Pretendard Variable', Pretendard, -apple-system, sans-serif;
   --mono:'IBM Plex Mono', monospace;
 }
