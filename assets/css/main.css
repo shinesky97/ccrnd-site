@@ -483,3 +483,15 @@ table.board thead th{background:var(--paper-deep);color:var(--muted);font-size:.
 .qlink b::after{content:' ↗';font-family:var(--mono);color:var(--blue);font-size:.8rem}
 .qlink:hover b::after{color:var(--gold-soft)}
 @media(max-width:820px){.qlinks{grid-template-columns:repeat(2,1fr)}}
+
+/* 주요 바로가기 배너 강조 배경 */
+.quicklinks-band{background:var(--paper-deep);padding:56px 0}
+
+/* 세금계산기 플로팅 아이콘 (부동산세제 아이콘 위에 스택) */
+.calc-fab{position:fixed;right:20px;bottom:148px;z-index:899;display:inline-flex;align-items:center;gap:7px;
+  height:48px;padding:0 18px;border-radius:24px;background:var(--blue);color:#fff;
+  font-family:var(--sans);font-weight:700;font-size:.9rem;box-shadow:0 6px 20px rgba(27,36,52,.22);
+  transition:transform .15s,background .15s}
+.calc-fab:hover{transform:translateY(-1px);background:var(--blue-soft)}
+.calc-fab-ico{font-size:1.05rem;line-height:1}
+@media(max-width:480px){.calc-fab{padding:0;width:48px;justify-content:center}.calc-fab-txt{display:none}}
