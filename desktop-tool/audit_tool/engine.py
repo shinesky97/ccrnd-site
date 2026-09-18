@@ -128,6 +128,7 @@ def pick_engine(prefer_excel=True):
         try:
             import xlwings  # noqa: F401
             return XlwingsEngine()
-        except ImportError:
+        except Exception:
+            # 미설치(ImportError)뿐 아니라 pywin32/Excel 환경 문제도 openpyxl로 폴백
             pass
     return OpenpyxlEngine()

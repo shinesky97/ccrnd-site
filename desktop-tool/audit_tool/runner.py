@@ -110,6 +110,10 @@ def execute(folder, dec, plans, dsd_job, prefer_excel=True, log=print):
     logfile = os.path.join(tool_dir, 'runlog.jsonl')
     engine = pick_engine(prefer_excel)
     log(f'실행 엔진: {engine.name}')
+    if engine.name == 'openpyxl':
+        log('  ⚠ openpyxl 엔진: 차트·도형이 많은 양식은 산출물에서 일부 요소가 빠질 수 '
+            '있습니다. 산출물을 열어 확인하고, 필요하면 Excel 설치 PC에서 실행.bat로 '
+            '실행하십시오(xlwings 엔진).')
     results = []
     for name, plan in plans:
         rec = {'time': now_iso(), 'action': 'rollforward', 'target': name,

@@ -18,6 +18,7 @@ class App(tk.Tk):
         super().__init__()
         self.title('외감 실무 자동화 도구')
         self.geometry('880x640')
+        self.report_callback_exception = self._on_error   # 버튼 동작 중 오류도 표시
         nb = ttk.Notebook(self)
         nb.pack(fill='both', expand=True)
         self.tab_roll = ttk.Frame(nb)
@@ -26,6 +27,15 @@ class App(tk.Tk):
         nb.add(self.tab_prog, text='② 진행현황')
         self._build_roll_tab()
         self._build_prog_tab()
+
+    def _on_error(self, exc_type, exc, tb):
+        import traceback
+        err = ''.join(traceback.format_exception(exc_type, exc, tb))
+        try:
+            self._println('\n✘ 오류 발생:\n' + err)
+        except Exception:
+            pass
+        messagebox.showerror('오류', str(exc) + '\n\n(상세 내용은 로그 창 참조)')
 
     # ---------------- 초기세팅 탭 ----------------
     def _build_roll_tab(self):

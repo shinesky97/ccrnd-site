@@ -16,23 +16,32 @@ pip install openpyxl xlwings
 - `xlwings`는 Excel이 설치된 PC에서 권장 (수식·서식·차트·도형 완전 보존).
   없으면 openpyxl로 동작한다.
 
-## exe로 만들기 (권장 사용 방식)
+## 실행 방법 3가지 (쉬운 순)
 
-`desktop-tool` 폴더에서 **`build_exe.bat`를 더블클릭**하면 `dist\AuditTool.exe`가
-생성된다 (PyInstaller 자동 설치 포함, 수 분 소요). exe는 아무 곳에나 복사해 쓰면 된다.
+### ① 실행.bat (권장 — 빌드 불필요)
 
-**exe 사용법**: 실행 → [찾기]로 당기 외감 폴더 선택 → **[▶ 전체 실행]** 버튼.
+`desktop-tool` 폴더의 **`실행.bat` 더블클릭**. Python으로 GUI가 바로 뜬다.
+Excel이 설치된 PC면 xlwings 엔진(서식·차트·도형 완전 보존)을 자동 사용한다.
+
+### ② exe로 만들기
+
+`build_exe.bat` 더블클릭 → `dist\AuditTool.exe` 생성 (수 분 소요).
+- exe에는 빌드 안정성을 위해 xlwings가 **제외**되어 있어 openpyxl 엔진으로 동작한다
+  (수식·값 처리는 동일. 차트·도형이 많은 양식은 산출물 확인 필요 — 원본은 항상 무수정).
+- **exe가 실행되지 않을 때**:
+  1. Windows SmartScreen 파란 창이 뜨면: "추가 정보" → "실행" 클릭.
+  2. 백신이 exe를 격리했는지 확인 (PyInstaller 단일 exe는 오탐이 흔함) → 예외 등록.
+  3. exe 옆에 `audit_tool_error.log` 파일이 생겼는지 확인 — 오류 내용이 기록된다.
+  4. 그래도 원인을 모르면 `build_exe_debug.bat`로 콘솔 버전(`AuditTool_debug.exe`)을
+     만들어 cmd에서 실행하면 오류 메시지가 화면에 보인다. 그 내용을 알려주면 된다.
+
+### ③ 명령행
+
+**exe/GUI 사용법**: 실행 → [찾기]로 당기 외감 폴더 선택 → **[▶ 전체 실행]** 버튼.
 - 처음 실행하는 폴더면 결정값 입력 창이 뜬다 → 기수·연도·결산일·전기수치_확정여부를
   확인·저장하고 [▶ 전체 실행]을 다시 누른다.
 - 이후: Dry-run 내용 확인창 → [예] → 이월 실행 → 주입 내용 확인창 → [예] → 완료.
 - 모든 단계는 원본을 수정하지 않고, 실행 내역은 `_audit_tool/runlog.jsonl`에 남는다.
-
-## 실행 (Python 직접)
-
-GUI:
-```bat
-python -m audit_tool.gui
-```
 
 CLI:
 ```bat
