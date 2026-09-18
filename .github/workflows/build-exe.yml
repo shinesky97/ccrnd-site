@@ -1,0 +1,40 @@
+name: build-exe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/ai-audit-support-design-3vml4o]
+    paths:
+      - 'desktop-tool/**'
+      - '.github/workflows/build-exe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pyinstaller openpyxl
+      - name: Build exe
+        working-directory: desktop-tool
+        run: >
+          pyinstaller --noconfirm --clean --onefile --windowed --name AuditTool
+          --paths .
+          --exclude-module xlwings --exclude-module win32com --exclude-module pandas
+          run_app.py
+      - name: Publish release (audit-tool-latest)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: audit-tool-latest
+          name: 외감 자동화 도구 (최신 빌드)
+          body: |
+            무설치 단독 실행 파일. AuditTool.exe를 내려받아 더블클릭으로 실행합니다.
+            (Windows SmartScreen 경고 시: 추가 정보 → 실행)
+          files: desktop-tool/dist/AuditTool.exe
+          prerelease: false

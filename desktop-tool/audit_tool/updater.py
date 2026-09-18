@@ -57,11 +57,20 @@ def remote_version():
     return m.group(1) if m else None
 
 
+RELEASE_URL = f'https://github.com/{REPO}/releases/tag/audit-tool-latest'
+EXE_URL = (f'https://github.com/{REPO}/releases/download/audit-tool-latest/AuditTool.exe')
+
+
 def download_and_apply(log=print):
     if getattr(sys, 'frozen', False):
-        log('✘ exe 실행 중에는 자동 업데이트할 수 없습니다.')
-        log('  실행.bat 방식으로 사용하거나, 소스 폴더에서 업데이트.bat 실행 후 '
-            'build_exe.bat로 exe를 다시 만드십시오.')
+        log('exe 버전은 새 exe를 내려받아 교체하는 방식으로 업데이트합니다.')
+        log(f'다운로드 페이지를 엽니다: {RELEASE_URL}')
+        try:
+            import webbrowser
+            webbrowser.open(RELEASE_URL)
+        except Exception:
+            pass
+        log('내려받은 AuditTool.exe로 기존 exe를 바꿔치기하면 됩니다.')
         return 'failed'
     root = install_root()
     log('최신 코드 다운로드 중...')

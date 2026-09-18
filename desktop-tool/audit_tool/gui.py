@@ -1,44 +1,77 @@
 # -*- coding: utf-8 -*-
-"""tkinter GUI — [① 초기세팅] [② 진행현황] 두 탭.
+"""tkinter GUI — 파일 지정 방식.
 
-실행: python -m audit_tool.gui
-CLI와 동일한 엔진을 사용한다. (이 파일은 Windows에서 동작 확인 필요)
+[① 이월 생성] 좌측: 전기 파일 슬롯(DSD·정산표·계정별조서·일반조서·전산자료) + 기본정보
+              우측: 생성된 당기 파일 목록 + 다운로드
+[② 진행현황] 다업체 8단계 관리
+
+실행: python -m audit_tool.gui  (exe: AuditTool.exe)
 """
-import json
 import os
+import shutil
+import tempfile
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from . import __version__, decisions, identify, progress, runner
+from . import __version__, progress, runner
+
+SLOTS = [
+    ('dsd',     '전기 감사보고서 DSD', [('DSD 파일', '*.dsd'), ('모든 파일', '*.*')], True),
+    ('trial',   '전기 정산표',         [('엑셀', '*.xlsx *.xlsm')], True),
+    ('account', '전기 계정별조서',      [('엑셀', '*.xlsx *.xlsm')], True),
+    ('general', '전기 일반조서 (선택)', [('엑셀', '*.xlsx *.xlsm')], False),
+    ('raw',     '당기 전산자료 (선택 — 있으면 정산표에 당기 숫자 주입)',
+     [('엑셀', '*.xlsx *.xlsm')], False),
+]
+INFO_FIELDS = ['회사명', '전기_기수', '전기_연도', '전기_결산일',
+               '당기_기수', '당기_연도', '당기_결산일']
 
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title(f'외감 실무 자동화 도구 v{__version__}')
-        self.geometry('880x640')
-        self.report_callback_exception = self._on_error   # 버튼 동작 중 오류도 표시
+        self.geometry('1020x680')
+        self.report_callback_exception = self._on_error
+        self.slot_vars = {}
+        self.info_vars = {}
+        self.generated = []
+        self.outdir = None
         nb = ttk.Notebook(self)
         nb.pack(fill='both', expand=True)
         self.tab_roll = ttk.Frame(nb)
         self.tab_prog = ttk.Frame(nb)
-        nb.add(self.tab_roll, text='① 초기세팅 (이월)')
+        nb.add(self.tab_roll, text='① 이월 생성')
         nb.add(self.tab_prog, text='② 진행현황')
         self._build_roll_tab()
         self._build_prog_tab()
         self.after(600, self._check_update_quietly)
 
+    # ---------------- 공통 ----------------
+    def _on_error(self, exc_type, exc, tb):
+        import traceback
+        err = ''.join(traceback.format_exception(exc_type, exc, tb))
+        try:
+            self._println('\n✘ 오류 발생:\n' + err)
+        except Exception:
+            pass
+        messagebox.showerror('오류', str(exc) + '\n\n(상세 내용은 로그 창 참조)')
+
+    def _println(self, s=''):
+        def do():
+            self.log.insert('end', s + '\n')
+            self.log.see('end')
+        self.after(0, do)
+
     def _check_update_quietly(self):
-        """시작 시 새 버전이 있으면 로그에 안내 (실패는 조용히 무시)."""
         def worker():
             try:
                 from . import updater
                 rv = updater.remote_version()
                 if rv and rv != __version__:
-                    self.after(0, lambda: self._println(
-                        f'※ 새 버전 v{rv}이 있습니다 (현재 v{__version__}). '
-                        f'[업데이트] 버튼으로 갱신하십시오.'))
+                    self._println(f'※ 새 버전 v{rv}이 있습니다 (현재 v{__version__}). '
+                                  f'[업데이트] 버튼으로 갱신하십시오.')
             except Exception:
                 pass
         threading.Thread(target=worker, daemon=True).start()
@@ -51,129 +84,183 @@ class App(tk.Tk):
             messagebox.showinfo('업데이트 완료',
                                 '프로그램을 닫았다가 다시 실행하면 새 버전이 적용됩니다.')
 
-    def _on_error(self, exc_type, exc, tb):
-        import traceback
-        err = ''.join(traceback.format_exception(exc_type, exc, tb))
-        try:
-            self._println('\n✘ 오류 발생:\n' + err)
-        except Exception:
-            pass
-        messagebox.showerror('오류', str(exc) + '\n\n(상세 내용은 로그 창 참조)')
-
-    # ---------------- 초기세팅 탭 ----------------
+    # ---------------- ① 이월 생성 탭 ----------------
     def _build_roll_tab(self):
         f = self.tab_roll
-        top = ttk.Frame(f); top.pack(fill='x', padx=10, pady=8)
-        ttk.Label(top, text='대상 폴더:').pack(side='left')
-        self.folder_var = tk.StringVar()
-        ttk.Entry(top, textvariable=self.folder_var, width=70).pack(side='left', padx=6)
-        ttk.Button(top, text='찾기', command=self._pick_folder).pack(side='left')
+        top = ttk.Frame(f); top.pack(fill='both', expand=True, padx=10, pady=8)
 
-        btns = ttk.Frame(f); btns.pack(fill='x', padx=10)
-        run_btn = ttk.Button(btns, text='▶ 전체 실행 (식별→이월→주입)', command=self._run_all)
-        run_btn.pack(side='left')
-        ttk.Separator(btns, orient='vertical').pack(side='left', fill='y', padx=8)
-        ttk.Button(btns, text='파일 식별', command=self._identify).pack(side='left')
-        ttk.Button(btns, text='결정값 입력', command=self._decisions).pack(side='left', padx=4)
-        ttk.Button(btns, text='이월 미리보기', command=lambda: self._roll(False)).pack(side='left')
-        ttk.Button(btns, text='이월 실행', command=lambda: self._roll(True)).pack(side='left', padx=4)
-        ttk.Button(btns, text='숫자 주입', command=self._inject).pack(side='left')
-        ttk.Button(btns, text='업데이트', command=self._update).pack(side='right')
+        # 좌측: 파일 슬롯 + 기본정보
+        left = ttk.LabelFrame(top, text=' 1. 전기 파일 지정 ')
+        left.pack(side='left', fill='both', expand=True, padx=(0, 6))
+        for i, (key, label, ftypes, required) in enumerate(SLOTS):
+            ttk.Label(left, text=('* ' if required else '') + label)\
+                .grid(row=i * 2, column=0, sticky='w', padx=8, pady=(8 if i == 0 else 4, 0))
+            var = tk.StringVar()
+            self.slot_vars[key] = var
+            ent = ttk.Entry(left, textvariable=var, width=52, state='readonly')
+            ent.grid(row=i * 2 + 1, column=0, sticky='we', padx=8)
+            ttk.Button(left, text='파일 선택', width=9,
+                       command=lambda k=key, t=ftypes: self._pick(k, t))\
+                .grid(row=i * 2 + 1, column=1, padx=(4, 8))
+        base = len(SLOTS) * 2
+        ttk.Separator(left).grid(row=base, column=0, columnspan=2, sticky='we', pady=8)
+        info = ttk.Frame(left); info.grid(row=base + 1, column=0, columnspan=2,
+                                          sticky='we', padx=8)
+        ttk.Label(info, text='2. 기본 정보 (DSD 선택 시 자동 채움 — 확인·수정하십시오)',
+                  font=('', 9, 'bold')).grid(row=0, column=0, columnspan=4, sticky='w')
+        for i, key in enumerate(INFO_FIELDS):
+            r, c = divmod(i, 2)
+            ttk.Label(info, text=key.replace('_', ' ')).grid(row=r + 1, column=c * 2,
+                                                             sticky='w', pady=2)
+            v = tk.StringVar()
+            self.info_vars[key] = v
+            ttk.Entry(info, textvariable=v, width=18).grid(row=r + 1, column=c * 2 + 1,
+                                                           sticky='w', padx=(4, 14))
+        self.confirmed_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(left, variable=self.confirmed_var,
+                        text='전기 감사후 수치가 확정되었습니다 (미확정이면 이월 무의미)')\
+            .grid(row=base + 2, column=0, columnspan=2, sticky='w', padx=8, pady=(6, 0))
+        btnrow = ttk.Frame(left); btnrow.grid(row=base + 3, column=0, columnspan=2, pady=10)
+        ttk.Button(btnrow, text='▶ 생성하기', command=self._generate).pack(side='left')
+        ttk.Button(btnrow, text='업데이트', command=self._update).pack(side='left', padx=8)
 
-        self.log = tk.Text(f, wrap='word', height=28)
-        self.log.pack(fill='both', expand=True, padx=10, pady=8)
+        # 우측: 생성 결과
+        right = ttk.LabelFrame(top, text=' 3. 생성된 당기 파일 ')
+        right.pack(side='left', fill='both', expand=True)
+        self.out_list = tk.Listbox(right, height=12)
+        self.out_list.pack(fill='both', expand=True, padx=8, pady=8)
+        rbtn = ttk.Frame(right); rbtn.pack(pady=(0, 8))
+        ttk.Button(rbtn, text='다운로드 (저장 위치 선택)',
+                   command=self._download).pack(side='left', padx=4)
+        ttk.Button(rbtn, text='폴더 열기', command=self._open_outdir).pack(side='left')
 
-    def _pick_folder(self):
-        d = filedialog.askdirectory(title='당기 외감 폴더 선택')
-        if d:
-            self.folder_var.set(d)
+        # 하단: 로그
+        self.log = tk.Text(f, wrap='word', height=12)
+        self.log.pack(fill='both', expand=False, padx=10, pady=(0, 8))
 
-    def _println(self, s=''):
-        self.log.insert('end', s + '\n')
-        self.log.see('end')
-        self.update_idletasks()
-
-    def _identify(self):
-        folder = self.folder_var.get()
-        if not folder:
-            return messagebox.showwarning('안내', '폴더를 먼저 선택하십시오.')
-        self._println('=== 파일 식별 ===')
-        scan = identify.scan_folder(folder)
-        self._println(identify.summarize(scan))
-
-    def _decisions(self):
-        folder = self.folder_var.get()
-        if not folder:
-            return messagebox.showwarning('안내', '폴더를 먼저 선택하십시오.')
-        dec = decisions.load(folder)
-        if dec is None:
-            scan = identify.scan_folder(folder)
-            dec = decisions.template(prefill=decisions.prefill_from_scan(scan))
-            path = decisions.save(folder, dec)
-            self._println(f'결정값 파일을 생성했습니다: {path}')
-        DecisionDialog(self, folder, dec, on_saved=self._println)
-
-    def _roll(self, execute):
-        folder = self.folder_var.get()
-        if not folder:
-            return messagebox.showwarning('안내', '폴더를 먼저 선택하십시오.')
-        dec = decisions.load(folder)
-        if dec is None:
-            return messagebox.showwarning('안내', "먼저 '결정값 입력/확인'을 실행하십시오.")
-        missing, errors = decisions.validate_pre(dec)
-        if missing or errors:
-            for m in missing:
-                self._println(f'✋ 사전 결정값 미입력: {m}')
-            for e in errors:
-                self._println(f'✘ {e}')
+    def _pick(self, key, ftypes):
+        p = filedialog.askopenfilename(title='파일 선택', filetypes=ftypes)
+        if not p:
             return
-        plans, dsd_job, problems = runner.build_plans(folder, dec)
-        self._println(runner.dry_run_report(plans, dsd_job, problems))
-        if not execute:
-            return
-        if problems:
-            return messagebox.showerror('실행 불가', '해결 필요 항목이 있습니다. 로그를 확인하십시오.')
-        if not messagebox.askyesno('실행 확인',
-                                   '위 Dry-run 내용대로 당기 파일을 생성합니다.\n'
-                                   '원본은 수정되지 않습니다. 진행할까요?'):
-            return
-        threading.Thread(target=lambda: runner.execute(
-            folder, dec, plans, dsd_job, log=self._println), daemon=True).start()
+        self.slot_vars[key].set(p)
+        if key == 'dsd':
+            self._prefill_from_dsd(p)
 
-    def _run_all(self):
-        """원클릭: 식별 → 결정값 검증 → 이월(확인) → 주입(확인)."""
-        folder = self.folder_var.get()
-        if not folder:
-            return messagebox.showwarning('안내', '폴더를 먼저 선택하십시오.')
+    def _prefill_from_dsd(self, path):
+        try:
+            from .identify import _inspect_dsd
+            d = _inspect_dsd(path)
+        except Exception:
+            return
+        def put(key, val):
+            if val is not None and not self.info_vars[key].get().strip():
+                self.info_vars[key].set(str(val))
+        put('회사명', d.get('company'))
+        if d.get('doc_name') and '감사보고서' not in d['doc_name']:
+            self._println(f"⚠ 선택한 DSD 문서가 '{d['doc_name']}'입니다. "
+                          f"감사보고서 DSD가 맞는지 확인하십시오.")
+        if d.get('fiscal_no'):
+            put('전기_기수', d['fiscal_no'])
+            put('당기_기수', d['fiscal_no'] + 1)
+        if d.get('year'):
+            put('전기_연도', d['year'])
+            put('당기_연도', d['year'] + 1)
+            put('전기_결산일', f"{d['year']}-12-31")
+            put('당기_결산일', f"{d['year'] + 1}-12-31")
+        self._println('기본 정보를 DSD에서 자동 채움 — 값을 확인하십시오.')
+
+    def _collect_info(self):
+        info = {k: v.get().strip() for k, v in self.info_vars.items()}
+        # 당기 값 자동 유도
+        try:
+            if not info['당기_기수'] and info['전기_기수']:
+                info['당기_기수'] = str(int(info['전기_기수']) + 1)
+            if not info['당기_연도'] and info['전기_연도']:
+                info['당기_연도'] = str(int(info['전기_연도']) + 1)
+            if not info['전기_결산일'] and info['전기_연도']:
+                info['전기_결산일'] = f"{info['전기_연도']}-12-31"
+            if not info['당기_결산일'] and info['당기_연도']:
+                info['당기_결산일'] = f"{info['당기_연도']}-12-31"
+        except ValueError:
+            pass
+        for k, v in info.items():
+            self.info_vars[k].set(v)
+        missing = [k for k, v in info.items() if not v]
+        return info, missing
+
+    def _generate(self):
+        files = {k: (v.get() or None) for k, v in self.slot_vars.items()}
+        if not any(files[k] for k in ('dsd', 'trial', 'account', 'general')):
+            return messagebox.showwarning('안내', '전기 파일을 하나 이상 선택하십시오.')
+        info, missing = self._collect_info()
+        if missing:
+            return messagebox.showwarning(
+                '안내', '기본 정보 미입력: ' + ', '.join(m.replace('_', ' ') for m in missing))
+        if not self.confirmed_var.get():
+            return messagebox.showwarning(
+                '안내', "'전기 감사후 수치 확정' 확인란에 체크해야 생성할 수 있습니다.")
+        self.out_list.delete(0, 'end')
+        self.generated = []
+        self.outdir = tempfile.mkdtemp(prefix='외감이월_')
         self.log.delete('1.0', 'end')
-        res = runner.run_all(folder, prefer_excel=True, log=self._println,
-                             confirm=lambda m: messagebox.askyesno('확인', m))
-        if res['status'] == 'need_decisions':
-            self._println('\n→ 결정값 입력 창을 엽니다. 저장 후 [▶ 전체 실행]을 다시 누르십시오.')
-            DecisionDialog(self, folder, decisions.load(folder), on_saved=self._println)
-        elif res['status'] == 'done':
-            messagebox.showinfo('완료', '전체 작업이 끝났습니다.\n'
-                                '생성물과 _audit_tool/주입리포트를 확인하십시오.\n'
-                                'DSD는 DART 편집기에서 열어 확인이 필요합니다.')
+        self._println('=== 당기 파일 생성 시작 ===')
 
-    def _inject(self):
-        from . import inject as inject_mod
-        folder = self.folder_var.get()
-        if not folder:
-            return messagebox.showwarning('안내', '폴더를 먼저 선택하십시오.')
-        dec = decisions.load(folder)
-        if dec is None or not dec['사전'].get('당기_연도'):
-            return messagebox.showwarning('안내', '결정값(당기_연도)을 먼저 입력하십시오.')
-        res = inject_mod.run_for_folder(folder, dec, execute=False, log=self._println)
-        if res['status'] != 'dry_run':
-            return
-        if not messagebox.askyesno('주입 실행',
-                                   f"{res['ops']}개 항목을 정산표 당기 열에 주입합니다.\n"
-                                   '대상 파일은 백업 후 수정됩니다. 진행할까요?'):
-            return
-        inject_mod.run_for_folder(folder, dec, execute=True, log=self._println)
+        def worker():
+            try:
+                outputs = runner.rollforward_files(files, info, self.outdir,
+                                                   log=self._println)
+            except Exception as e:
+                import traceback
+                self._println('✘ 생성 실패:\n' + traceback.format_exc())
+                self.after(0, lambda: messagebox.showerror('실패', str(e)))
+                return
+            self.generated = outputs
+            def done():
+                for p in outputs:
+                    self.out_list.insert('end', os.path.basename(p))
+                if outputs:
+                    self._println(f'\n=== 완료: {len(outputs)}개 파일 생성 ===')
+                    self._println('[다운로드] 버튼으로 원하는 위치에 저장하십시오. '
+                                  'DSD는 DART 편집기에서 열어 확인이 필요합니다.')
+                else:
+                    self._println('\n생성된 파일이 없습니다. 로그를 확인하십시오.')
+            self.after(0, done)
+        threading.Thread(target=worker, daemon=True).start()
 
-    # ---------------- 진행현황 탭 ----------------
+    def _download(self):
+        if not self.generated:
+            return messagebox.showwarning('안내', '먼저 [생성하기]를 실행하십시오.')
+        dst = filedialog.askdirectory(title='저장할 폴더 선택')
+        if not dst:
+            return
+        saved = []
+        for p in self.generated:
+            target = os.path.join(dst, os.path.basename(p))
+            if os.path.exists(target):
+                base, ext = os.path.splitext(target)
+                n = 2
+                while os.path.exists(f'{base}_v{n}{ext}'):
+                    n += 1
+                target = f'{base}_v{n}{ext}'
+            shutil.copy2(p, target)
+            saved.append(os.path.basename(target))
+        # 리포트류도 함께 저장
+        if self.outdir:
+            for fn in os.listdir(self.outdir):
+                if fn.endswith(('.txt', '.jsonl')):
+                    shutil.copy2(os.path.join(self.outdir, fn), os.path.join(dst, fn))
+        self._println(f'✔ 저장 완료 ({dst}): ' + ', '.join(saved))
+        messagebox.showinfo('저장 완료', f'{len(saved)}개 파일을 저장했습니다.\n{dst}')
+
+    def _open_outdir(self):
+        if not self.outdir:
+            return
+        try:
+            os.startfile(self.outdir)          # Windows
+        except (AttributeError, OSError):
+            self._println(f'생성 폴더: {self.outdir}')
+
+    # ---------------- ② 진행현황 탭 ----------------
     def _build_prog_tab(self):
         f = self.tab_prog
         top = ttk.Frame(f); top.pack(fill='x', padx=10, pady=8)
@@ -215,7 +302,8 @@ class App(tk.Tk):
             key = f"{c['code']}:{year}"
             st = state['clients'].get(key, {}).get('stage')
             label = f"{st+1}.{progress.STAGES[st]}" if st is not None else '-'
-            self.tree.insert('', 'end', iid=c['code'], values=(f"{c['code']} {c['company']}", label))
+            self.tree.insert('', 'end', iid=c['code'],
+                             values=(f"{c['code']} {c['company']}", label))
 
     def _set_stage(self, idx):
         sel = self.tree.selection()
@@ -232,57 +320,9 @@ class App(tk.Tk):
         out = progress.dashboard_html(root, year)
         messagebox.showinfo('완료', f'대시보드 생성:\n{out}')
         try:
-            os.startfile(out)  # Windows
+            os.startfile(out)
         except (AttributeError, OSError):
             pass
-
-
-class DecisionDialog(tk.Toplevel):
-    """결정값 입력 폼 — 각 항목에 '무엇을 결정하는지' 설명 표시."""
-
-    def __init__(self, master, folder, dec, on_saved=None):
-        super().__init__(master)
-        self.title('결정값 입력 (프로그램은 결정하지 않습니다)')
-        self.folder, self.dec, self.on_saved = folder, dec, on_saved
-        self.vars = {}
-        row = 0
-        ttk.Label(self, text='[사전 결정값 — 초기세팅 실행에 필수]',
-                  font=('', 10, 'bold')).grid(row=row, column=0, columnspan=3,
-                                              sticky='w', padx=8, pady=(8, 2)); row += 1
-        for key, desc in decisions.PRE_FIELDS:
-            ttk.Label(self, text=key).grid(row=row, column=0, sticky='w', padx=8)
-            v = tk.StringVar(value='' if dec['사전'].get(key) is None else str(dec['사전'][key]))
-            self.vars[('사전', key)] = v
-            ttk.Entry(self, textvariable=v, width=24).grid(row=row, column=1, padx=4)
-            ttk.Label(self, text=desc, foreground='#57606a').grid(row=row, column=2, sticky='w')
-            row += 1
-        ttk.Label(self, text='[사후 결정값 — 감사판단: 보고서 단계 전 입력. 기본값 없음]',
-                  font=('', 10, 'bold')).grid(row=row, column=0, columnspan=3,
-                                              sticky='w', padx=8, pady=(10, 2)); row += 1
-        for key, desc in decisions.POST_FIELDS:
-            ttk.Label(self, text=key).grid(row=row, column=0, sticky='w', padx=8)
-            v = tk.StringVar(value='' if dec['사후'].get(key) is None else str(dec['사후'][key]))
-            self.vars[('사후', key)] = v
-            ttk.Entry(self, textvariable=v, width=24).grid(row=row, column=1, padx=4)
-            ttk.Label(self, text=desc, foreground='#57606a').grid(row=row, column=2, sticky='w')
-            row += 1
-        ttk.Button(self, text='저장', command=self._save).grid(row=row, column=1, pady=10)
-
-    def _save(self):
-        for (section, key), var in self.vars.items():
-            s = var.get().strip()
-            if s == '':
-                self.dec[section][key] = None
-            elif s.lower() in ('true', 'false'):
-                self.dec[section][key] = (s.lower() == 'true')
-            elif s.isdigit():
-                self.dec[section][key] = int(s)
-            else:
-                self.dec[section][key] = s
-        path = decisions.save(self.folder, self.dec)
-        if self.on_saved:
-            self.on_saved(f'결정값 저장: {path}')
-        self.destroy()
 
 
 def main():

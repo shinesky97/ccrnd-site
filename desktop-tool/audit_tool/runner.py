@@ -153,6 +153,111 @@ def execute(folder, dec, plans, dsd_job, prefer_excel=True, log=print):
     return results
 
 
+def rollforward_files(files, info, outdir, prefer_excel=True, log=print):
+    """파일을 사용자가 직접 지정하는 이월 방식 (폴더 자동식별을 쓰지 않음 — GUI 슬롯 UI용).
+
+    files: {'dsd','trial','account','general','raw'} → 경로 또는 None
+    info : {'회사명','전기_기수','전기_연도','전기_결산일','당기_기수','당기_연도','당기_결산일'}
+    반환 : 생성된 파일 경로 리스트. 원본 미수정, outdir에 새 파일 생성.
+    """
+    from datetime import date as _date
+
+    from . import inject as inject_mod
+    from .engine import pick_engine
+    from .util import jsonl_append, now_iso, safe_out_path, sha256_file
+
+    prior_fye = _date.fromisoformat(str(info['전기_결산일']))
+    cur_fye = _date.fromisoformat(str(info['당기_결산일']))
+    prior_year = int(info['전기_연도'])
+    cur_year = int(info['당기_연도'])
+    company = str(info.get('회사명') or '회사').replace('주식회사', '').strip() or '회사'
+    os.makedirs(outdir, exist_ok=True)
+    logfile = os.path.join(outdir, '생성로그.jsonl')
+    outputs = []
+
+    plans = []
+    if files.get('general'):
+        plans.append(('일반조서', roll_xlsx.plan_general_wp(
+            files['general'], safe_out_path(os.path.join(outdir, f'wp_일반조서_{cur_year}.xlsx')),
+            prior_fye, cur_fye)))
+    if files.get('account'):
+        plans.append(('계정별조서', roll_xlsx.plan_account_wp(
+            files['account'],
+            safe_out_path(os.path.join(outdir, f'wp_4000_계정별조서_{cur_year}.xlsx')),
+            prior_fye, cur_fye, info.get('회사명'))))
+    if files.get('trial'):
+        plans.append(('정산표', roll_xlsx.plan_trial_sheet(
+            files['trial'],
+            safe_out_path(os.path.join(outdir, f'wp_8600A_정산표_{cur_year}.xlsx')),
+            prior_year=prior_year)))
+
+    engine = pick_engine(prefer_excel)
+    log(f'실행 엔진: {engine.name}')
+    trial_out = None
+    for name, plan in plans:
+        rec = {'time': now_iso(), 'action': 'rollforward_files', 'target': name,
+               'src': plan.src, 'src_sha256': sha256_file(plan.src),
+               'out': plan.out, 'engine': engine.name}
+        try:
+            applied = engine.execute(plan)
+            rec.update(status='ok', ops_applied=applied,
+                       warnings=plan.warnings, manual=plan.manual)
+            outputs.append(plan.out)
+            if name == '정산표':
+                trial_out = plan.out
+            log(f'✔ {name}: {applied}건 적용 → {os.path.basename(plan.out)}')
+            for m in plan.manual:
+                log(f'  ✋ 수동 확인: {m}')
+        except Exception as ex:
+            rec.update(status='error', error=str(ex))
+            log(f'✘ {name} 실패: {ex}')
+        jsonl_append(logfile, rec)
+
+    if files.get('dsd'):
+        out = safe_out_path(os.path.join(outdir, f'FY{cur_year}_{company}_DSD.dsd'))
+        rec = {'time': now_iso(), 'action': 'rollforward_files', 'target': 'DSD',
+               'src': files['dsd'], 'src_sha256': sha256_file(files['dsd']), 'out': out}
+        try:
+            summary = roll_dsd.roll(files['dsd'], out,
+                                    int(info['당기_기수']) - int(info['전기_기수']),
+                                    cur_year - prior_year)
+            rec.update(status='ok',
+                       **{k: v for k, v in summary.items() if k != 'review_texts'})
+            outputs.append(out)
+            log(f"✔ DSD: 값이동 {summary['moved_cells']}셀, 라벨 {summary['label_changes']}건"
+                f" → {os.path.basename(out)}")
+            for w in summary['warnings']:
+                log(f'  ⚠ {w}')
+            log(f"  ⚠ {summary['review_note']}")
+        except Exception as ex:
+            rec.update(status='error', error=str(ex))
+            log(f'✘ DSD 실패: {ex}')
+        jsonl_append(logfile, rec)
+
+    if files.get('raw') and trial_out:
+        log('\n— 당기 전산자료 주입 —')
+        try:
+            plan, rpt = inject_mod.plan_inject(trial_out, files['raw'], cur_year,
+                                               name_source=files['trial'])
+            log('\n'.join(rpt))
+            with open(os.path.join(outdir, f'주입리포트_{cur_year}.txt'), 'w',
+                      encoding='utf-8') as f:
+                f.write('\n'.join(rpt))
+            if plan.ops:
+                applied = engine.execute(plan)
+                log(f'✔ 주입 완료: {applied}건')
+            jsonl_append(logfile, {'time': now_iso(), 'action': 'inject',
+                                   'target': trial_out, 'raw': files['raw'],
+                                   'raw_sha256': sha256_file(files['raw']),
+                                   'ops': len(plan.ops), 'status': 'ok'})
+        except Exception as ex:
+            log(f'✘ 주입 실패: {ex}')
+    elif files.get('raw'):
+        log('⚠ 전산자료가 지정되었지만 정산표가 없어 주입을 건너뜁니다.')
+
+    return outputs
+
+
 def run_all(folder, prefer_excel=True, log=print, confirm=None):
     """원클릭 파이프라인: 식별 → 결정값 검증 → 이월(확인 후) → 당기 숫자 주입(확인 후).
 
