@@ -13,10 +13,21 @@
 pip install openpyxl xlwings
 ```
 
-- `xlwings`는 Excel이 설치된 PC에서 권장 (수식·서식·차트 완전 보존, 열 삽입 지원).
-  없으면 openpyxl로 동작하되 정산표 열 삽입 단계는 수동 처리로 안내된다.
+- `xlwings`는 Excel이 설치된 PC에서 권장 (수식·서식·차트·도형 완전 보존).
+  없으면 openpyxl로 동작한다.
 
-## 실행
+## exe로 만들기 (권장 사용 방식)
+
+`desktop-tool` 폴더에서 **`build_exe.bat`를 더블클릭**하면 `dist\AuditTool.exe`가
+생성된다 (PyInstaller 자동 설치 포함, 수 분 소요). exe는 아무 곳에나 복사해 쓰면 된다.
+
+**exe 사용법**: 실행 → [찾기]로 당기 외감 폴더 선택 → **[▶ 전체 실행]** 버튼.
+- 처음 실행하는 폴더면 결정값 입력 창이 뜬다 → 기수·연도·결산일·전기수치_확정여부를
+  확인·저장하고 [▶ 전체 실행]을 다시 누른다.
+- 이후: Dry-run 내용 확인창 → [예] → 이월 실행 → 주입 내용 확인창 → [예] → 완료.
+- 모든 단계는 원본을 수정하지 않고, 실행 내역은 `_audit_tool/runlog.jsonl`에 남는다.
+
+## 실행 (Python 직접)
 
 GUI:
 ```bat
@@ -25,10 +36,13 @@ python -m audit_tool.gui
 
 CLI:
 ```bat
+python -m audit_tool all      "D:\...\2026년 기말감사"   :: 원클릭 (대화식 확인)
+python -m audit_tool all      "D:\...\2026년 기말감사" --yes
 python -m audit_tool identify "D:\...\2026년 기말감사"
 python -m audit_tool init     "D:\...\2026년 기말감사"   :: 결정값.json 생성
 python -m audit_tool roll     "D:\...\2026년 기말감사"   :: Dry-run
 python -m audit_tool roll     "D:\...\2026년 기말감사" --execute
+python -m audit_tool inject   "D:\...\2026년 기말감사" --execute
 python -m audit_tool progress scan "C:\...\C 회계감사"
 python -m audit_tool progress set  "C:\...\C 회계감사" C-35 2026 3 "전산자료 수령"
 python -m audit_tool progress dash "C:\...\C 회계감사" 2026

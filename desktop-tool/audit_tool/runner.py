@@ -137,3 +137,63 @@ def execute(folder, dec, plans, dsd_job, prefer_excel=True, log=print):
         jsonl_append(logfile, rec)
         results.append(rec)
     return results
+
+
+def run_all(folder, prefer_excel=True, log=print, confirm=None):
+    """원클릭 파이프라인: 식별 → 결정값 검증 → 이월(확인 후) → 당기 숫자 주입(확인 후).
+
+    confirm(message) -> bool  : 사용자 확인 콜백. None이면 Dry-run까지만 수행.
+    반환 dict의 status: need_decisions / blocked / dry_run / cancelled / done
+    """
+    from . import inject as inject_mod
+
+    dec = decisions.load(folder)
+    scan = identify.scan_folder(folder)
+    log('=== 1단계: 파일 식별 ===')
+    log(identify.summarize(scan))
+
+    if dec is None:
+        dec = decisions.template(prefill=decisions.prefill_from_scan(scan))
+        decisions.save(folder, dec)
+        log('\n결정값 파일이 없어 새로 만들었습니다 (_audit_tool/결정값.json).')
+        log('사전 결정값(기수·연도·결산일·전기수치_확정여부)을 확인·입력한 뒤 다시 실행하십시오.')
+        return {'status': 'need_decisions', 'dec': dec}
+    missing, errors = decisions.validate_pre(dec)
+    if missing or errors:
+        for m in missing:
+            log(f'✋ 사전 결정값 미입력: {m} — {dict(decisions.PRE_FIELDS)[m]}')
+        for e in errors:
+            log(f'✘ {e}')
+        return {'status': 'need_decisions', 'dec': dec, 'missing': missing, 'errors': errors}
+
+    scan = exclude_tool_outputs(scan, dec)
+    plans, dsd_job, problems = build_plans(folder, dec, scan)
+    log('\n=== 2단계: 이월(초기세팅) ===')
+    log(dry_run_report(plans, dsd_job, problems))
+    if problems:
+        log('\n✘ 해결 필요 항목이 있어 중단합니다.')
+        return {'status': 'blocked', 'problems': problems}
+    if confirm is None:
+        return {'status': 'dry_run'}
+    if not confirm('위 Dry-run 내용대로 당기 파일을 생성합니다.\n'
+                   '원본은 수정되지 않습니다. 진행할까요?'):
+        return {'status': 'cancelled'}
+    execute(folder, dec, plans, dsd_job, prefer_excel=prefer_excel, log=log)
+
+    log('\n=== 3단계: 정산표 당기 숫자 주입 ===')
+    if not scan['found']['raw_data']:
+        log('당기 전산자료(Raw)가 없어 주입을 건너뜁니다. 자료 수령 후 주입을 실행하십시오.')
+        return {'status': 'done', 'inject': 'skipped'}
+    res = inject_mod.run_for_folder(folder, dec, execute=False,
+                                    prefer_excel=prefer_excel, log=log)
+    if res['status'] != 'dry_run':
+        return {'status': 'done', 'inject': res['status']}
+    if not confirm(f"{res['ops']}개 항목을 정산표 당기 열에 주입합니다.\n"
+                   '대상 파일은 백업 후 수정됩니다. 진행할까요?'):
+        return {'status': 'done', 'inject': 'cancelled'}
+    res = inject_mod.run_for_folder(folder, dec, execute=True,
+                                    prefer_excel=prefer_excel, log=log)
+    log('\n=== 완료 ===')
+    log('생성물 확인: 당기 조서·정산표·DSD + _audit_tool/주입리포트. '
+        'DSD는 DART 편집기에서 열어 확인하십시오.')
+    return {'status': 'done', 'inject': res['status']}

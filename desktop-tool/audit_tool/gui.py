@@ -37,11 +37,14 @@ class App(tk.Tk):
         ttk.Button(top, text='찾기', command=self._pick_folder).pack(side='left')
 
         btns = ttk.Frame(f); btns.pack(fill='x', padx=10)
-        ttk.Button(btns, text='1. 파일 식별', command=self._identify).pack(side='left')
-        ttk.Button(btns, text='2. 결정값 입력/확인', command=self._decisions).pack(side='left', padx=6)
-        ttk.Button(btns, text='3. 미리보기(Dry-run)', command=lambda: self._roll(False)).pack(side='left')
-        ttk.Button(btns, text='4. 실행', command=lambda: self._roll(True)).pack(side='left', padx=6)
-        ttk.Button(btns, text='5. 당기 숫자 주입', command=self._inject).pack(side='left')
+        run_btn = ttk.Button(btns, text='▶ 전체 실행 (식별→이월→주입)', command=self._run_all)
+        run_btn.pack(side='left')
+        ttk.Separator(btns, orient='vertical').pack(side='left', fill='y', padx=8)
+        ttk.Button(btns, text='파일 식별', command=self._identify).pack(side='left')
+        ttk.Button(btns, text='결정값 입력', command=self._decisions).pack(side='left', padx=4)
+        ttk.Button(btns, text='이월 미리보기', command=lambda: self._roll(False)).pack(side='left')
+        ttk.Button(btns, text='이월 실행', command=lambda: self._roll(True)).pack(side='left', padx=4)
+        ttk.Button(btns, text='숫자 주입', command=self._inject).pack(side='left')
 
         self.log = tk.Text(f, wrap='word', height=28)
         self.log.pack(fill='both', expand=True, padx=10, pady=8)
@@ -103,45 +106,38 @@ class App(tk.Tk):
         threading.Thread(target=lambda: runner.execute(
             folder, dec, plans, dsd_job, log=self._println), daemon=True).start()
 
+    def _run_all(self):
+        """원클릭: 식별 → 결정값 검증 → 이월(확인) → 주입(확인)."""
+        folder = self.folder_var.get()
+        if not folder:
+            return messagebox.showwarning('안내', '폴더를 먼저 선택하십시오.')
+        self.log.delete('1.0', 'end')
+        res = runner.run_all(folder, prefer_excel=True, log=self._println,
+                             confirm=lambda m: messagebox.askyesno('확인', m))
+        if res['status'] == 'need_decisions':
+            self._println('\n→ 결정값 입력 창을 엽니다. 저장 후 [▶ 전체 실행]을 다시 누르십시오.')
+            DecisionDialog(self, folder, decisions.load(folder), on_saved=self._println)
+        elif res['status'] == 'done':
+            messagebox.showinfo('완료', '전체 작업이 끝났습니다.\n'
+                                '생성물과 _audit_tool/주입리포트를 확인하십시오.\n'
+                                'DSD는 DART 편집기에서 열어 확인이 필요합니다.')
+
     def _inject(self):
-        import shutil
-        from datetime import datetime
         from . import inject as inject_mod
-        from .engine import pick_engine
-        from .util import ensure_tool_dir
         folder = self.folder_var.get()
         if not folder:
             return messagebox.showwarning('안내', '폴더를 먼저 선택하십시오.')
         dec = decisions.load(folder)
         if dec is None or not dec['사전'].get('당기_연도'):
             return messagebox.showwarning('안내', '결정값(당기_연도)을 먼저 입력하십시오.')
-        year = int(dec['사전']['당기_연도'])
-        trial = os.path.join(folder, decisions.output_name(dec, '정산표'))
-        if not os.path.exists(trial):
-            return messagebox.showwarning('안내', '당기 정산표가 없습니다. 먼저 4.실행을 하십시오.')
-        from .runner import exclude_tool_outputs
-        scan = exclude_tool_outputs(identify.scan_folder(folder), dec)
-        raws = scan['found']['raw_data']
-        if len(raws) != 1:
-            return messagebox.showwarning('안내', f'전산자료(Raw) 후보가 {len(raws)}개입니다.')
-        from .runner import _pick_prior
-        prior = _pick_prior(scan['found']['trial_sheet'], dec['사전'].get('전기_연도'))
-        plan, rpt = inject_mod.plan_inject(trial, raws[0]['path'], year,
-                                           name_source=prior['path'] if prior else None)
-        self._println('\n'.join(rpt))
-        if not plan.ops:
+        res = inject_mod.run_for_folder(folder, dec, execute=False, log=self._println)
+        if res['status'] != 'dry_run':
             return
         if not messagebox.askyesno('주입 실행',
-                                   f'{len(plan.ops)}개 계정을 정산표 {year} 열에 주입합니다.\n'
+                                   f"{res['ops']}개 항목을 정산표 당기 열에 주입합니다.\n"
                                    '대상 파일은 백업 후 수정됩니다. 진행할까요?'):
             return
-        backups = os.path.join(ensure_tool_dir(folder), 'backups')
-        os.makedirs(backups, exist_ok=True)
-        bak = os.path.join(backups, datetime.now().strftime('%Y%m%d_%H%M%S_')
-                           + os.path.basename(trial))
-        shutil.copy2(trial, bak)
-        applied = pick_engine(True).execute(plan)
-        self._println(f'✔ 주입 완료: {applied}건 (백업: {bak})')
+        inject_mod.run_for_folder(folder, dec, execute=True, log=self._println)
 
     # ---------------- 진행현황 탭 ----------------
     def _build_prog_tab(self):

@@ -29,6 +29,10 @@ def main(argv=None):
     s.add_argument('folder'); s.add_argument('--execute', action='store_true')
     s.add_argument('--no-excel', action='store_true')
     s.add_argument('--year', type=int, help='대상 연도 열 (기본: 결정값의 당기_연도)')
+    s = sub.add_parser('all', help='원클릭: 식별→이월→주입 전체 실행')
+    s.add_argument('folder'); s.add_argument('--yes', action='store_true',
+                                             help='확인 질문 없이 진행')
+    s.add_argument('--no-excel', action='store_true')
     s = sub.add_parser('progress')
     s.add_argument('sub', choices=['scan', 'set', 'dash'])
     s.add_argument('args', nargs='*')
@@ -78,58 +82,25 @@ def main(argv=None):
         runner.execute(a.folder, dec, plans, dsd_job, prefer_excel=not a.no_excel)
         return 0
 
+    if a.cmd == 'all':
+        if a.yes:
+            confirm = lambda msg: True          # noqa: E731
+        else:
+            confirm = lambda msg: input(f'\n{msg} [y/N] ').strip().lower() == 'y'  # noqa: E731
+        res = runner.run_all(a.folder, prefer_excel=not a.no_excel, confirm=confirm)
+        return 0 if res['status'] == 'done' else 1
+
     if a.cmd == 'inject':
-        import os
-        import shutil
-        from datetime import datetime
         from . import inject as inject_mod
-        from .engine import pick_engine
-        from .util import ensure_tool_dir, jsonl_append, now_iso, sha256_file
         dec = decisions.load(a.folder)
         if dec is None:
             print("결정값.json이 없습니다. 먼저 'init'을 실행하십시오.")
             return 1
-        year = a.year or dec['사전'].get('당기_연도')
-        if not year:
-            print('당기_연도가 없습니다. 결정값을 입력하거나 --year를 지정하십시오.')
-            return 1
-        trial = os.path.join(a.folder, decisions.output_name(dec, '정산표'))
-        if not os.path.exists(trial):
-            print(f'당기 정산표가 없습니다: {trial}\n먼저 roll을 실행하십시오.')
-            return 1
-        scan = runner.exclude_tool_outputs(identify.scan_folder(a.folder), dec)
-        raws = scan['found']['raw_data']
-        if len(raws) != 1:
-            print(f'전산자료(Raw)를 특정하지 못했습니다 (후보 {len(raws)}개).')
-            return 1
-        prior = runner._pick_prior(scan['found']['trial_sheet'],
-                                   dec['사전'].get('전기_연도'))
-        plan, rpt = inject_mod.plan_inject(trial, raws[0]['path'], int(year),
-                                           name_source=prior['path'] if prior else None)
-        print('\n'.join(rpt))
-        tool_dir = ensure_tool_dir(a.folder)
-        with open(os.path.join(tool_dir, f'주입리포트_{year}.txt'), 'w', encoding='utf-8') as f:
-            f.write('\n'.join(rpt))
-        if not plan.ops:
-            print('\n주입할 항목이 없습니다.')
-            return 1
-        if not a.execute:
+        res = inject_mod.run_for_folder(a.folder, dec, year=a.year,
+                                        execute=a.execute, prefer_excel=not a.no_excel)
+        if res['status'] == 'dry_run':
             print('\n(Dry-run입니다. --execute 로 실행 시 대상 파일을 백업 후 수정합니다)')
-            return 0
-        backups = os.path.join(tool_dir, 'backups')
-        os.makedirs(backups, exist_ok=True)
-        stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        bak = os.path.join(backups, f'{stamp}_{os.path.basename(trial)}')
-        shutil.copy2(trial, bak)
-        engine = pick_engine(not a.no_excel)
-        applied = engine.execute(plan)
-        jsonl_append(os.path.join(tool_dir, 'runlog.jsonl'),
-                     {'time': now_iso(), 'action': 'inject', 'target': trial,
-                      'backup': bak, 'raw': raws[0]['path'],
-                      'raw_sha256': sha256_file(raws[0]['path']),
-                      'engine': engine.name, 'ops_applied': applied, 'status': 'ok'})
-        print(f'\n✔ 주입 완료: {applied}건 (백업: {bak})')
-        return 0
+        return 0 if res['status'] in ('done', 'dry_run') else 1
 
     if a.cmd == 'progress':
         if a.sub == 'scan':

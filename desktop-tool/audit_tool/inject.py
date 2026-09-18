@@ -100,8 +100,9 @@ def _find_ar_layout(ws):
 
     입력 대상은 '제 N (당)기 금액' 헤더 아래 2개 열(세부/본란)이다.
     연도 열(=F+G 수식)과 감사후 열은 수식이므로 건드리지 않는다.
+    subj_col: '과 목' 열 — 계정명 열(L)이 수식이라 값이 없을 때의 폴백(리터럴).
     """
-    name_col = detail_col = header_row = None
+    name_col = detail_col = header_row = subj_col = None
     for row in ws.iter_rows(min_row=1, max_row=10):
         for c in row:
             v = c.value
@@ -111,11 +112,14 @@ def _find_ar_layout(ws):
             if s == '회사제시계정과목':
                 name_col = c.column
                 header_row = max(header_row or 0, c.row)
+            if s == '과목' and subj_col is None:
+                subj_col = c.column
             if re.search(r'제\d+\(당\)기', s) and detail_col is None:
                 detail_col = c.column
     if name_col and detail_col:
         return {'header_row': header_row, 'name_col': name_col,
-                'detail_col': detail_col, 'main_col': detail_col + 1}
+                'detail_col': detail_col, 'main_col': detail_col + 1,
+                'subj_col': subj_col}
     return None
 
 
@@ -170,11 +174,16 @@ def plan_inject(trial_path, raw_path, year, sheet='AR', name_source=None):
             _, src_name_col = _find_name_col(src_ws)
 
     # 1차 통과: AR의 계정명 출현 횟수 집계
+    # 이름 결정 우선순위: ①당기 L열 값 ②전기 정산표 L열 값 ③당기 '과 목' 열(리터럴)
     ar_rows, filled_from_source = [], 0
     for r in range(layout['header_row'] + 1, wsv.max_row + 1):
         v = wsv.cell(row=r, column=layout['name_col']).value
         if (v is None or not str(v).strip()) and src_ws is not None and src_name_col:
             v = src_ws.cell(row=r, column=src_name_col).value
+            if v is not None and str(v).strip():
+                filled_from_source += 1
+        if (v is None or not str(v).strip()) and layout.get('subj_col'):
+            v = wsv.cell(row=r, column=layout['subj_col']).value
             if v is not None and str(v).strip():
                 filled_from_source += 1
         if v is None or not str(v).strip():
@@ -239,3 +248,58 @@ def plan_inject(trial_path, raw_path, year, sheet='AR', name_source=None):
     rpt.append('※ 주입 후 정산표의 소계·합계(수식)는 Excel에서 열면 재계산됩니다. '
                '차대·합계 검증은 재계산 후 확인하십시오.')
     return plan, rpt
+
+
+def run_for_folder(folder, dec, year=None, execute=False, prefer_excel=True, log=print):
+    """폴더 단위 주입 일괄 처리 (CLI·GUI·원클릭 공용).
+
+    반환 dict: {'status': 'done'|'dry_run'|'no_ops'|'blocked', ...}
+    execute=True면 대상 정산표를 백업 후 in-place 수정한다.
+    """
+    import shutil
+    from datetime import datetime
+
+    from . import decisions as dec_mod, identify
+    from .engine import pick_engine
+    from .runner import _pick_prior, exclude_tool_outputs
+    from .util import ensure_tool_dir, jsonl_append, now_iso, sha256_file
+
+    year = year or dec['사전'].get('당기_연도')
+    if not year:
+        log('✘ 당기_연도가 없습니다. 결정값을 입력하십시오.')
+        return {'status': 'blocked', 'reason': '당기_연도 없음'}
+    trial = os.path.join(folder, dec_mod.output_name(dec, '정산표'))
+    if not os.path.exists(trial):
+        log(f'✘ 당기 정산표가 없습니다: {os.path.basename(trial)} — 먼저 이월을 실행하십시오.')
+        return {'status': 'blocked', 'reason': '당기 정산표 없음'}
+    scan = exclude_tool_outputs(identify.scan_folder(folder), dec)
+    raws = scan['found']['raw_data']
+    if len(raws) != 1:
+        log(f'✘ 전산자료(Raw)를 특정하지 못했습니다 (후보 {len(raws)}개).')
+        return {'status': 'blocked', 'reason': f'전산자료 후보 {len(raws)}개'}
+    prior = _pick_prior(scan['found']['trial_sheet'], dec['사전'].get('전기_연도'))
+    plan, rpt = plan_inject(trial, raws[0]['path'], int(year),
+                            name_source=prior['path'] if prior else None)
+    log('\n'.join(rpt))
+    tool_dir = ensure_tool_dir(folder)
+    with open(os.path.join(tool_dir, f'주입리포트_{year}.txt'), 'w', encoding='utf-8') as f:
+        f.write('\n'.join(rpt))
+    if not plan.ops:
+        log('주입할 항목이 없습니다.')
+        return {'status': 'no_ops'}
+    if not execute:
+        return {'status': 'dry_run', 'ops': len(plan.ops)}
+    backups = os.path.join(tool_dir, 'backups')
+    os.makedirs(backups, exist_ok=True)
+    bak = os.path.join(backups, datetime.now().strftime('%Y%m%d_%H%M%S_')
+                       + os.path.basename(trial))
+    shutil.copy2(trial, bak)
+    engine = pick_engine(prefer_excel)
+    applied = engine.execute(plan)
+    jsonl_append(os.path.join(tool_dir, 'runlog.jsonl'),
+                 {'time': now_iso(), 'action': 'inject', 'target': trial,
+                  'backup': bak, 'raw': raws[0]['path'],
+                  'raw_sha256': sha256_file(raws[0]['path']),
+                  'engine': engine.name, 'ops_applied': applied, 'status': 'ok'})
+    log(f'✔ 주입 완료: {applied}건 (백업: {os.path.basename(bak)})')
+    return {'status': 'done', 'applied': applied, 'backup': bak}
