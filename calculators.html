@@ -1,0 +1,204 @@
+---
+layout: default
+title: 세금계산기
+permalink: /calculators/
+description: 종합소득세·법인세·4대보험료·연봉 실수령액 계산기와 주요 세금 세율표(2026년 기준). 공인회계사 손슬기가 제공하는 무료 세금 계산 도구입니다.
+---
+<div class="page-head">
+  <div class="wrap">
+    <h1>세금계산기 &amp; 세율표</h1>
+    <p class="ph-lead">종합소득세·법인세·4대보험료·연봉 실수령액을 바로 계산해 보세요. <b>2026년 기준</b>입니다.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:28px">
+  <div class="wrap">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab is-on" data-tab="income">종합소득세</button>
+      <button class="calc-tab" data-tab="corp">법인세</button>
+      <button class="calc-tab" data-tab="ins">4대보험료</button>
+      <button class="calc-tab" data-tab="net">연봉 실수령액</button>
+      <button class="calc-tab" data-tab="rates">세율표</button>
+    </div>
+
+    <!-- 종합소득세 -->
+    <div class="calc-panel is-on" id="tab-income">
+      <div class="calc-card">
+        <h2>종합소득세 계산기</h2>
+        <p class="calc-help">종합소득 <b>과세표준</b>(소득 − 각종 공제)을 입력하면 산출세액과 지방소득세를 계산합니다.</p>
+        <label>과세표준 (원)</label>
+        <input type="text" inputmode="numeric" id="in-income" class="calc-input" placeholder="예: 50,000,000">
+        <button class="calc-run" data-calc="income">계산하기</button>
+        <div class="calc-out" id="out-income" hidden></div>
+      </div>
+    </div>
+
+    <!-- 법인세 -->
+    <div class="calc-panel" id="tab-corp">
+      <div class="calc-card">
+        <h2>법인세 계산기</h2>
+        <p class="calc-help">각 사업연도 소득 <b>과세표준</b>을 입력하면 법인세 산출세액과 지방소득세를 계산합니다. (일반 내국법인 기준)</p>
+        <label>과세표준 (원)</label>
+        <input type="text" inputmode="numeric" id="in-corp" class="calc-input" placeholder="예: 300,000,000">
+        <button class="calc-run" data-calc="corp">계산하기</button>
+        <div class="calc-out" id="out-corp" hidden></div>
+      </div>
+    </div>
+
+    <!-- 4대보험 -->
+    <div class="calc-panel" id="tab-ins">
+      <div class="calc-card">
+        <h2>4대보험료 계산기</h2>
+        <p class="calc-help">월 급여(보수월액)를 입력하면 근로자·사업주 부담 4대보험료를 계산합니다.</p>
+        <label>월 급여 (원)</label>
+        <input type="text" inputmode="numeric" id="in-ins" class="calc-input" placeholder="예: 3,000,000">
+        <button class="calc-run" data-calc="ins">계산하기</button>
+        <div class="calc-out" id="out-ins" hidden></div>
+      </div>
+    </div>
+
+    <!-- 실수령액 -->
+    <div class="calc-panel" id="tab-net">
+      <div class="calc-card">
+        <h2>연봉 실수령액 계산기</h2>
+        <p class="calc-help">연봉과 부양가족 수를 입력하면 4대보험·소득세를 뺀 <b>예상 실수령액</b>을 계산합니다.</p>
+        <div class="calc-row">
+          <div><label>연봉 (원)</label><input type="text" inputmode="numeric" id="in-net" class="calc-input" placeholder="예: 40,000,000"></div>
+          <div><label>부양가족 수(본인 포함)</label><input type="number" id="in-dep" class="calc-input" value="1" min="1"></div>
+        </div>
+        <label>월 비과세액 (식대 등, 원)</label>
+        <input type="text" inputmode="numeric" id="in-nontax" class="calc-input" placeholder="예: 200,000 (기본 0)">
+        <button class="calc-run" data-calc="net">계산하기</button>
+        <div class="calc-out" id="out-net" hidden></div>
+      </div>
+    </div>
+
+    <!-- 세율표 -->
+    <div class="calc-panel" id="tab-rates">
+      <div class="calc-card">
+        <h2>주요 세금 세율표 <span class="calc-year">2026년 기준</span></h2>
+
+        <h3>종합소득세율 (소득세법 제55조)</h3>
+        <table class="rate-table">
+          <thead><tr><th>과세표준</th><th>세율</th><th>누진공제</th></tr></thead>
+          <tbody>
+            <tr><td>1,400만원 이하</td><td>6%</td><td>-</td></tr>
+            <tr><td>1,400만 ~ 5,000만원</td><td>15%</td><td>126만원</td></tr>
+            <tr><td>5,000만 ~ 8,800만원</td><td>24%</td><td>576만원</td></tr>
+            <tr><td>8,800만 ~ 1억 5,000만원</td><td>35%</td><td>1,544만원</td></tr>
+            <tr><td>1억 5,000만 ~ 3억원</td><td>38%</td><td>1,994만원</td></tr>
+            <tr><td>3억 ~ 5억원</td><td>40%</td><td>2,594만원</td></tr>
+            <tr><td>5억 ~ 10억원</td><td>42%</td><td>3,594만원</td></tr>
+            <tr><td>10억원 초과</td><td>45%</td><td>6,594만원</td></tr>
+          </tbody>
+        </table>
+        <p class="rate-note">지방소득세(소득분)는 산출세액의 10%가 별도 부과됩니다.</p>
+
+        <h3>법인세율 (법인세법 제55조 · 일반 내국법인)</h3>
+        <table class="rate-table">
+          <thead><tr><th>과세표준</th><th>세율</th><th>누진공제</th></tr></thead>
+          <tbody>
+            <tr><td>2억원 이하</td><td>10%</td><td>-</td></tr>
+            <tr><td>2억 ~ 200억원</td><td>20%</td><td>2,000만원</td></tr>
+            <tr><td>200억 ~ 3,000억원</td><td>22%</td><td>4억 2,000만원</td></tr>
+            <tr><td>3,000억원 초과</td><td>25%</td><td>94억 2,000만원</td></tr>
+          </tbody>
+        </table>
+        <p class="rate-note">2026년부터 세율이 10/20/22/25%로 적용됩니다. 지방소득세(법인분) 10% 별도. 특정 소규모 법인은 2억 이하 10% 구간이 배제될 수 있습니다.</p>
+
+        <h3>4대보험 요율 (2026년)</h3>
+        <table class="rate-table">
+          <thead><tr><th>구분</th><th>전체 요율</th><th>근로자</th><th>사업주</th></tr></thead>
+          <tbody>
+            <tr><td>국민연금</td><td>9.5%</td><td>4.75%</td><td>4.75%</td></tr>
+            <tr><td>건강보험</td><td>7.19%</td><td>3.595%</td><td>3.595%</td></tr>
+            <tr><td>장기요양보험</td><td>건강보험료의 13.14%</td><td>절반</td><td>절반</td></tr>
+            <tr><td>고용보험(실업급여)</td><td>1.8%</td><td>0.9%</td><td>0.9%</td></tr>
+            <tr><td>산재보험</td><td>업종별 상이</td><td>-</td><td>전액</td></tr>
+          </tbody>
+        </table>
+        <p class="rate-note">국민연금 기준소득월액 상한 659만원·하한 41만원. 사업주는 고용안정·직업능력개발부담금(규모별 0.25%~)이 추가됩니다.</p>
+
+        <h3>양도소득세 (요약)</h3>
+        <p class="rate-note">기본세율은 종합소득세율과 동일(6~45%)하며, 보유기간·주택 수·조정대상지역 여부에 따라 단기 중과세율·다주택 중과가 적용됩니다. 자세한 내용은 <a href="{{ '/real-estate-tax/' | relative_url }}">부동산 세제 최신판</a>을 참고하세요.</p>
+      </div>
+    </div>
+
+    <p class="calc-disc">※ 본 계산기는 <b>2026년 기준</b> 일반적인 세율로 계산한 <b>참고용 추정치</b>입니다. 실제 세액은 각종 공제·감면·가산세·비과세 항목에 따라 달라지며, 정확한 계산은 <a href="{{ '/contact/' | relative_url }}">상담</a>을 이용해 주세요.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var won=function(n){return Math.round(n).toLocaleString('ko-KR')+'원';};
+  var num=function(id){return parseFloat((document.getElementById(id).value||'').replace(/[^0-9.]/g,''))||0;};
+  // 입력값 천단위 콤마
+  document.querySelectorAll('.calc-input[inputmode="numeric"]').forEach(function(el){
+    el.addEventListener('input',function(){
+      var v=el.value.replace(/[^0-9]/g,'');
+      el.value=v?parseInt(v,10).toLocaleString('ko-KR'):'';
+    });
+  });
+
+  // ===== 2026년 기준 세율 상수 =====
+  var INCOME=[[14000000,0.06,0],[50000000,0.15,1260000],[88000000,0.24,5760000],[150000000,0.35,15440000],[300000000,0.38,19940000],[500000000,0.40,25940000],[1000000000,0.42,35940000],[Infinity,0.45,65940000]];
+  var CORP=[[200000000,0.10,0],[20000000000,0.20,20000000],[300000000000,0.22,420000000],[Infinity,0.25,9420000000]];
+  var INS={npE:0.0475,npMin:410000,npMax:6590000,hiE:0.03595,ltc:0.1314,eiE:0.009};
+  function bracketTax(base,tbl){base=Math.max(0,base);for(var i=0;i<tbl.length;i++){if(base<=tbl[i][0])return base*tbl[i][1]-tbl[i][2];}return 0;}
+  function earnedDed(pay){var d;if(pay<=5000000)d=pay*0.7;else if(pay<=15000000)d=3500000+(pay-5000000)*0.4;else if(pay<=45000000)d=7500000+(pay-15000000)*0.15;else if(pay<=100000000)d=12000000+(pay-45000000)*0.05;else d=14750000+(pay-100000000)*0.02;return Math.min(d,20000000);}
+  function workCredit(tax,pay){var c=tax<=1300000?tax*0.55:715000+(tax-1300000)*0.30;var lim;if(pay<=33000000)lim=740000;else if(pay<=70000000)lim=Math.max(660000,740000-(pay-33000000)*0.008);else if(pay<=120000000)lim=Math.max(500000,660000-(pay-70000000)*0.5);else lim=Math.max(200000,500000-(pay-120000000)*0.5);return Math.min(c,lim);}
+
+  var render={
+    income:function(){
+      var base=num('in-income');var tax=bracketTax(base,INCOME);var local=tax*0.1;
+      return '<div class="ro-big">'+won(tax+local)+'</div><div class="ro-sub">총 부담세액(지방소득세 포함)</div>'+
+        row('과세표준',won(base))+row('산출세액(국세)',won(tax))+row('지방소득세(10%)',won(local))+
+        row('실효세율',(base>0?((tax/base*100).toFixed(1)):'0')+'%');
+    },
+    corp:function(){
+      var base=num('in-corp');var tax=bracketTax(base,CORP);var local=tax*0.1;
+      return '<div class="ro-big">'+won(tax+local)+'</div><div class="ro-sub">총 부담세액(지방소득세 포함)</div>'+
+        row('과세표준',won(base))+row('법인세(국세)',won(tax))+row('지방소득세(10%)',won(local))+
+        row('실효세율',(base>0?((tax/base*100).toFixed(1)):'0')+'%');
+    },
+    ins:function(){
+      var m=num('in-ins');
+      var np=Math.min(Math.max(m,INS.npMin),INS.npMax)*INS.npE;
+      var hi=m*INS.hiE;var ltc=hi*INS.ltc;var ei=m*INS.eiE;
+      var emp=np+hi+ltc+ei;
+      return '<div class="ro-big">'+won(emp)+'</div><div class="ro-sub">근로자 월 부담 합계</div>'+
+        row('국민연금(4.75%)',won(np))+row('건강보험(3.595%)',won(hi))+row('장기요양(건보료×13.14%)',won(ltc))+row('고용보험(0.9%)',won(ei))+
+        '<div class="ro-line"></div>'+row('사업주 부담(연금·건보·고용)',won(np+hi+ltc+m*INS.eiE)+' + 산재·고용안정 별도');
+    },
+    net:function(){
+      var annual=num('in-net');var dep=Math.max(1,parseInt(document.getElementById('in-dep').value||'1',10));var ntM=num('in-nontax');
+      var mGross=annual/12;var taxM=Math.max(0,mGross-ntM);
+      var np=Math.min(Math.max(taxM,INS.npMin),INS.npMax)*INS.npE;var hi=taxM*INS.hiE;var ltc=hi*INS.ltc;var ei=taxM*INS.eiE;
+      var insM=np+hi+ltc+ei;var insY=insM*12;
+      var totalPay=annual-ntM*12;
+      var ei_income=totalPay-earnedDed(totalPay);
+      var base=ei_income-1500000*dep-np*12-(hi+ltc+ei)*12;base=Math.max(0,base);
+      var tax=bracketTax(base,INCOME);var decided=Math.max(0,tax-workCredit(tax,totalPay));var local=decided*0.1;
+      var netY=annual-insY-decided-local;
+      return '<div class="ro-big">'+won(netY/12)+'</div><div class="ro-sub">예상 월 실수령액</div>'+
+        row('연 실수령액',won(netY))+row('월 4대보험(근로자)',won(insM))+row('월 소득세(추정)',won((decided+local)/12))+
+        '<div class="ro-line"></div>'+row('연 4대보험',won(insY))+row('연 소득세+지방세(추정)',won(decided+local));
+    }
+  };
+  function row(k,v){return '<div class="ro-row"><span>'+k+'</span><b>'+v+'</b></div>';}
+
+  document.querySelectorAll('.calc-run').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var k=btn.getAttribute('data-calc');var out=document.getElementById('out-'+k);
+      out.innerHTML=render[k]();out.hidden=false;
+    });
+  });
+  document.querySelectorAll('.calc-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      var t=tab.getAttribute('data-tab');
+      document.querySelectorAll('.calc-tab').forEach(function(x){x.classList.toggle('is-on',x===tab);});
+      document.querySelectorAll('.calc-panel').forEach(function(p){p.classList.toggle('is-on',p.id==='tab-'+t);});
+    });
+  });
+})();
+</script>
