@@ -1,8 +1,14 @@
 <header class="site">
   <div class="wrap nav">
-    <a class="brand" href="{{ '/' | relative_url }}">
-      <span class="brand-name">공인회계사 손슬기</span>
-      <span class="brand-sub">SON SEULGI, CPA</span>
+    <a class="brand" href="{{ '/' | relative_url }}" aria-label="Numbers & Insight 홈">
+      <svg class="brand-logo" viewBox="0 0 96 100" aria-hidden="true">
+        <circle cx="60" cy="50" r="26" fill="none" stroke="#C9A227" stroke-width="3.5"/>
+        <path d="M28 26 V74 M28 26 L58 74 M58 26 V74" fill="none" stroke="#1B2434" stroke-width="9" stroke-linecap="square"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-name">NUMBERS &amp; INSIGHT</span>
+        <span class="brand-sub">손슬기 공인회계사 · ACCOUNTING · AUDIT · ADVISORY</span>
+      </span>
     </a>
     <nav class="menu">
       {%- for item in site.nav -%}

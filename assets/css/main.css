@@ -55,9 +55,11 @@ header.site{
   border-bottom:1px solid var(--rule);
 }
 .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
-.brand{display:flex;align-items:baseline;gap:10px}
-.brand-name{font-family:var(--serif);font-weight:900;font-size:1.15rem;letter-spacing:.02em}
-.brand-sub{font-size:.72rem;color:var(--muted);letter-spacing:.16em}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-logo{width:40px;height:42px;flex:none}
+.brand-text{display:flex;flex-direction:column;line-height:1.15}
+.brand-name{font-family:var(--sans);font-weight:800;font-size:1.05rem;letter-spacing:.08em}
+.brand-sub{font-size:.66rem;color:var(--muted);letter-spacing:.04em;margin-top:1px}
 .menu{display:flex;gap:28px;font-size:.9rem;font-weight:500}
 .menu a{position:relative;padding:4px 0;color:var(--muted);transition:color .2s}
 .menu a:hover,.menu a:focus-visible{color:var(--blue)}
@@ -67,7 +69,7 @@ header.site{
 .menu .cta{color:var(--inju);font-weight:600}
 .menu .cta:hover{color:var(--inju)}
 .menu .cta::after{background:var(--inju)}
-@media(max-width:720px){.menu{gap:16px;font-size:.82rem}.menu a{padding:2px 0}.brand-sub{display:none}}
+@media(max-width:720px){.menu{gap:16px;font-size:.82rem}.menu a{padding:2px 0}.brand-sub{display:none}.brand-name{font-size:.9rem;letter-spacing:.04em}.brand-logo{width:34px;height:36px}}
 
 /* ───── hero (홈) ───── */
 .hero{padding:72px 0 88px;position:relative;overflow:hidden}
