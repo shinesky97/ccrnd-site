@@ -68,13 +68,20 @@ def build_plans(folder, dec, scan=None, allow_insert=True):
     else:
         problems.append('전기 정산표를 특정하지 못함')
 
-    e = _pick_prior(scan['found']['dsd'], prior_year)
+    # DSD는 감사보고서 문서만 이월 대상 (기업개황자료·중요성금액 등 기타 DSD는 제외)
+    dsds = scan['found']['dsd']
+    report_dsds = [e for e in dsds
+                   if e['detail'].get('doc_code') == '00760'
+                   or '감사보고서' in (e['detail'].get('doc_name') or '')]
+    other_dsds = [e for e in dsds if e not in report_dsds]
+    e = _pick_prior(report_dsds or dsds, prior_year)
     if e:
         dsd_job = {'src': e['path'], 'out': out_path('DSD'),
                    'gisu_delta': int(pre['당기_기수']) - int(pre['전기_기수']),
-                   'year_delta': int(pre['당기_연도']) - int(pre['전기_연도'])}
+                   'year_delta': int(pre['당기_연도']) - int(pre['전기_연도']),
+                   'others': [os.path.basename(o['path']) for o in other_dsds]}
     else:
-        problems.append('전기 DSD를 특정하지 못함')
+        problems.append('전기 DSD(감사보고서)를 특정하지 못함')
 
     return plans, dsd_job, problems
 
@@ -89,6 +96,9 @@ def dry_run_report(plans, dsd_job, problems):
                      f"\n생성: {os.path.basename(dsd_job['out'])}"
                      f"\n기수 +{dsd_job['gisu_delta']}, 연도 +{dsd_job['year_delta']},"
                      f" 당기열→전기열 이동, 감사보고서일 [입력 필요] 처리")
+        if dsd_job.get('others'):
+            lines.append('※ 기타 DSD(자동 이월 제외 — 수동 처리): '
+                         + ', '.join(dsd_job['others']))
     for p in problems:
         lines.append(f'\n✋ 해결 필요: {p}')
     return '\n'.join(lines)

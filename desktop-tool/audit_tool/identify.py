@@ -32,12 +32,32 @@ def _classify_xlsx(path):
         return 'general_wp', info
     if '입증감사절차' in names:
         return 'account_wp', info
-    if {'AR', 'SAD'} <= names:
+    if 'AR' in names:                       # SAD 없는 정산표도 수용
         return 'trial_sheet', info
     if {'BS', 'PL'} <= names and (names & {'RQ', 'ARAP', '조회서', '월보'}
                                   or any(re.fullmatch(r'\d{2}', s) for s in names)):
         return 'raw_data', info
+    # 계정별조서: 알파벳 인덱스 시트(A, B, C, AA, E100 …)가 다수
+    letter_sheets = [s for s in names if re.fullmatch(r'[A-Z]{1,3}\d{0,3}', s)]
+    if len(letter_sheets) >= 5:
+        info['note'] = f'알파벳 인덱스 시트 {len(letter_sheets)}개 기반 분류'
+        return 'account_wp', info
     return 'unknown', info
+
+
+FILENAME_HINTS = [
+    ('trial_sheet', ('정산표', '8600')),
+    ('account_wp', ('계정별', '전계정', '4000')),
+    ('general_wp', ('일반조서',)),
+]
+
+
+def _classify_by_filename(fn):
+    """내용 기반 분류 실패 시 파일명 키워드 폴백 (분류 근거를 detail에 명시)."""
+    for kind, keys in FILENAME_HINTS:
+        if any(k in fn for k in keys):
+            return kind
+    return None
 
 
 def _inspect_dsd(path):
@@ -55,6 +75,10 @@ def _inspect_dsd(path):
     m = re.search(r'editver="([^"]+)"', meta)
     if m:
         info['editor_version'] = m.group(1)
+    m = re.search(r'<DOCUMENT-NAME[^>]*ACODE="(\d+)"[^>]*>([^<]+)</DOCUMENT-NAME>', contents)
+    if m:
+        info['doc_code'] = m.group(1)
+        info['doc_name'] = m.group(2).strip()
     m = re.search(r'<FORMULA-VERSION ADATE="(\d+)">([\d.]+)</FORMULA-VERSION>', contents)
     if m:
         info['formula_version'] = f'{m.group(2)} ({m.group(1)})'
@@ -121,6 +145,11 @@ def scan_folder(folder, max_depth=2):
                                      'detail': info})
             elif ext in ('.xlsx', '.xlsm'):
                 kind, info = _classify_xlsx(path)
+                if kind == 'unknown' and 'error' not in info:
+                    fb = _classify_by_filename(fn)
+                    if fb:
+                        kind = fb
+                        info['note'] = '파일명 키워드 기반 분류 — 내용 확인 필요'
                 year = _detect_year_xlsx(path, kind) or parse_year(fn)
                 entry = {'path': path, 'year': year, 'detail': info}
                 if kind == 'unknown':
@@ -134,8 +163,16 @@ def summarize(scan):
     lines = []
     for kind in KINDS:
         for e in scan['found'][kind]:
+            extra = ''
+            d = e.get('detail', {})
+            if kind == 'dsd' and d.get('doc_name'):
+                extra = f" — 문서: {d['doc_name']}"
+            elif d.get('note'):
+                extra = f" — {d['note']}"
             lines.append(f"  [{KIND_LABEL[kind]}] {os.path.basename(e['path'])}"
-                         f" (연도: {e['year'] or '판별불가'})")
+                         f" (연도: {e['year'] or '판별불가'}){extra}")
     for e in scan['unknown']:
-        lines.append(f"  [미분류] {os.path.basename(e['path'])}")
+        d = e.get('detail', {})
+        hint = d.get('error') or ('시트: ' + ', '.join(d.get('sheets', [])[:6]))
+        lines.append(f"  [미분류] {os.path.basename(e['path'])} ({hint})")
     return '\n'.join(lines) if lines else '  (식별된 파일 없음)'

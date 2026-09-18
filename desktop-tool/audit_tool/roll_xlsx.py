@@ -71,28 +71,46 @@ def plan_general_wp(src, out, prior_fye, cur_fye, keep_authors=True):
 
 # ---------------------------------------------------------------- 계정별조서
 def plan_account_wp(src, out, prior_fye, cur_fye, company):
-    """계정별조서(4000) 당기화: 목차의 담당자·종료일 비움, 결산일·회사명 세팅."""
+    """계정별조서(4000) 당기화: 목차의 담당자·종료일 비움, 결산일·회사명 세팅.
+
+    목차 시트는 '입증감사절차'가 기본이며, 없으면 상단에 '담당자' + ('인덱스' 또는
+    '계정과목') 헤더가 함께 있는 첫 시트를 목차로 사용한다.
+    """
     plan = Plan(src, out)
     wb = load_workbook(src, read_only=False, data_only=False)
-    toc = '입증감사절차'
-    if toc in wb.sheetnames:
-        ws = wb[toc]
-        header_row = None
-        cols = {}
+
+    def find_toc_cols(ws):
+        header_row, cols = None, {}
         for c in _iter_cells(ws, max_row=15):
-            if isinstance(c.value, str) and c.value.strip() in ('담당자', '종료일', '인덱스', '계정과목'):
+            if isinstance(c.value, str) and c.value.strip() in ('담당자', '종료일',
+                                                                '인덱스', '계정과목'):
                 header_row = c.row
                 cols[c.value.strip()] = c.column
-        if header_row and '담당자' in cols:
-            for r in range(header_row + 1, ws.max_row + 1):
-                for key in ('담당자', '종료일'):
-                    if key in cols:
-                        cell = ws.cell(row=r, column=cols[key])
-                        if cell.value not in (None, ''):
-                            plan.add(op='clear_cell', sheet=toc,
-                                     cell=cell.coordinate, old=str(cell.value)[:20])
-        else:
-            plan.manual.append(f'{toc}: 담당자/종료일 열 탐지 실패 — 수동 정리 필요')
+        if header_row and '담당자' in cols and ('인덱스' in cols or '계정과목' in cols):
+            return header_row, cols
+        return None, {}
+
+    toc_ws, header_row, cols = None, None, {}
+    if '입증감사절차' in wb.sheetnames:
+        toc_ws = wb['입증감사절차']
+        header_row, cols = find_toc_cols(toc_ws)
+    else:
+        for ws in wb.worksheets:
+            header_row, cols = find_toc_cols(ws)
+            if header_row:
+                toc_ws = ws
+                plan.add(op='note', text=f"목차 시트: '{ws.title}' (헤더 기반 탐지)")
+                break
+    if toc_ws is not None and header_row:
+        for r in range(header_row + 1, toc_ws.max_row + 1):
+            for key in ('담당자', '종료일'):
+                if key in cols:
+                    cell = toc_ws.cell(row=r, column=cols[key])
+                    if cell.value not in (None, ''):
+                        plan.add(op='clear_cell', sheet=toc_ws.title,
+                                 cell=cell.coordinate, old=str(cell.value)[:20])
+    else:
+        plan.manual.append('계정별조서: 목차(담당자/종료일) 탐지 실패 — 수동 정리 필요')
     # 각 시트 상단의 결산일·회사명 라벨
     for ws in wb.worksheets:
         for c in _iter_cells(ws, max_row=8):
@@ -257,6 +275,8 @@ def plan_trial_sheet(src, out, prior_year=None, insert_history_col=True):
         else:
             plan.manual.append('AR: 당기/전기 열 탐지 실패 — 수동 처리 필요')
     wb.close()
+    if not plan.ops and not plan.manual:
+        plan.manual.append('이월 대상 시트(AR/CF/FN/BS/PL)를 찾지 못함 — 시트 구성 확인 필요')
     plan.warnings.append('정산표 열 구조는 업체별로 다를 수 있음 — Dry-run에서 탐지 결과를 '
                          '반드시 확인 후 실행하십시오.')
     return plan
