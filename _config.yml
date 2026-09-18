@@ -71,6 +71,8 @@ nav:
     url: /about/
   - name: 인사이트
     url: /insights/
+  - name: 세금계산기
+    url: /calculators/
   - name: 자료실
     url: /downloads/
   # 방명록 메뉴 숨김 (나중에 다시 쓰려면 아래 두 줄의 주석을 푸세요)
