@@ -78,27 +78,36 @@ def download_and_apply(log=print):
         if src is None:
             log('✘ 다운로드 파일에서 desktop-tool 폴더를 찾지 못했습니다.')
             return 'failed'
-        # 기존 코드 백업
+        # 기존 코드 백업 후 audit_tool 패키지는 통째로 교체 (잔여 파일 방지 — 클린 재설치)
         bak = os.path.join(root, '_backup')
         shutil.rmtree(bak, ignore_errors=True)
         shutil.copytree(os.path.join(root, 'audit_tool'),
                         os.path.join(bak, 'audit_tool'),
                         ignore=shutil.ignore_patterns('__pycache__'))
-        # 저장소 파일로 덮어쓰기 (로컬 전용 파일은 삭제하지 않음)
+        shutil.rmtree(os.path.join(root, 'audit_tool'), ignore_errors=True)
+        # 저장소 파일로 갱신 (실패 시 백업에서 자동 복구)
         updated = 0
-        for dirpath, dirnames, filenames in os.walk(src):
-            rel = os.path.relpath(dirpath, src)
-            if rel != '.' and rel.split(os.sep)[0] in SKIP_TOP:
-                dirnames[:] = []
-                continue
-            dirnames[:] = [d for d in dirnames if d not in SKIP_TOP]
-            dst_dir = root if rel == '.' else os.path.join(root, rel)
-            os.makedirs(dst_dir, exist_ok=True)
-            for fn in filenames:
-                if fn in SKIP_TOP:
+        try:
+            for dirpath, dirnames, filenames in os.walk(src):
+                rel = os.path.relpath(dirpath, src)
+                if rel != '.' and rel.split(os.sep)[0] in SKIP_TOP:
+                    dirnames[:] = []
                     continue
-                shutil.copy2(os.path.join(dirpath, fn), os.path.join(dst_dir, fn))
-                updated += 1
+                dirnames[:] = [d for d in dirnames if d not in SKIP_TOP]
+                dst_dir = root if rel == '.' else os.path.join(root, rel)
+                os.makedirs(dst_dir, exist_ok=True)
+                for fn in filenames:
+                    if fn in SKIP_TOP:
+                        continue
+                    shutil.copy2(os.path.join(dirpath, fn), os.path.join(dst_dir, fn))
+                    updated += 1
+        except Exception as e:
+            log(f'✘ 파일 교체 중 오류: {e} — 이전 버전으로 복구합니다.')
+            shutil.rmtree(os.path.join(root, 'audit_tool'), ignore_errors=True)
+            shutil.copytree(os.path.join(bak, 'audit_tool'),
+                            os.path.join(root, 'audit_tool'))
+            log('복구 완료 (기존 버전 유지). 인터넷 연결 확인 후 다시 시도하십시오.')
+            return 'failed'
     log(f'✔ 업데이트 완료: 파일 {updated}개 갱신 (이전 코드는 _backup/ 보관)')
     log('프로그램을 다시 시작하면 새 버전이 적용됩니다.')
     return 'updated'
