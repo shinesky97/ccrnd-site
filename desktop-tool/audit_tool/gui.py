@@ -10,13 +10,13 @@ import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from . import decisions, identify, progress, runner
+from . import __version__, decisions, identify, progress, runner
 
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('외감 실무 자동화 도구')
+        self.title(f'외감 실무 자동화 도구 v{__version__}')
         self.geometry('880x640')
         self.report_callback_exception = self._on_error   # 버튼 동작 중 오류도 표시
         nb = ttk.Notebook(self)
@@ -27,6 +27,29 @@ class App(tk.Tk):
         nb.add(self.tab_prog, text='② 진행현황')
         self._build_roll_tab()
         self._build_prog_tab()
+        self.after(600, self._check_update_quietly)
+
+    def _check_update_quietly(self):
+        """시작 시 새 버전이 있으면 로그에 안내 (실패는 조용히 무시)."""
+        def worker():
+            try:
+                from . import updater
+                rv = updater.remote_version()
+                if rv and rv != __version__:
+                    self.after(0, lambda: self._println(
+                        f'※ 새 버전 v{rv}이 있습니다 (현재 v{__version__}). '
+                        f'[업데이트] 버튼으로 갱신하십시오.'))
+            except Exception:
+                pass
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _update(self):
+        from . import updater
+        status = updater.run(log=self._println,
+                             confirm=lambda m: messagebox.askyesno('업데이트', m))
+        if status == 'updated':
+            messagebox.showinfo('업데이트 완료',
+                                '프로그램을 닫았다가 다시 실행하면 새 버전이 적용됩니다.')
 
     def _on_error(self, exc_type, exc, tb):
         import traceback
@@ -55,6 +78,7 @@ class App(tk.Tk):
         ttk.Button(btns, text='이월 미리보기', command=lambda: self._roll(False)).pack(side='left')
         ttk.Button(btns, text='이월 실행', command=lambda: self._roll(True)).pack(side='left', padx=4)
         ttk.Button(btns, text='숫자 주입', command=self._inject).pack(side='left')
+        ttk.Button(btns, text='업데이트', command=self._update).pack(side='right')
 
         self.log = tk.Text(f, wrap='word', height=28)
         self.log.pack(fill='both', expand=True, padx=10, pady=8)
