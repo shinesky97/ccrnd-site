@@ -19,6 +19,9 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
       <button class="calc-tab" data-tab="ins">4대보험료</button>
       <button class="calc-tab" data-tab="net">연봉 실수령액</button>
       <button class="calc-tab" data-tab="house">주택 양도세</button>
+      <button class="calc-tab" data-tab="acq">취득세</button>
+      <button class="calc-tab" data-tab="prop">재산세</button>
+      <button class="calc-tab" data-tab="ctax">종부세</button>
       <button class="calc-tab" data-tab="rates">세율표</button>
     </div>
 
@@ -110,6 +113,107 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
       </div>
     </div>
 
+    <!-- 취득세 -->
+    <div class="calc-panel" id="tab-acq">
+      <div class="calc-card">
+        <h2>취득세 계산기 (주택)</h2>
+        <p class="calc-help">주택 취득가액과 조건을 입력하면 취득세·지방교육세·농어촌특별세를 합한 총 부담액을 계산합니다. (지방세법 제11조·제13조의2)</p>
+        <label>취득가액 (원)</label>
+        <input type="text" inputmode="numeric" id="a-price" class="calc-input" placeholder="예: 700,000,000">
+        <div class="calc-row">
+          <div><label>취득 유형</label>
+            <select id="a-kind" class="calc-input">
+              <option value="buy">유상거래(매매)</option>
+              <option value="gift">무상취득(증여)</option>
+              <option value="inherit">상속</option>
+            </select>
+          </div>
+          <div><label>중과 여부 (유상거래)</label>
+            <select id="a-heavy" class="calc-input">
+              <option value="0">해당 없음 (1주택 등)</option>
+              <option value="8">조정 2주택 / 비조정 3주택 (8%)</option>
+              <option value="12">조정 3주택↑ / 비조정 4주택↑ · 법인 (12%)</option>
+            </select>
+          </div>
+        </div>
+        <label>전용면적</label>
+        <select id="a-area" class="calc-input">
+          <option value="0">85㎡ 이하 (농어촌특별세 없음)</option>
+          <option value="1">85㎡ 초과 (농어촌특별세 0.2%)</option>
+        </select>
+        <button class="calc-run" data-calc="acq">계산하기</button>
+        <div class="calc-out" id="out-acq" hidden></div>
+      </div>
+    </div>
+
+    <!-- 재산세 -->
+    <div class="calc-panel" id="tab-prop">
+      <div class="calc-card">
+        <h2>재산세 계산기 (주택)</h2>
+        <p class="calc-help">주택 공시가격을 입력하면 재산세·지방교육세·도시지역분을 계산합니다. (지방세법 제111조·제111조의2)</p>
+        <label>주택 공시가격 (원)</label>
+        <input type="text" inputmode="numeric" id="p-price" class="calc-input" placeholder="예: 500,000,000">
+        <div class="calc-row">
+          <div><label>공정시장가액비율 (%)</label><input type="number" id="p-ratio" class="calc-input" value="60" min="0" max="100" step="1"></div>
+          <div><label>1세대 1주택 특례</label>
+            <select id="p-one" class="calc-input">
+              <option value="0">적용 안 함 (일반세율)</option>
+              <option value="1">적용 (공시 9억 이하)</option>
+            </select>
+          </div>
+        </div>
+        <label>도시지역분 (과세표준의 0.14%)</label>
+        <select id="p-city" class="calc-input">
+          <option value="1">포함</option>
+          <option value="0">제외</option>
+        </select>
+        <button class="calc-run" data-calc="prop">계산하기</button>
+        <div class="calc-out" id="out-prop" hidden></div>
+        <p class="calc-help" style="margin-top:14px">※ 공정시장가액비율은 시행령으로 매년 정해집니다(주택 60%, 1세대1주택 특례 43~45%). 지자체 조례로 ±50% 가감될 수 있습니다.</p>
+      </div>
+    </div>
+
+    <!-- 종합부동산세 -->
+    <div class="calc-panel" id="tab-ctax">
+      <div class="calc-card">
+        <h2>종합부동산세 계산기 (주택)</h2>
+        <p class="calc-help">보유 주택 공시가격 합계를 입력하면 종부세와 농어촌특별세를 계산합니다. (종합부동산세법 제8조·제9조)</p>
+        <label>주택 공시가격 합계 (원)</label>
+        <input type="text" inputmode="numeric" id="c-price" class="calc-input" placeholder="예: 2,000,000,000">
+        <div class="calc-row">
+          <div><label>주택 수 구분</label>
+            <select id="c-type" class="calc-input">
+              <option value="one">1세대 1주택 (기본공제 12억)</option>
+              <option value="two">2주택 이하 (기본공제 9억)</option>
+              <option value="three">3주택 이상 (기본공제 9억·중과)</option>
+            </select>
+          </div>
+          <div><label>공정시장가액비율 (%)</label><input type="number" id="c-ratio" class="calc-input" value="60" min="60" max="100" step="1"></div>
+        </div>
+        <div class="calc-row">
+          <div><label>연령 세액공제 (1주택)</label>
+            <select id="c-age" class="calc-input">
+              <option value="0">해당 없음</option>
+              <option value="20">60세 이상 (20%)</option>
+              <option value="30">65세 이상 (30%)</option>
+              <option value="40">70세 이상 (40%)</option>
+            </select>
+          </div>
+          <div><label>보유기간 세액공제 (1주택)</label>
+            <select id="c-hold" class="calc-input">
+              <option value="0">5년 미만</option>
+              <option value="20">5년 이상 (20%)</option>
+              <option value="40">10년 이상 (40%)</option>
+              <option value="50">15년 이상 (50%)</option>
+            </select>
+          </div>
+        </div>
+        <button class="calc-run" data-calc="ctax">계산하기</button>
+        <div class="calc-out" id="out-ctax" hidden></div>
+        <p class="calc-help" style="margin-top:14px">※ 1세대1주택 세액공제는 연령+보유 합계 최대 80%입니다. 실제 고지세액은 <b>주택분 재산세 공제</b>와 세부담상한이 추가로 적용되어 더 낮아질 수 있습니다. 2026 세제개편안(기본공제·세율 조정)은 국회 심의 중입니다.</p>
+      </div>
+    </div>
+
     <!-- 세율표 -->
     <div class="calc-panel" id="tab-rates">
       <div class="calc-card">
@@ -157,7 +261,48 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         <p class="rate-note">국민연금 기준소득월액 상한 659만원·하한 41만원. 사업주는 고용안정·직업능력개발부담금(규모별 0.25%~)이 추가됩니다.</p>
 
         <h3>양도소득세 (요약)</h3>
-        <p class="rate-note">기본세율은 종합소득세율과 동일(6~45%)하며, 보유기간·주택 수·조정대상지역 여부에 따라 단기 중과세율·다주택 중과가 적용됩니다. 자세한 내용은 <a href="{{ '/real-estate-tax/' | relative_url }}">부동산 세제 최신판</a>을 참고하세요.</p>
+        <p class="rate-note">기본세율은 종합소득세율과 동일(6~45%). 주택 단기 양도는 1년 미만 70%, 2년 미만 60%. 조정지역 다주택 중과(+20%p/+30%p)는 시기별 한시배제 여부를 확인해야 합니다. 자세한 내용은 <a href="{{ '/real-estate-tax/' | relative_url }}">부동산 세제 최신판</a> 참고.</p>
+
+        <h3>취득세 (주택 · 지방세법 제11조·제13조의2)</h3>
+        <table class="rate-table">
+          <thead><tr><th>구분</th><th>취득세</th><th>지방교육세</th><th>농특세(85㎡초과)</th></tr></thead>
+          <tbody>
+            <tr><td>유상 6억원 이하</td><td>1%</td><td>0.1%</td><td>0.2%</td></tr>
+            <tr><td>유상 6억~9억원</td><td>(가액×2/3억−3)% <small>1~3% 누진</small></td><td>세율의 10%</td><td>0.2%</td></tr>
+            <tr><td>유상 9억원 초과</td><td>3%</td><td>0.3%</td><td>0.2%</td></tr>
+            <tr><td>조정 2주택 / 비조정 3주택</td><td>8%</td><td>0.4%</td><td>0.2%</td></tr>
+            <tr><td>조정 3주택↑ / 비조정 4주택↑ · 법인</td><td>12%</td><td>0.4%</td><td>0.2%</td></tr>
+            <tr><td>무상취득(증여)</td><td>3.5%</td><td>0.3%</td><td>0.2%</td></tr>
+            <tr><td>상속(농지 외)</td><td>2.8%</td><td>0.16%</td><td>0.2%</td></tr>
+          </tbody>
+        </table>
+
+        <h3>재산세 (주택 · 지방세법 제111조·제111조의2)</h3>
+        <table class="rate-table">
+          <thead><tr><th>과세표준</th><th>표준세율</th><th>1세대1주택 특례(공시 9억 이하)</th></tr></thead>
+          <tbody>
+            <tr><td>6천만원 이하</td><td>0.1%</td><td>0.05%</td></tr>
+            <tr><td>6천만~1억5천만원</td><td>6만원 + 초과 0.15%</td><td>3만원 + 초과 0.1%</td></tr>
+            <tr><td>1억5천만~3억원</td><td>19.5만원 + 초과 0.25%</td><td>12만원 + 초과 0.2%</td></tr>
+            <tr><td>3억원 초과</td><td>57만원 + 초과 0.4%</td><td>42만원 + 초과 0.35%</td></tr>
+          </tbody>
+        </table>
+        <p class="rate-note">과세표준 = 공시가격 × 공정시장가액비율(주택 60%, 1주택 특례 43~45%). 지방교육세 20%·도시지역분 0.14% 별도.</p>
+
+        <h3>종합부동산세 (주택 · 종부세법 제9조)</h3>
+        <table class="rate-table">
+          <thead><tr><th>과세표준</th><th>2주택 이하</th><th>3주택 이상</th></tr></thead>
+          <tbody>
+            <tr><td>3억원 이하</td><td>0.5%</td><td>0.5%</td></tr>
+            <tr><td>3억~6억원</td><td>0.7%</td><td>0.7%</td></tr>
+            <tr><td>6억~12억원</td><td>1.0%</td><td>1.0%</td></tr>
+            <tr><td>12억~25억원</td><td>1.3%</td><td>2.0%</td></tr>
+            <tr><td>25억~50억원</td><td>1.5%</td><td>3.0%</td></tr>
+            <tr><td>50억~94억원</td><td>2.0%</td><td>4.0%</td></tr>
+            <tr><td>94억원 초과</td><td>2.7%</td><td>5.0%</td></tr>
+          </tbody>
+        </table>
+        <p class="rate-note">기본공제 1세대1주택 12억원 / 그 외 9억원. 과세표준 = (공시가격 합계 − 기본공제) × 공정시장가액비율(60%). 1주택 세액공제(연령+보유, 최대 80%)·재산세 공제·농특세 20% 적용. 2026 세제개편안은 국회 심의 중입니다.</p>
       </div>
     </div>
 
@@ -181,11 +326,74 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
   var INCOME=[[14000000,0.06,0],[50000000,0.15,1260000],[88000000,0.24,5760000],[150000000,0.35,15440000],[300000000,0.38,19940000],[500000000,0.40,25940000],[1000000000,0.42,35940000],[Infinity,0.45,65940000]];
   var CORP=[[200000000,0.10,0],[20000000000,0.20,20000000],[300000000000,0.22,420000000],[Infinity,0.25,9420000000]];
   var INS={npE:0.0475,npMin:410000,npMax:6590000,hiE:0.03595,ltc:0.1314,eiE:0.009};
+  // 재산세(주택) 표준세율 · 1세대1주택 특례 — 지방세법 제111조·제111조의2
+  var PROP =[[60000000,0.001,0],[150000000,0.0015,30000],[300000000,0.0025,180000],[Infinity,0.004,630000]];
+  var PROP1=[[60000000,0.0005,0],[150000000,0.001,30000],[300000000,0.002,180000],[Infinity,0.0035,630000]];
+  // 종합부동산세(주택) — 종부세법 제9조 (2주택 이하 / 3주택 이상)
+  var CTAX_N=[[300000000,0.005,0],[600000000,0.007,600000],[1200000000,0.010,2400000],[2500000000,0.013,6000000],[5000000000,0.015,11000000],[9400000000,0.020,36000000],[Infinity,0.027,101800000]];
+  var CTAX_H=[[300000000,0.005,0],[600000000,0.007,600000],[1200000000,0.010,2400000],[2500000000,0.020,14400000],[5000000000,0.030,39400000],[9400000000,0.040,89400000],[Infinity,0.050,183400000]];
   function bracketTax(base,tbl){base=Math.max(0,base);for(var i=0;i<tbl.length;i++){if(base<=tbl[i][0])return base*tbl[i][1]-tbl[i][2];}return 0;}
   function earnedDed(pay){var d;if(pay<=5000000)d=pay*0.7;else if(pay<=15000000)d=3500000+(pay-5000000)*0.4;else if(pay<=45000000)d=7500000+(pay-15000000)*0.15;else if(pay<=100000000)d=12000000+(pay-45000000)*0.05;else d=14750000+(pay-100000000)*0.02;return Math.min(d,20000000);}
   function workCredit(tax,pay){var c=tax<=1300000?tax*0.55:715000+(tax-1300000)*0.30;var lim;if(pay<=33000000)lim=740000;else if(pay<=70000000)lim=Math.max(660000,740000-(pay-33000000)*0.008);else if(pay<=120000000)lim=Math.max(500000,660000-(pay-70000000)*0.5);else lim=Math.max(200000,500000-(pay-120000000)*0.5);return Math.min(c,lim);}
 
   var render={
+    acq:function(){
+      var p=num('a-price'),kind=document.getElementById('a-kind').value;
+      var hv=parseFloat(document.getElementById('a-heavy').value||'0')/100;
+      var big=document.getElementById('a-area').value==='1';
+      var rate,edu,label;
+      if(kind==='gift'){rate=0.035;edu=0.003;label='무상취득(증여) 3.5%';}
+      else if(kind==='inherit'){rate=0.028;edu=0.0016;label='상속 2.8%';}
+      else if(hv>0){rate=hv;edu=0.004;label='유상 중과 '+(hv*100)+'%';}
+      else{
+        if(p<=600000000){rate=0.01;}
+        else if(p<=900000000){rate=(p*2/300000000-3)/100;rate=Math.round(rate*1000000)/1000000;}
+        else{rate=0.03;}
+        edu=rate*0.1;label='유상 표준 '+(Math.round(rate*10000)/100)+'%';
+      }
+      var farm=big?0.002:0;
+      var t1=p*rate,t2=p*edu,t3=p*farm,tot=t1+t2+t3;
+      return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">총 취득 부담액 (실효 '+(p>0?((tot/p*100).toFixed(2)):'0')+'%)</div>'+
+        row('취득가액',won(p))+row('적용 구분',label)+
+        '<div class="ro-line"></div>'+
+        row('취득세',won(t1))+row('지방교육세',won(t2))+row('농어촌특별세',won(t3));
+    },
+    prop:function(){
+      var p=num('p-price');
+      var ratio=Math.max(0,parseFloat(document.getElementById('p-ratio').value||'60'))/100;
+      var one=document.getElementById('p-one').value==='1';
+      var city=document.getElementById('p-city').value==='1';
+      var base=p*ratio;
+      var useOne=one&&p<=900000000;
+      var tax=bracketTax(base,useOne?PROP1:PROP);
+      var edu=tax*0.2, cityTax=city?base*0.0014:0, tot=tax+edu+cityTax;
+      return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">연간 주택 재산세 총액</div>'+
+        row('공시가격',won(p))+row('과세표준 (×'+(ratio*100).toFixed(0)+'%)',won(base))+
+        row('적용세율',useOne?'1세대1주택 특례':'일반 표준세율')+
+        '<div class="ro-line"></div>'+
+        row('재산세',won(tax))+row('지방교육세(20%)',won(edu))+row('도시지역분(0.14%)',won(cityTax))+
+        (one&&p>900000000?row('안내','공시 9억 초과로 특례 미적용'):'');
+    },
+    ctax:function(){
+      var p=num('c-price'),type=document.getElementById('c-type').value;
+      var ratio=Math.max(0.6,parseFloat(document.getElementById('c-ratio').value||'60')/100);
+      var ded=type==='one'?1200000000:900000000;
+      var base=Math.max(0,(p-ded))*ratio;
+      var tax=bracketTax(base,type==='three'?CTAX_H:CTAX_N);
+      var credit=0;
+      if(type==='one'){
+        var a=parseFloat(document.getElementById('c-age').value||'0')/100;
+        var h=parseFloat(document.getElementById('c-hold').value||'0')/100;
+        credit=Math.min(0.8,a+h);
+      }
+      var cut=tax*credit, net=tax-cut, farm=net*0.2, tot=net+farm;
+      if(base<=0){return '<div class="ro-big">'+won(0)+'</div><div class="ro-sub">기본공제 이하로 종부세 대상이 아닙니다</div>'+row('공시가격 합계',won(p))+row('기본공제',won(ded));}
+      return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">종부세 + 농어촌특별세</div>'+
+        row('공시가격 합계',won(p))+row('기본공제',won(ded))+row('과세표준 (×'+(ratio*100).toFixed(0)+'%)',won(base))+
+        '<div class="ro-line"></div>'+
+        row('산출세액',won(tax))+(credit>0?row('1주택 세액공제('+Math.round(credit*100)+'%)','-'+won(cut)):'')+
+        row('종합부동산세',won(net))+row('농어촌특별세(20%)',won(farm));
+    },
     house:function(){
       var sale=num('h-sale'),buy=num('h-buy'),cost=num('h-cost');
       var hold=Math.max(0,parseInt(document.getElementById('h-hold').value||'0',10));
