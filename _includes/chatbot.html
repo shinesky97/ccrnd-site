@@ -15,6 +15,11 @@
     </div>
     <div id="cbot-log" class="cbot-log"></div>
     <div id="cbot-quick" class="cbot-quick"></div>
+    {%- if site.contact.kakao and site.contact.kakao != "" -%}
+    <a class="cbot-kakao" href="{{ site.contact.kakao }}" target="_blank" rel="noopener">
+      <span class="cbot-kakao-ico" aria-hidden="true">💬</span> 카카오톡 1:1 상담하기
+    </a>
+    {%- endif -%}
     <div class="cbot-foot">
       <a href="{{ '/contact/' | relative_url }}">✉️ 바로 문의하기</a>
       <span>· 답변은 안내용이며, 정확한 상담은 문의를 이용해 주세요.</span>

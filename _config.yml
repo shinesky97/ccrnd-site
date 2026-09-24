@@ -36,6 +36,7 @@ contact:
   tel: "02-518-3675"
   address: 서울특별시 강남구 선릉로131길 16, 7층
   hours: 평일 09:00 – 18:00
+  kakao: "https://open.kakao.com/o/sKkBp9Oi"
 
 # ───────────────────────── 콘텐츠 분류 ─────────────────────────
 # key      : 글 front matter의 category 값 / URL slug
