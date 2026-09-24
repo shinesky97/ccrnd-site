@@ -18,6 +18,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
       <button class="calc-tab" data-tab="corp">법인세</button>
       <button class="calc-tab" data-tab="ins">4대보험료</button>
       <button class="calc-tab" data-tab="net">연봉 실수령액</button>
+      <button class="calc-tab" data-tab="house">주택 양도세</button>
       <button class="calc-tab" data-tab="rates">세율표</button>
     </div>
 
@@ -70,6 +71,42 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         <input type="text" inputmode="numeric" id="in-nontax" class="calc-input" placeholder="예: 200,000 (기본 0)">
         <button class="calc-run" data-calc="net">계산하기</button>
         <div class="calc-out" id="out-net" hidden></div>
+      </div>
+    </div>
+
+    <!-- 주택 양도소득세 -->
+    <div class="calc-panel" id="tab-house">
+      <div class="calc-card">
+        <h2>주택 양도소득세 계산기</h2>
+        <p class="calc-help">주택 양도가액·취득가액·보유/거주기간을 입력하면 양도세를 계산합니다. 국세청 홈택스 간편계산과 동일한 방식(장기보유특별공제·단기세율·고가주택 안분)을 따릅니다.</p>
+        <div class="calc-row">
+          <div><label>양도가액 (원)</label><input type="text" inputmode="numeric" id="h-sale" class="calc-input" placeholder="예: 1,200,000,000"></div>
+          <div><label>취득가액 (원)</label><input type="text" inputmode="numeric" id="h-buy" class="calc-input" placeholder="예: 700,000,000"></div>
+        </div>
+        <label>필요경비 (취득세·중개비·자본적지출 등, 원)</label>
+        <input type="text" inputmode="numeric" id="h-cost" class="calc-input" placeholder="예: 20,000,000 (기본 0)">
+        <div class="calc-row">
+          <div><label>보유기간 (년)</label><input type="number" id="h-hold" class="calc-input" value="0" min="0" step="1"></div>
+          <div><label>거주기간 (년)</label><input type="number" id="h-live" class="calc-input" value="0" min="0" step="1"></div>
+        </div>
+        <div class="calc-row">
+          <div><label>주택 구분</label>
+            <select id="h-type" class="calc-input">
+              <option value="general">일반 과세 주택</option>
+              <option value="one">1세대 1주택(비과세 요건 충족)</option>
+            </select>
+          </div>
+          <div><label>조정지역 다주택 중과</label>
+            <select id="h-heavy" class="calc-input">
+              <option value="0">해당 없음</option>
+              <option value="20">2주택 (+20%p)</option>
+              <option value="30">3주택 이상 (+30%p)</option>
+            </select>
+          </div>
+        </div>
+        <button class="calc-run" data-calc="house">계산하기</button>
+        <div class="calc-out" id="out-house" hidden></div>
+        <p class="calc-help" style="margin-top:14px">※ 1세대 1주택 비과세 요건(2년 보유·조정지역은 2년 거주 등) 충족을 가정합니다. 조정지역 다주택 중과는 시기에 따라 한시 배제될 수 있으니 최신 여부를 확인하세요.</p>
       </div>
     </div>
 
@@ -149,6 +186,40 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
   function workCredit(tax,pay){var c=tax<=1300000?tax*0.55:715000+(tax-1300000)*0.30;var lim;if(pay<=33000000)lim=740000;else if(pay<=70000000)lim=Math.max(660000,740000-(pay-33000000)*0.008);else if(pay<=120000000)lim=Math.max(500000,660000-(pay-70000000)*0.5);else lim=Math.max(200000,500000-(pay-120000000)*0.5);return Math.min(c,lim);}
 
   var render={
+    house:function(){
+      var sale=num('h-sale'),buy=num('h-buy'),cost=num('h-cost');
+      var hold=Math.max(0,parseInt(document.getElementById('h-hold').value||'0',10));
+      var live=Math.max(0,parseInt(document.getElementById('h-live').value||'0',10));
+      var type=document.getElementById('h-type').value;
+      var heavy=parseFloat(document.getElementById('h-heavy').value||'0')/100;
+      var gain=sale-buy-cost;
+      if(gain<=0){return '<div class="ro-big">'+won(0)+'</div><div class="ro-sub">양도차익이 없어 납부세액이 없습니다</div>'+row('양도차익',won(gain));}
+      var taxableGain=gain,note='';
+      if(type==='one'){
+        if(sale<=1200000000){return '<div class="ro-big">'+won(0)+'</div><div class="ro-sub">1세대 1주택 비과세 (양도가액 12억원 이하)</div>'+row('양도차익',won(gain))+row('과세대상',won(0));}
+        taxableGain=gain*(sale-1200000000)/sale;note='고가주택 · 12억 초과분 과세';
+      }
+      var ltrate=0;
+      if(type==='one'){
+        var rh=hold>=3?Math.min(hold,10)*0.04:0;
+        var rl=live>=2?Math.min(live,10)*0.04:0;
+        ltrate=Math.min(0.8,rh+rl);
+      } else if(heavy===0 && hold>=3){ ltrate=Math.min(0.30,Math.min(hold,15)*0.02); }
+      var ltd=taxableGain*ltrate;
+      var incomeAmt=taxableGain-ltd;
+      var base=Math.max(0,incomeAmt-2500000);
+      var tax,rateLabel;
+      if(hold<1){tax=base*0.70;rateLabel='단기 70% (1년 미만)';}
+      else if(hold<2){tax=base*0.60;rateLabel='단기 60% (2년 미만)';}
+      else{tax=bracketTax(base,INCOME);if(heavy>0){tax=tax+base*heavy;rateLabel='기본세율+중과 '+(heavy*100)+'%p';}else rateLabel='기본세율(6~45%)';}
+      var local=tax*0.1;
+      return '<div class="ro-big">'+won(tax+local)+'</div><div class="ro-sub">총 납부세액(지방소득세 포함)</div>'+
+        (note?row('구분',note):'')+row('양도차익',won(gain))+
+        (type==='one'?row('과세대상 양도차익',won(taxableGain)):'')+
+        row('장기보유특별공제('+Math.round(ltrate*100)+'%)',won(ltd))+
+        row('양도소득금액',won(incomeAmt))+row('과세표준(기본공제 250만↓)',won(base))+
+        '<div class="ro-line"></div>'+row('산출세액 · '+rateLabel,won(tax))+row('지방소득세(10%)',won(local));
+    },
     income:function(){
       var base=num('in-income');var tax=bracketTax(base,INCOME);var local=tax*0.1;
       return '<div class="ro-big">'+won(tax+local)+'</div><div class="ro-sub">총 부담세액(지방소득세 포함)</div>'+
