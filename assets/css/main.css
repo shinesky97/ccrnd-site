@@ -503,3 +503,20 @@ table.board thead th{background:var(--paper-deep);color:var(--muted);font-size:.
 .career li{position:relative;padding:9px 0 9px 20px;border-bottom:1px dashed var(--rule);font-size:1rem;color:var(--ink)}
 .career li:first-child{font-weight:700}
 .career li::before{content:'';position:absolute;left:2px;top:17px;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+
+/* ───── 카카오톡 상담 ───── */
+.cbot-kakao{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 16px 12px;
+  background:#FEE500;color:#191600;font-weight:700;font-size:.92rem;padding:12px;border-radius:10px;transition:filter .15s}
+.cbot-kakao:hover{filter:brightness(.96)}
+.cbot-kakao-ico{font-size:1rem}
+.kakao-box{display:flex;align-items:center;gap:20px;margin-top:26px;padding:20px;
+  background:#FEF7CD;border:1px solid #F5E27A;border-radius:14px;flex-wrap:wrap}
+.kakao-box-txt{flex:1;min-width:220px}
+.kakao-box-txt strong{display:block;font-size:1.05rem;margin-bottom:4px}
+.kakao-box-txt p{font-size:.86rem;color:var(--muted);margin-bottom:14px}
+.kakao-btn{display:inline-flex;align-items:center;gap:7px;background:#FEE500;color:#191600;
+  font-weight:700;font-size:.95rem;padding:12px 22px;border-radius:10px;transition:filter .15s}
+.kakao-btn:hover{filter:brightness(.96)}
+.kakao-qr{flex:none;background:#fff;padding:8px;border:1px solid #F5E27A;border-radius:10px;line-height:0}
+.kakao-qr img{width:120px;height:120px;display:block}
+@media(max-width:520px){.kakao-box{justify-content:center;text-align:center}.kakao-box-txt{min-width:0}}

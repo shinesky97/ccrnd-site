@@ -19,6 +19,20 @@ description: 회계감사·세무기장·사업비 정산 상담 문의 — 공�
         <div><dt>TEL</dt><dd>{{ site.contact.tel }}</dd></div>
         <div><dt>HOURS</dt><dd>{{ site.contact.hours }}</dd></div>
       </dl>
+      {%- if site.contact.kakao and site.contact.kakao != "" -%}
+      <div class="kakao-box">
+        <div class="kakao-box-txt">
+          <strong>카카오톡 1:1 상담</strong>
+          <p>가장 빠르게 상담받으실 수 있습니다. 버튼을 누르거나, PC에서는 QR을 휴대폰으로 스캔하세요.</p>
+          <a class="kakao-btn" href="{{ site.contact.kakao }}" target="_blank" rel="noopener">
+            <span aria-hidden="true">💬</span> 카카오톡으로 상담하기
+          </a>
+        </div>
+        <a class="kakao-qr" href="{{ site.contact.kakao }}" target="_blank" rel="noopener">
+          <img src="{{ '/assets/img/kakao-qr.png' | relative_url }}" alt="카카오톡 1:1 상담 QR코드" width="120" height="120">
+        </a>
+      </div>
+      {%- endif -%}
     </div>
     <form id="contact-form" action="https://formsubmit.co/{{ site.contact.email }}" method="POST">
       <input type="hidden" name="_subject" value="[ccrnd.com] 홈페이지 문의">
