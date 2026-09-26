@@ -2,8 +2,13 @@
 layout: default
 title: null
 ---
-<!-- HERO : 프리미엄 이미지 배경 -->
-<section class="hero-cine" style="background-image:url('{{ '/assets/img/hero.jpg' | relative_url }}')">
+<!-- HERO : 쇼릴 배경영상 (무음 루프 · 모션 최소화 설정 시 정지 이미지) -->
+<section class="hero-cine" style="background-image:url('{{ '/assets/video/showreel-poster.jpg' | relative_url }}')">
+  <video class="hero-cine-video" id="hero-video" autoplay muted loop playsinline preload="auto"
+         poster="{{ '/assets/video/showreel-poster.jpg' | relative_url }}" aria-hidden="true" tabindex="-1">
+    <source src="{{ '/assets/video/showreel-bg.webm' | relative_url }}" type="video/webm">
+    <source src="{{ '/assets/video/showreel-bg.mp4' | relative_url }}" type="video/mp4">
+  </video>
   <div class="hero-cine-overlay"></div>
   <div class="wrap hero-cine-inner">
     <div class="doc-meta light">
@@ -19,9 +24,46 @@ title: null
     <div class="hero-actions">
       <a class="btn btn-primary" href="{{ '/insights/' | relative_url }}">인사이트 보기</a>
       <a class="btn btn-ghost light" href="{{ '/contact/' | relative_url }}">상담 문의</a>
+      <button class="reel-open" type="button" id="reel-open" aria-haspopup="dialog">
+        <span class="reel-open-ico" aria-hidden="true">▶</span> 쇼릴 보기 <small>15초 · 사운드</small>
+      </button>
     </div>
   </div>
 </section>
+
+<!-- 쇼릴 전체 보기 (사운드 포함) -->
+<dialog class="reel-modal" id="reel-modal" aria-label="Numbers & Insight 쇼릴">
+  <button class="reel-close" type="button" id="reel-close" aria-label="닫기">✕</button>
+  <video id="reel-video" controls playsinline preload="none"
+         poster="{{ '/assets/video/showreel-poster.jpg' | relative_url }}">
+    <source src="{{ '/assets/video/showreel.mp4' | relative_url }}" type="video/mp4">
+  </video>
+</dialog>
+<script>
+(function () {
+  var bg = document.getElementById('hero-video');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var saveData = navigator.connection && navigator.connection.saveData;
+  if (bg && (reduce || saveData)) { bg.removeAttribute('autoplay'); bg.pause(); bg.preload = 'none'; }
+
+  var modal = document.getElementById('reel-modal'), vid = document.getElementById('reel-video');
+  var openBtn = document.getElementById('reel-open');
+  if (!modal || !openBtn) return;
+  if (typeof modal.showModal !== 'function') {           // <dialog> 미지원 브라우저: 새 탭으로 재생
+    openBtn.addEventListener('click', function () { window.open(vid.querySelector('source').src, '_blank'); });
+    return;
+  }
+  function close() { vid.pause(); modal.close(); }
+  openBtn.addEventListener('click', function () {
+    modal.showModal(); vid.currentTime = 0;
+    var p = vid.play(); if (p && p.catch) p.catch(function () {});
+    if (bg) bg.pause();
+  });
+  document.getElementById('reel-close').addEventListener('click', close);
+  modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+  modal.addEventListener('close', function () { vid.pause(); if (bg && !reduce && !saveData) bg.play().catch(function () {}); });
+})();
+</script>
 
 <!-- 주요 사이트 바로가기 -->
 <section id="quicklinks" class="quicklinks-band">
