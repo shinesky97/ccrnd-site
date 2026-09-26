@@ -514,6 +514,9 @@ table.board thead th{background:var(--paper-deep);color:var(--muted);font-size:.
 .career{list-style:none;margin:0 0 22px;padding:0}
 .career li{position:relative;padding:9px 0 9px 20px;border-bottom:1px dashed var(--rule);font-size:1rem;color:var(--ink)}
 .career li:first-child{font-weight:700}
+.career li.now{font-weight:800;color:var(--ink)}
+.career li.now::before{background:var(--inju,#B23A2E);box-shadow:0 0 0 3px rgba(201,162,39,.25)}
+.career li.now + li{font-weight:600}
 .career li::before{content:'';position:absolute;left:2px;top:17px;width:6px;height:6px;border-radius:50%;background:var(--gold)}
 
 /* ───── 카카오톡 상담 ───── */
