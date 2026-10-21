@@ -25,6 +25,18 @@ layout: default
   <div class="wrap-narrow">
     <div class="article-body">
       {{ content }}
+
+      {%- if page.faq and page.faq.size > 0 %}
+      <section class="post-faq" aria-labelledby="post-faq-h">
+        <h2 id="post-faq-h">자주 묻는 질문</h2>
+        {%- for f in page.faq %}
+        <details class="faq-item"{% if forloop.first %} open{% endif %}>
+          <summary>{{ f.q }}</summary>
+          <div class="faq-a">{{ f.a | markdownify }}</div>
+        </details>
+        {%- endfor %}
+      </section>
+      {%- endif %}
     </div>
 
     <div class="article-foot">
@@ -61,3 +73,31 @@ layout: default
     </div>
   </div>
 </article>
+
+{%- comment -%} 구조화 데이터: 이동경로 + (있으면) FAQ {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "홈", "item": "{{ '/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 2, "name": "인사이트", "item": "{{ '/insights/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 3, "name": {{ cat.name | default: '인사이트' | jsonify }}, "item": "{{ '/insights/' | append: page.category | append: '/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 4, "name": {{ page.title | jsonify }}, "item": "{{ page.url | absolute_url }}" }
+  ]
+}
+</script>
+{%- if page.faq and page.faq.size > 0 %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for f in page.faq %}
+    { "@type": "Question", "name": {{ f.q | jsonify }},
+      "acceptedAnswer": { "@type": "Answer", "text": {{ f.a | markdownify | strip_html | strip_newlines | strip | jsonify }} } }{% unless forloop.last %},{% endunless %}
+    {%- endfor %}
+  ]
+}
+</script>
+{%- endif %}

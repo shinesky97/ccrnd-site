@@ -4,16 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 100'><rect width='96' height='100' fill='%23FBFBF8'/><circle cx='60' cy='50' r='25' fill='none' stroke='%23C9A227' stroke-width='5'/><path d='M28 26V74M28 26L58 74M58 26V74' fill='none' stroke='%231B2434' stroke-width='10' stroke-linecap='square'/></svg>">
-<title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }} | {{ site.tagline }}{% endif %}</title>
+<title>{% if page.seo_title %}{{ page.seo_title }} | {{ site.title }}{% elsif page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }} | {{ site.tagline }}{% endif %}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}?v={{ site.time | date: '%Y%m%d%H%M%S' }}">
-{%- if site.keywords and site.keywords != "" -%}<meta name="keywords" content="{{ site.keywords }}">{%- endif -%}
+{%- if page.keywords -%}<meta name="keywords" content="{{ page.keywords | join: ', ' }}">
+{%- elsif page.tags and page.tags.size > 0 -%}<meta name="keywords" content="{{ page.tags | join: ', ' }}">
+{%- elsif site.keywords and site.keywords != "" -%}<meta name="keywords" content="{{ site.keywords }}">{%- endif -%}
 {%- if site.naver_verification and site.naver_verification != "" -%}<meta name="naver-site-verification" content="{{ site.naver_verification }}">{%- endif -%}
 {%- feed_meta -%}
-{%- seo -%}
+{%- seo title=false -%}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
