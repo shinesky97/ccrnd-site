@@ -535,3 +535,15 @@ table.board thead th{background:var(--paper-deep);color:var(--muted);font-size:.
 .kakao-qr{flex:none;background:#fff;padding:8px;border:1px solid #F5E27A;border-radius:10px;line-height:0}
 .kakao-qr img{width:120px;height:120px;display:block}
 @media(max-width:520px){.kakao-box{justify-content:center;text-align:center}.kakao-box-txt{min-width:0}}
+
+/* ───── 글 하단 자주 묻는 질문 (FAQPage 구조화 데이터와 동일 내용) ───── */
+.post-faq{margin-top:56px;padding-top:32px;border-top:2px solid var(--ink)}
+.post-faq h2{margin-top:0}
+.faq-item{border-bottom:1px solid var(--rule);padding:4px 0}
+.faq-item summary{cursor:pointer;list-style:none;position:relative;padding:16px 36px 16px 0;font-weight:700;font-size:1.04rem;color:var(--ink)}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::before{content:'Q.';color:var(--gold,#C9A227);font-weight:800;margin-right:8px}
+.faq-item summary::after{content:'+';position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:1.3rem;font-weight:400;color:var(--muted)}
+.faq-item[open] summary::after{content:'−'}
+.faq-a{padding:0 0 18px 26px;color:var(--ink)}
+.faq-a p{margin:0}
