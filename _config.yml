@@ -85,8 +85,6 @@ nav:
 
 # ───────────────────────── Jekyll 빌드 설정 ─────────────────────────
 permalink: /insights/:title/
-paginate: 6
-paginate_path: /insights/page:num/
 
 markdown: kramdown
 kramdown:
@@ -97,7 +95,6 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
-  - jekyll-paginate
 
 feed:
   path: /feed.xml
@@ -110,6 +107,11 @@ defaults:
     values:
       layout: post
       author: 손슬기
+  # 사이트 전체 기본 공유 이미지 (글에 image가 따로 있으면 그것이 우선)
+  - scope:
+      path: ""
+    values:
+      image: /assets/img/og/default.png
 
 exclude:
   - DESIGN.md
