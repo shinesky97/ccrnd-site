@@ -100,7 +100,9 @@ for (const cat of CATEGORIES) {
     `category: ${cat.key}`,
     `tags: [뉴스, ${cat.tag}]`,
     `summary: "${cat.label} 분야 최신 뉴스 ${fresh.length}건을 모았습니다. (매일 자동 수집·발행)"`,
-    'author: 손슬기',
+    'author: Numbers & Insight 자동 브리핑',
+    'noindex: true',      // 방문자에게는 노출, 검색 색인에서만 제외
+    'sitemap: false',
     '---',
     '',
     `> 최신 **${cat.label}** 관련 뉴스를 자동으로 모은 브리핑입니다. 자세한 내용은 각 원문 출처에서 확인해 주세요.`,
