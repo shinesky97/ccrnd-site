@@ -39,6 +39,10 @@ layout: default
       {%- endif %}
     </div>
 
+    {%- unless page.noindex %}
+    {% include author-box.html %}
+    {%- endunless %}
+
     <div class="article-foot">
       {%- assign prev = page.previous -%}
       {%- assign next = page.next -%}
@@ -75,6 +79,7 @@ layout: default
 </article>
 
 {%- comment -%} 구조화 데이터: 이동경로 + (있으면) FAQ {%- endcomment -%}
+{%- unless page.noindex %}{% include person-schema.html %}{% endunless %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

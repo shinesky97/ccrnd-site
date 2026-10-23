@@ -6,7 +6,7 @@ description: 공인회계사 손슬기 소개 — 외감법상 외부감사(법�
 lead: 회계감사와 세무기장·신고를 중심으로, 사업비 정산검증에 강점을 가진 공인회계사입니다.
 ---
 
-<div class="about-photo" style="background-image:url('/assets/img/portrait.jpg')"></div>
+<img class="about-photo" src="/assets/img/portrait.jpg" alt="공인회계사 손슬기" width="240" height="320">
 
 ## 공인회계사 손슬기
 
@@ -76,3 +76,5 @@ lead: 회계감사와 세무기장·신고를 중심으로, 사업비 정산검�
 
 [방명록 전체 보기 →](/guestbook/){: .res-link}
 {% endcomment %}
+
+{% include person-schema.html %}
