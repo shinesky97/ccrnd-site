@@ -54,7 +54,7 @@ layout: default
       </div>
 
       {%- comment -%} 같은 카테고리 관련 글 {%- endcomment -%}
-      {%- assign related = site.posts | where: "category", page.category | where_exp: "p", "p.url != page.url" | slice: 0, 2 -%}
+      {%- assign related = site.posts | where: "category", page.category | where_exp: "p", "p.url != page.url" | where_exp: "p", "p.noindex != true" | slice: 0, 3 -%}
       {% if related.size > 0 %}
       <div class="related">
         <h4>같은 분류의 다른 글</h4>
