@@ -131,18 +131,45 @@ title: null
       <span class="sec-no">제2절</span>
       <h2 class="sec-title">최근 인사이트</h2>
     </div>
-    {% if site.posts.size > 0 %}
+    {%- assign articles = site.posts | where_exp: "p", "p.noindex != true" -%}
+    {%- assign briefs = site.posts | where: "noindex", true -%}
+    {% if articles.size > 0 %}
     <div class="post-grid">
-      {%- for post in site.posts limit: 6 -%}
+      {%- for post in articles limit: 4 -%}
         {% include post-card.html post=post %}
       {%- endfor -%}
       <div class="pcard pcard-video" aria-hidden="true">
-        <video autoplay muted loop playsinline poster="{{ '/assets/img/bg-fintech.jpg' | relative_url }}">
+        <video class="lazy-video" muted loop playsinline preload="none" poster="{{ '/assets/img/bg-fintech.jpg' | relative_url }}">
           <source src="{{ '/assets/video/insight1.mp4' | relative_url }}" type="video/mp4">
         </video>
       </div>
     </div>
     <a class="sec-more" href="{{ '/insights/' | relative_url }}">전체 인사이트 보기 →</a>
+
+    {%- if briefs.size > 0 %}
+    <div class="brief-strip">
+      <span class="brief-label">뉴스 브리핑 <small>매일 자동 수집</small></span>
+      <ul>
+        {%- for b in briefs limit: 3 %}
+        <li><a href="{{ b.url | relative_url }}">{{ b.title }}</a></li>
+        {%- endfor %}
+      </ul>
+    </div>
+    {%- endif %}
+    <script>
+    (function () {
+      var vids = document.querySelectorAll('video.lazy-video');
+      if (!('IntersectionObserver' in window)) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          var v = e.target;
+          if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause();
+        });
+      }, { threshold: 0.2 });
+      vids.forEach(function (v) { io.observe(v); });
+    })();
+    </script>
     {% else %}
     <div class="empty">첫 글을 준비 중입니다.</div>
     {% endif %}
