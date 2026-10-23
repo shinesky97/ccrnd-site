@@ -1,0 +1,16 @@
+{%- assign a = site.data.author -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "{{ a.about_url | absolute_url }}#person",
+  "name": {{ a.name | jsonify }},
+  "jobTitle": {{ a.title | jsonify }},
+  "url": "{{ a.about_url | absolute_url }}",
+  "image": "{{ a.photo | absolute_url }}",
+  "worksFor": { "@type": "Organization", "name": {{ a.works_for.name | jsonify }}, "url": {{ a.works_for.url | jsonify }} },
+  "hasCredential": { "@type": "EducationalOccupationalCredential", "credentialCategory": "license", "name": {{ a.credential | jsonify }} },
+  "knowsAbout": {{ a.knows_about | jsonify }}{% if a.same_as and a.same_as.size > 0 %},
+  "sameAs": {{ a.same_as | jsonify }}{% endif %}
+}
+</script>

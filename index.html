@@ -4,15 +4,31 @@ title: null
 ---
 <!-- HERO : 쇼릴 (히어로 문구 대신 영상 자체를 첫 화면으로) -->
 <section class="hero-reel" aria-label="Numbers &amp; Insight 쇼릴">
-  <h1 class="sr-only">숫자를 넘어, 더 나은 내일을 봅니다. — Numbers &amp; Insight 공인회계사 손슬기 (보조금정산·회계감사·재무실사·가치평가)</h1>
   <video class="hero-reel-video" id="hero-reel" autoplay muted loop playsinline preload="auto"
          poster="{{ '/assets/video/showreel-poster.jpg' | relative_url }}">
+    <!-- 모바일(폭 768px 이하)은 720p 경량본(약 1MB), 그 외 1080p -->
+    <source src="{{ '/assets/video/showreel-m.webm' | relative_url }}" type="video/webm" media="(max-width: 768px)">
+    <source src="{{ '/assets/video/showreel-m.mp4' | relative_url }}" type="video/mp4" media="(max-width: 768px)">
     <source src="{{ '/assets/video/showreel.webm' | relative_url }}" type="video/webm">
     <source src="{{ '/assets/video/showreel.mp4' | relative_url }}" type="video/mp4">
   </video>
   <button class="reel-sound" type="button" id="reel-sound" aria-pressed="false">
     <span class="reel-sound-ico" aria-hidden="true">🔇</span><span class="reel-sound-txt">소리 켜기</span>
   </button>
+</section>
+
+<!-- 한 줄 소개: 홈의 주제를 화면 텍스트로 (검색엔진·방문자 모두에게) -->
+<section class="reel-intro" aria-label="소개">
+  <div class="wrap reel-intro-inner">
+    <h1>공인회계사 손슬기 <span>· Numbers &amp; Insight</span></h1>
+    <p><strong>보조금정산</strong> · <strong>회계감사</strong> · <strong>재무실사</strong> · <strong>가치평가</strong> — 숫자를 넘어, 더 나은 <em>내일</em>을 봅니다.</p>
+    <div class="reel-intro-cta">
+      <a class="btn btn-primary" href="{{ '/contact/' | relative_url }}">상담 문의</a>
+      {%- if site.contact.kakao and site.contact.kakao != "" %}
+      <a class="btn btn-ghost" href="{{ site.contact.kakao }}" target="_blank" rel="noopener">카카오톡 상담</a>
+      {%- endif %}
+    </div>
+  </div>
 </section>
 <script>
 (function () {
@@ -55,7 +71,7 @@ title: null
       <h2 class="sec-title">공인회계사 손슬기</h2>
     </div>
     <div class="profile">
-      <div class="profile-photo" style="background-image:url('{{ '/assets/img/profile.jpg' | relative_url }}')"></div>
+      <img class="profile-photo" src="{{ '/assets/img/profile.jpg' | relative_url }}" alt="공인회계사 손슬기 프로필 사진" width="180" height="220" loading="lazy">
       <div class="profile-body">
         <ul class="career">
           <li class="now">現 회계법인 창천 근무</li>

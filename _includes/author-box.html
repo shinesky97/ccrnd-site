@@ -1,0 +1,12 @@
+{%- assign a = site.data.author -%}
+<aside class="author-box" aria-label="작성자 소개">
+  <img class="author-photo" src="{{ a.photo | relative_url }}" alt="{{ a.title }} {{ a.name }}" width="88" height="132" loading="lazy">
+  <div class="author-body">
+    <p class="author-kicker">글쓴이</p>
+    <p class="author-name"><a href="{{ a.about_url | relative_url }}">{{ a.title }} {{ a.name }}</a> <span>{{ a.credential }}</span></p>
+    <ul class="author-career">
+      {%- for c in a.career limit: 4 %}<li>{{ c }}</li>{%- endfor %}
+    </ul>
+    <a class="author-more" href="{{ a.about_url | relative_url }}">소개 자세히 보기 →</a>
+  </div>
+</aside>

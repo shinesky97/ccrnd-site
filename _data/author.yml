@@ -1,0 +1,18 @@
+# 작성자 정보 — 글 하단 작성자 박스와 Person 구조화 데이터가 함께 사용합니다.
+name: 손슬기
+title: 공인회계사
+credential: 한국공인회계사(KICPA)
+photo: /assets/img/profile.jpg
+about_url: /about/
+works_for:
+  name: 회계법인 창천
+  url: https://www.atcc.co.kr
+career:
+  - 現 회계법인 창천
+  - 2009년 제44회 공인회계사 시험 합격
+  - 前 삼정회계법인
+  - 前 한영회계법인
+  - 前 성균관대학교
+knows_about: [보조금정산, 회계감사, 재무실사, 가치평가, 세무]
+# 외부 프로필 주소(네이버 블로그·링크드인 등)가 생기면 아래에 추가하세요. 검색엔진이 같은 인물로 연결합니다.
+same_as: []
