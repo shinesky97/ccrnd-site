@@ -31,6 +31,8 @@ layout: default
       {%- assign list = site.posts -%}
     {%- endif -%}
 
+    {%- if page.category == nil %}{% include core-guides.html %}{% endif %}
+
     {% if list.size > 0 %}
     <ul class="post-list">
       {%- for post in list -%}
@@ -49,3 +51,24 @@ layout: default
     {% endif %}
   </div>
 </section>
+
+{%- assign items = list | where_exp: "p", "p.noindex != true" -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ page.title | jsonify }},
+  "url": "{{ page.url | absolute_url }}",
+  "inLanguage": "ko",
+  "isPartOf": { "@type": "WebSite", "name": {{ site.title | jsonify }}, "url": "{{ '/' | absolute_url }}" },
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ items.size }},
+    "itemListElement": [
+      {%- for p in items limit: 30 %}
+      { "@type": "ListItem", "position": {{ forloop.index }}, "url": "{{ p.url | absolute_url }}", "name": {{ p.title | jsonify }} }{% unless forloop.last %},{% endunless %}
+      {%- endfor %}
+    ]
+  }
+}
+</script>

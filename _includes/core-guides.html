@@ -1,0 +1,11 @@
+{%- comment -%} 핵심 가이드 고정 목록. include.exclude 에 현재 글 URL을 넘기면 제외 {%- endcomment -%}
+<nav class="core-guides" aria-label="핵심 가이드">
+  <h4>핵심 가이드</h4>
+  <ul>
+    {%- for g in site.data.core_guides %}
+    {%- unless g.url == include.exclude %}
+    <li><a href="{{ g.url | relative_url }}"><span class="cg-tag">{{ g.tag }}</span>{{ g.label }}</a></li>
+    {%- endunless %}
+    {%- endfor %}
+  </ul>
+</nav>
