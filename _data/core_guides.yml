@@ -1,0 +1,25 @@
+# '핵심 가이드' — 글 하단·인사이트 목록 상단에 고정 노출되는 대표 글 (순서대로 표시)
+- url: /insights/subsidy-act-settlement-guide/
+  label: 보조금법 정산 대상과 유의사항
+  tag: 정산
+- url: /insights/local-subsidy-act-settlement-guide/
+  label: 지방보조금법 정산·검증·정보공시
+  tag: 정산
+- url: /insights/university-industry-rnd-settlement/
+  label: 산학연 공동연구 회계정산 유의점
+  tag: 정산
+- url: /insights/external-audit-criteria/
+  label: 외부감사 대상 판정 기준
+  tag: 회계
+- url: /insights/reading-financial-statements/
+  label: 비회계인을 위한 재무제표 읽는 법
+  tag: 회계
+- url: /insights/vat-input-tax-credit/
+  label: 부가가치세 매입세액공제
+  tag: 세무
+- url: /insights/sole-proprietor-tax-tips/
+  label: 개인사업자 종합소득세 절세 포인트
+  tag: 세무
+- url: /insights/apartment-profit-business-registration/
+  label: 아파트 수익사업 사업자등록·세금 신고
+  tag: 공동주택

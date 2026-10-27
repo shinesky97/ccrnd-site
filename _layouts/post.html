@@ -57,6 +57,8 @@ layout: default
         <a class="btn btn-primary" href="{{ '/contact/' | relative_url }}">문의하기</a>
       </div>
 
+      {%- unless page.noindex %}{% include core-guides.html exclude=page.url %}{% endunless %}
+
       {%- comment -%} 같은 카테고리 관련 글 {%- endcomment -%}
       {%- assign related = site.posts | where: "category", page.category | where_exp: "p", "p.url != page.url" | where_exp: "p", "p.noindex != true" | slice: 0, 3 -%}
       {% if related.size > 0 %}
