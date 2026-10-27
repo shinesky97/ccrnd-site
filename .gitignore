@@ -13,3 +13,7 @@ Gemfile.lock
 node_modules/
 package.json
 package-lock.json
+
+# 회계기준서 원문 번들 — 저작권(한국회계기준원) 보호를 위해 절대 커밋하지 않음 (Firebase 관리자 전용으로만 업로드)
+standards-bundle*.json
+standards_data/

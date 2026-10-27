@@ -1,0 +1,130 @@
+/* 회계기준서 열람 (관리자 전용) — cpawork standards.css 를 사이트 색상 체계로 옮김 */
+.std-app{--std-border:var(--rule);--std-card:#fff;--std-primary:var(--blue);--std-primary-dark:var(--ink);--std-text:var(--ink);
+  max-width:1320px;margin:0 auto;padding:28px 24px 80px;font-size:15px;line-height:1.6}
+.std-app h1{font-size:1.5rem;font-weight:800;margin:0}
+.std-app h2{font-size:1.1rem;font-weight:800;margin:0 0 10px}
+.std-muted{color:var(--muted);font-weight:400}
+.std-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.std-spacer{flex:1}
+.std-card{background:var(--std-card);border:1px solid var(--std-border);border-radius:10px;padding:18px 20px;margin-bottom:16px}
+.std-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.std-warn{background:#fff7e6;border-color:#f3d19c;color:#7a4b00}
+.std-foot{font-size:.82rem;margin-top:8px}
+.std-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;font:inherit;font-size:.9rem;cursor:pointer;text-decoration:none}
+.std-btn.ghost{background:transparent;color:var(--ink);border-color:var(--std-border)}
+.std-btn.ghost:hover{border-color:var(--ink)}
+.std-btn.sm{padding:4px 10px;font-size:.8rem}
+.std-btn.danger{background:var(--inju);border-color:var(--inju)}
+.std-tag{flex:none;font-size:.72rem;padding:1px 6px;border-radius:4px;background:#f3f4f6;color:#4b5563}
+.std-crumb{color:inherit;text-decoration:none}
+.std-crumb:hover{text-decoration:underline}
+.std-search{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.std-search input[type=search]{flex:1 1 360px;padding:9px 12px;font:inherit;font-size:15px;border:1px solid var(--std-border);border-radius:8px;background:#fff}
+.std-search select{padding:8px 10px;border:1px solid var(--std-border);border-radius:8px;font:inherit;background:#fff}
+.std-check{display:inline-flex;gap:4px;align-items:center;margin:0;font-weight:normal;font-size:.9rem}
+.std-list{width:100%;border-collapse:collapse}
+.std-list td{padding:6px 8px;vertical-align:top;border-top:1px solid var(--paper-deep)}
+.std-list a{color:var(--ink);font-weight:600;text-decoration:none}
+.std-list a:hover{color:var(--std-primary);text-decoration:underline}
+.std-code{width:52px;color:var(--muted);font-variant-numeric:tabular-nums}
+.std-ver{font-size:12px}
+.std-admin-upload summary{cursor:pointer;font-weight:700}
+.std-admin-upload p{margin:10px 0}
+.std-progress{height:6px;background:var(--paper-deep);border-radius:4px;overflow:hidden;margin-top:10px}
+.std-progress>div{height:100%;width:0;background:var(--std-primary);transition:width .2s}
+
+/* 검색 결과 */
+.std-result-std{font-size:14px;margin:18px 0 6px;color:var(--std-primary-dark)}
+.std-result{display:flex;gap:10px;align-items:baseline;padding:8px 10px;border-radius:6px;color:var(--std-text);text-decoration:none;border-bottom:1px solid var(--std-border)}
+.std-result:hover{background:#f1f4fb}
+.std-result-no{flex:0 0 auto;min-width:64px;font-weight:600;color:var(--std-primary)}
+.std-result-text{line-height:1.6}
+.std-result mark:not(.hl){background:#ffe58a;padding:0 1px}
+
+/* 본문 보기: 좌측 목차 + 본문 */
+.std-layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
+.std-side{position:sticky;top:80px;max-height:calc(100vh - 96px);display:flex;flex-direction:column;background:var(--std-card);border:1px solid var(--std-border);border-radius:10px}
+.std-side-head{padding:12px;border-bottom:1px solid var(--std-border);font-size:13px}
+.std-jump{width:100%;margin:8px 0;padding:6px;border:1px solid var(--std-border);border-radius:6px;font:inherit;font-size:13px}
+.std-side-search{gap:6px}
+.std-side-search input[type=search]{flex:1 1 100%;padding:6px 8px;font-size:13px}
+.std-side-search select,.std-side-search .std-check{display:none}
+.std-side-search .std-btn{display:none}
+.std-toc{overflow-y:auto;padding:8px 0 16px;font-size:13px}
+.std-toc a{display:block;padding:3px 14px;color:var(--std-text);text-decoration:none;line-height:1.4}
+.std-toc a:hover{background:#eef2fb;color:var(--std-primary-dark)}
+.std-toc-part{margin:10px 14px 4px;font-size:12px;font-weight:700;color:var(--muted)}
+.std-doc{background:var(--std-card);border:1px solid var(--std-border);border-radius:10px;padding:24px 32px 64px;min-width:0}
+.std-head h1{font-size:22px;margin:4px 0}
+.std-head-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 8px}
+.std-help{margin-left:auto;font-size:12px}
+.std-part{margin:36px 0 8px;padding:8px 12px;background:#eef2fb;border-radius:6px;font-weight:700;color:var(--std-primary-dark)}
+.std-part.ref{background:#f3f4f6;color:#4b5563}
+.std-part span{font-weight:normal;font-size:12px}
+.std-h{font-size:15px;margin:24px 0 6px;color:#1a2238;scroll-margin-top:80px}
+.std-p{display:grid;grid-template-columns:64px 1fr 34px;gap:8px;padding:6px 4px;border-radius:6px;scroll-margin-top:80px}
+.std-p:hover{background:#fafbfd}
+.std-p.ref .pbody{color:#374151}
+.std-p.target{animation:std-flash 2.2s ease-out}
+@keyframes std-flash{from{background:#fff3c4}to{background:transparent}}
+.std-no{font-weight:700;color:var(--std-primary);text-align:right;padding-top:1px;font-variant-numeric:tabular-nums;word-break:keep-all}
+.pbody{line-height:1.75;font-size:14.5px;min-width:0}
+.pbody p{margin:0 0 4px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere}
+.pbody p.fn{font-size:12.5px;color:var(--muted);padding-left:10px;border-left:2px solid var(--std-border)}
+.std-tbl{border-collapse:collapse;margin:6px 0 10px;font-size:13px;max-width:100%;display:block;overflow-x:auto}
+.std-tbl td{border:1px solid var(--std-border);padding:4px 8px;vertical-align:top;white-space:pre-wrap}
+.std-tools{display:flex;flex-direction:column;gap:2px;opacity:.25}
+.std-p:hover .std-tools,.std-p.bookmarked .std-tools{opacity:1}
+.std-tools button{background:none;border:none;color:#9aa3b2;cursor:pointer;padding:2px;font-size:15px}
+.std-tools button:hover{color:var(--std-primary)}
+.std-tools .bm-btn.on{color:#f0a500}
+.std-p.bookmarked{box-shadow:inset 3px 0 0 #f0a500}
+
+/* 형광펜 */
+mark.hl{padding:0;border-radius:2px;cursor:pointer;color:inherit}
+.hl-yellow{background:#fff176}.hl-green{background:#b9f6ca}.hl-blue{background:#b3e5fc}.hl-pink{background:#f8bbd0}
+mark.hl.has-note{border-bottom:2px dotted #8d6e00}
+.hl-bar,.hl-pop{position:absolute;z-index:70;background:#1f2430;border-radius:8px;box-shadow:0 6px 20px #0003}
+.hl-bar{display:flex;gap:6px;padding:6px 8px;align-items:center}
+.hl-bar[hidden],.hl-pop[hidden]{display:none}
+.hl-bar .std-btn.ghost{color:#fff;border-color:#ffffff55}
+.sw{width:22px;height:22px;border-radius:50%;border:2px solid #fff;padding:0;cursor:pointer}
+.sw-yellow{background:#fff176}.sw-green{background:#b9f6ca}.sw-blue{background:#b3e5fc}.sw-pink{background:#f8bbd0}
+.sw.on{outline:3px solid #4f8cff}
+.hl-pop{padding:10px;width:280px}
+.hl-pop textarea{width:100%;margin:8px 0;font:inherit;padding:6px;border-radius:6px}
+.hl-pop-colors{display:flex;gap:8px}
+.hl-pop-actions{display:flex;gap:6px}
+.std-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1f2430;color:#fff;padding:8px 16px;border-radius:8px;z-index:80;font-size:13px}
+.std-toast[hidden]{display:none}
+
+/* 로그인 */
+.std-login{max-width:420px;margin:40px auto}
+.std-login label{display:block;font-size:.85rem;font-weight:600;margin:10px 0 4px}
+.std-login input{width:100%;padding:9px 12px;border:1px solid var(--std-border);border-radius:8px;font:inherit}
+.std-login .std-btn{margin-top:14px;width:100%;justify-content:center}
+.std-login-err{color:var(--inju);font-size:.85rem;margin-top:8px}
+
+@media (max-width:900px){
+  .std-grid2{grid-template-columns:1fr}
+  .std-layout{grid-template-columns:1fr}
+  .std-side{position:static;max-height:260px}
+  .std-doc{padding:16px}
+  .std-p{grid-template-columns:48px 1fr 28px}
+}
+
+/* 사이트 전역 form/input 규칙(세로 배치·100% 폭) 무력화 */
+.std-app [hidden],.std-toast[hidden]{display:none!important}
+.std-app form.std-search{flex-direction:row;gap:8px}
+.std-app .std-search input[type=checkbox]{width:auto;padding:0;margin:0}
+.std-app .std-search label.std-check{display:inline-flex;margin:0;font-size:.9rem;color:var(--ink);letter-spacing:0;font-weight:400}
+.std-app .std-search input[type=search]{width:auto}
+.std-app .std-side-search input[type=search]{width:100%}
+.std-app form.std-login{display:block}
+@media (max-width:600px){
+  .std-app{padding:16px 10px 60px}
+  .std-doc{padding:12px 10px 40px}
+  .std-p{grid-template-columns:34px 1fr 22px;gap:6px;padding:6px 0}
+  .std-no{font-size:13px}
+  .pbody{font-size:14px}
+}

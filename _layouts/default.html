@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}?v={{ site.time | date: '%Y%m%d%H%M%S' }}">
+{%- if page.extra_css %}<link rel="stylesheet" href="{{ page.extra_css | relative_url }}?v={{ site.time | date: '%Y%m%d%H%M%S' }}">{% endif %}
 {%- if page.keywords -%}<meta name="keywords" content="{{ page.keywords | join: ', ' }}">
 {%- elsif page.tags and page.tags.size > 0 -%}<meta name="keywords" content="{{ page.tags | join: ', ' }}">
 {%- elsif site.keywords and site.keywords != "" -%}<meta name="keywords" content="{{ site.keywords }}">{%- endif -%}
@@ -53,9 +54,11 @@
 </main>
 
 {% include footer.html %}
+{%- unless page.app %}
 {% include calc-fab.html %}
 {% include re-fab.html %}
 {% include chatbot.html %}
+{%- endunless %}
 
 </body>
 </html>
