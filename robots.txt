@@ -5,10 +5,12 @@ permalink: /robots.txt
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /standards/
 
 # 네이버 검색 로봇
 User-agent: Yeti
 Allow: /
 Disallow: /admin/
+Disallow: /standards/
 
 Sitemap: {{ site.url }}/sitemap.xml
