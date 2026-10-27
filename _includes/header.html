@@ -10,7 +10,10 @@
         <span class="brand-sub">손슬기 공인회계사 · ACCOUNTING · AUDIT · ADVISORY</span>
       </span>
     </a>
-    <nav class="menu">
+    <button class="menu-toggle" type="button" id="menu-toggle" aria-controls="site-menu" aria-expanded="false" aria-label="메뉴 열기">
+      <span class="menu-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <nav class="menu" id="site-menu" aria-label="주 메뉴">
       {%- for item in site.nav -%}
         <a href="{{ item.url | relative_url }}"
            {% if item.cta %}class="cta"{% endif %}
@@ -19,3 +22,23 @@
     </nav>
   </div>
 </header>
+<script>
+(function () {
+  var btn = document.getElementById('menu-toggle'), menu = document.getElementById('site-menu');
+  if (!btn || !menu) return;
+  function set(open) {
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    document.documentElement.classList.toggle('menu-open', open);
+  }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); set(btn.getAttribute('aria-expanded') !== 'true'); });
+  menu.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
+  document.addEventListener('click', function (e) {
+    if (btn.getAttribute('aria-expanded') === 'true' && !menu.contains(e.target)) set(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); }
+  });
+  window.matchMedia('(min-width: 861px)').addEventListener('change', function (m) { if (m.matches) set(false); });
+})();
+</script>
