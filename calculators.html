@@ -13,7 +13,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
 </div>
 
 <div class="wrap" style="padding-top:20px">
-  <p class="re-updated" style="margin:0">최종 업데이트: <strong>{{ page.updated }}</strong> · 세율·공제 기준은 <b>매월 1일</b> 법령 개정 사항을 확인해 갱신합니다.</p>
+  <p class="re-updated" style="margin:0">최종 업데이트: <strong>{{ page.updated }}</strong> · 세율·공제 기준은 <b>매월 1일 점검 예정</b>이며, 확인 및 검토가 끝난 항목만 반영합니다. 2026년 11월 점검은 일부 항목 확인 상태이며 전체 검증 완료를 의미하지 않습니다.</p>
 </div>
 
 <section style="border-top:0;padding-top:28px">
@@ -46,7 +46,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
     <div class="calc-panel" id="tab-corp">
       <div class="calc-card">
         <h2>법인세 계산기</h2>
-        <p class="calc-help">각 사업연도 소득 <b>과세표준</b>을 입력하면 법인세 산출세액과 지방소득세를 계산합니다. (일반 내국법인 기준)</p>
+        <p class="calc-help">각 사업연도 소득 <b>과세표준</b>을 입력하면 법인세 산출세액과 지방소득세를 계산합니다. (2026년 개시·12개월 사업연도의 일반 내국법인 기준. 특정 소규모 법인·단기 사업연도는 지원하지 않습니다.)</p>
         <label>과세표준 (원)</label>
         <input type="text" inputmode="numeric" id="in-corp" class="calc-input" placeholder="예: 300,000,000">
         <button class="calc-run" data-calc="corp">계산하기</button>
@@ -58,7 +58,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
     <div class="calc-panel" id="tab-ins">
       <div class="calc-card">
         <h2>4대보험료 계산기</h2>
-        <p class="calc-help">월 급여(보수월액)를 입력하면 근로자·사업주 부담 4대보험료를 계산합니다.</p>
+        <p class="calc-help">월 급여(보수월액)로 2026년 7월 이후 일반 직장가입자의 보험료를 추정합니다. 산재보험·사업주 고용안정 부담금은 별도이며 건강보험 상하한·가입 예외·고지 단위 절사는 미반영입니다.</p>
         <label>월 급여 (원)</label>
         <input type="text" inputmode="numeric" id="in-ins" class="calc-input" placeholder="예: 3,000,000">
         <button class="calc-run" data-calc="ins">계산하기</button>
@@ -70,7 +70,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
     <div class="calc-panel" id="tab-net">
       <div class="calc-card">
         <h2>연봉 실수령액 계산기</h2>
-        <p class="calc-help">연봉과 부양가족 수를 입력하면 4대보험·소득세를 뺀 <b>예상 실수령액</b>을 계산합니다.</p>
+        <p class="calc-help">연봉과 부양가족 수로 <b>예상 실수령액</b>을 계산합니다. 연간 세액을 월평균한 간이 추정이며 간이세액표상 원천징수액과 다릅니다. 보험료는 2026년 7월 이후 기준을 12개월에 적용하며 추가 공제·감면과 보험료 고지 절사는 미반영입니다.</p>
         <div class="calc-row">
           <div><label>연봉 (원)</label><input type="text" inputmode="numeric" id="in-net" class="calc-input" placeholder="예: 40,000,000"></div>
           <div><label>부양가족 수(본인 포함)</label><input type="number" id="in-dep" class="calc-input" value="1" min="1"></div>
@@ -86,7 +86,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
     <div class="calc-panel" id="tab-house">
       <div class="calc-card">
         <h2>주택 양도소득세 계산기</h2>
-        <p class="calc-help">주택 양도가액·취득가액·보유/거주기간을 입력하면 양도세를 계산합니다. 국세청 홈택스 간편계산과 동일한 방식(장기보유특별공제·단기세율·고가주택 안분)을 따릅니다.</p>
+        <p class="calc-help">주택 양도가액·취득가액·보유/거주기간을 입력하면 양도세를 계산합니다. 장기보유특별공제·단기세율·고가주택 안분을 반영한 간이 추정치이며, 비과세·중과 제외 요건을 자동 판정하지 않습니다.</p>
         <div class="calc-row">
           <div><label>양도가액 (원)</label><input type="text" inputmode="numeric" id="h-sale" class="calc-input" placeholder="예: 1,200,000,000"></div>
           <div><label>취득가액 (원)</label><input type="text" inputmode="numeric" id="h-buy" class="calc-input" placeholder="예: 700,000,000"></div>
@@ -114,7 +114,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         </div>
         <button class="calc-run" data-calc="house">계산하기</button>
         <div class="calc-out" id="out-house" hidden></div>
-        <p class="calc-help" style="margin-top:14px">※ 1세대 1주택 비과세 요건(2년 보유·조정지역은 2년 거주 등) 충족을 가정합니다. 조정지역 다주택 중과는 시기에 따라 한시 배제될 수 있으니 최신 여부를 확인하세요.</p>
+        <p class="calc-help" style="margin-top:14px">※ 1세대 1주택 비과세 요건(2년 보유·조정지역은 2년 거주 등) 충족을 가정합니다. 다주택 중과 유예는 2026.5.9. 종료되었으며, 일부 계약·토지거래허가 경과조치는 별도 확인이 필요합니다. 양도일·계약일·지역에 따른 적용 여부를 확인한 뒤 중과 항목을 선택하세요. 본 계산기는 이를 자동 판정하지 않습니다.</p>
       </div>
     </div>
 
@@ -144,7 +144,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         <label>전용면적</label>
         <select id="a-area" class="calc-input">
           <option value="0">85㎡ 이하 (농어촌특별세 없음)</option>
-          <option value="1">85㎡ 초과 (농어촌특별세 0.2%)</option>
+          <option value="1">85㎡ 초과 (농특세 일반 0.2%·8% 중과 0.6%·12% 중과 1%)</option>
         </select>
         <button class="calc-run" data-calc="acq">계산하기</button>
         <div class="calc-out" id="out-acq" hidden></div>
@@ -159,11 +159,11 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         <label>주택 공시가격 (원)</label>
         <input type="text" inputmode="numeric" id="p-price" class="calc-input" placeholder="예: 500,000,000">
         <div class="calc-row">
-          <div><label>공정시장가액비율 (%)</label><input type="number" id="p-ratio" class="calc-input" value="60" min="0" max="100" step="1"></div>
-          <div><label>1세대 1주택 특례</label>
+          <div><label>공정시장가액비율 (%)</label><input type="number" id="p-ratio" class="calc-input" value="60" readonly aria-describedby="p-ratio-help"></div>
+          <div><label>1세대 1주택 해당 여부</label>
             <select id="p-one" class="calc-input">
-              <option value="0">적용 안 함 (일반세율)</option>
-              <option value="1">적용 (공시 9억 이하)</option>
+              <option value="0">해당 없음 (일반세율)</option>
+              <option value="1">해당 (가액비율 특례·9억 이하 세율 특례)</option>
             </select>
           </div>
         </div>
@@ -174,7 +174,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         </select>
         <button class="calc-run" data-calc="prop">계산하기</button>
         <div class="calc-out" id="out-prop" hidden></div>
-        <p class="calc-help" style="margin-top:14px">※ 공정시장가액비율은 시행령으로 매년 정해집니다(주택 60%, 1세대1주택 특례 43~45%). 지자체 조례로 ±50% 가감될 수 있습니다.</p>
+        <p class="calc-help" style="margin-top:14px"><span id="p-ratio-help">※ 2026년 공정시장가액비율은 일반 주택 60%, 1세대 1주택은 공시가격 3억 이하 43%·6억 이하 44%·6억 초과 45%로 자동 적용합니다(9억 초과 포함). 세율 특례는 공시가격 9억 이하에만 적용합니다. 조례에 따른 세율 가감·과세표준상한·세부담상한·감면·지역자원시설세는 반영하지 않은 추정치입니다.</span></p>
       </div>
     </div>
 
@@ -215,7 +215,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         </div>
         <button class="calc-run" data-calc="ctax">계산하기</button>
         <div class="calc-out" id="out-ctax" hidden></div>
-        <p class="calc-help" style="margin-top:14px">※ 1세대1주택 세액공제는 연령+보유 합계 최대 80%입니다. 실제 고지세액은 <b>주택분 재산세 공제</b>와 세부담상한이 추가로 적용되어 더 낮아질 수 있습니다. 2026 세제개편안(기본공제·세율 조정)은 국회 심의 중입니다.</p>
+        <p class="calc-help" style="margin-top:14px">※ 1세대1주택 세액공제는 연령+보유 합계 최대 80%입니다. 실제 고지세액은 <b>주택분 재산세 공제</b>와 세부담상한이 추가로 적용되어 더 낮아질 수 있습니다. 개정안과 시행 중인 법령을 구분하며, 미시행 개정안은 계산에 반영하지 않습니다.</p>
       </div>
     </div>
 
@@ -263,7 +263,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
             <tr><td>산재보험</td><td>업종별 상이</td><td>-</td><td>전액</td></tr>
           </tbody>
         </table>
-        <p class="rate-note">국민연금 기준소득월액 상한 659만원·하한 41만원. 사업주는 고용안정·직업능력개발부담금(규모별 0.25%~)이 추가됩니다.</p>
+        <p class="rate-note">국민연금 기준소득월액 상한 659만원·하한 41만원(2026.7.~2027.6. 적용). 사업주는 고용안정·직업능력개발부담금(규모별 0.25%~)이 추가됩니다.</p>
 
         <h3>양도소득세 (요약)</h3>
         <p class="rate-note">기본세율은 종합소득세율과 동일(6~45%). 주택 단기 양도는 1년 미만 70%, 2년 미만 60%. 조정지역 다주택 중과(+20%p/+30%p)는 시기별 한시배제 여부를 확인해야 합니다. 자세한 내용은 <a href="{{ '/real-estate-tax/' | relative_url }}">부동산 세제 최신판</a> 참고.</p>
@@ -275,8 +275,8 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
             <tr><td>유상 6억원 이하</td><td>1%</td><td>0.1%</td><td>0.2%</td></tr>
             <tr><td>유상 6억~9억원</td><td>(가액×2/3억−3)% <small>1~3% 누진</small></td><td>세율의 10%</td><td>0.2%</td></tr>
             <tr><td>유상 9억원 초과</td><td>3%</td><td>0.3%</td><td>0.2%</td></tr>
-            <tr><td>조정 2주택 / 비조정 3주택</td><td>8%</td><td>0.4%</td><td>0.2%</td></tr>
-            <tr><td>조정 3주택↑ / 비조정 4주택↑ · 법인</td><td>12%</td><td>0.4%</td><td>0.2%</td></tr>
+            <tr><td>조정 2주택 / 비조정 3주택</td><td>8%</td><td>0.4%</td><td>0.6%</td></tr>
+            <tr><td>조정 3주택↑ / 비조정 4주택↑ · 법인</td><td>12%</td><td>0.4%</td><td>1.0%</td></tr>
             <tr><td>무상취득(증여)</td><td>3.5%</td><td>0.3%</td><td>0.2%</td></tr>
             <tr><td>상속(농지 외)</td><td>2.8%</td><td>0.16%</td><td>0.2%</td></tr>
           </tbody>
@@ -307,7 +307,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
             <tr><td>94억원 초과</td><td>2.7%</td><td>5.0%</td></tr>
           </tbody>
         </table>
-        <p class="rate-note">기본공제 1세대1주택 12억원 / 그 외 9억원. 과세표준 = (공시가격 합계 − 기본공제) × 공정시장가액비율(60%). 1주택 세액공제(연령+보유, 최대 80%)·재산세 공제·농특세 20% 적용. 2026 세제개편안은 국회 심의 중입니다.</p>
+        <p class="rate-note">기본공제 1세대1주택 12억원 / 그 외 9억원. 과세표준 = (공시가격 합계 − 기본공제) × 공정시장가액비율(60%). 1주택 세액공제(연령+보유, 최대 80%)·재산세 공제·농특세 20% 적용. 미시행 개정안은 계산에 반영하지 않습니다.</p>
       </div>
     </div>
 
@@ -341,6 +341,11 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
   function earnedDed(pay){var d;if(pay<=5000000)d=pay*0.7;else if(pay<=15000000)d=3500000+(pay-5000000)*0.4;else if(pay<=45000000)d=7500000+(pay-15000000)*0.15;else if(pay<=100000000)d=12000000+(pay-45000000)*0.05;else d=14750000+(pay-100000000)*0.02;return Math.min(d,20000000);}
   function workCredit(tax,pay){var c=tax<=1300000?tax*0.55:715000+(tax-1300000)*0.30;var lim;if(pay<=33000000)lim=740000;else if(pay<=70000000)lim=Math.max(660000,740000-(pay-33000000)*0.008);else if(pay<=120000000)lim=Math.max(500000,660000-(pay-70000000)*0.5);else lim=Math.max(200000,500000-(pay-120000000)*0.5);return Math.min(c,lim);}
 
+  function propertyRatio(price,one){return one?(price<=300000000?0.43:price<=600000000?0.44:0.45):0.60;}
+  function syncPropertyRatio(){document.getElementById('p-ratio').value=Math.round(propertyRatio(num('p-price'),document.getElementById('p-one').value==='1')*100);}
+  document.getElementById('p-price').addEventListener('input',syncPropertyRatio);
+  document.getElementById('p-one').addEventListener('change',syncPropertyRatio);
+
   var render={
     acq:function(){
       var p=num('a-price'),kind=document.getElementById('a-kind').value;
@@ -356,7 +361,8 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         else{rate=0.03;}
         edu=rate*0.1;label='유상 표준 '+(Math.round(rate*10000)/100)+'%';
       }
-      var farm=big?0.002:0;
+      // 유상 중과 농특세: 8% 중과 0.6%, 12% 중과 1% (국민주택규모 초과).
+      var farm=big?(kind==='buy'&&hv>0?(hv===0.08?0.006:0.01):0.002):0;
       var t1=p*rate,t2=p*edu,t3=p*farm,tot=t1+t2+t3;
       return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">총 취득 부담액 (실효 '+(p>0?((tot/p*100).toFixed(2)):'0')+'%)</div>'+
         row('취득가액',won(p))+row('적용 구분',label)+
@@ -365,19 +371,20 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
     },
     prop:function(){
       var p=num('p-price');
-      var ratio=Math.max(0,parseFloat(document.getElementById('p-ratio').value||'60'))/100;
       var one=document.getElementById('p-one').value==='1';
+      var ratio=propertyRatio(p,one);
+      document.getElementById('p-ratio').value=Math.round(ratio*100);
       var city=document.getElementById('p-city').value==='1';
       var base=p*ratio;
       var useOne=one&&p<=900000000;
       var tax=bracketTax(base,useOne?PROP1:PROP);
       var edu=tax*0.2, cityTax=city?base*0.0014:0, tot=tax+edu+cityTax;
-      return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">연간 주택 재산세 총액</div>'+
+      return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">주택 재산세 추정액 (상한·감면 등 미반영)</div>'+
         row('공시가격',won(p))+row('과세표준 (×'+(ratio*100).toFixed(0)+'%)',won(base))+
         row('적용세율',useOne?'1세대1주택 특례':'일반 표준세율')+
         '<div class="ro-line"></div>'+
         row('재산세',won(tax))+row('지방교육세(20%)',won(edu))+row('도시지역분(0.14%)',won(cityTax))+
-        (one&&p>900000000?row('안내','공시 9억 초과로 특례 미적용'):'');
+        (one&&p>900000000?row('안내','공시 9억 초과: 세율 특례 미적용, 가액비율 45% 적용'):'');
     },
     ctax:function(){
       var p=num('c-price'),type=document.getElementById('c-type').value;
@@ -393,7 +400,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
       }
       var cut=tax*credit, net=tax-cut, farm=net*0.2, tot=net+farm;
       if(base<=0){return '<div class="ro-big">'+won(0)+'</div><div class="ro-sub">기본공제 이하로 종부세 대상이 아닙니다</div>'+row('공시가격 합계',won(p))+row('기본공제',won(ded));}
-      return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">종부세 + 농어촌특별세</div>'+
+      return '<div class="ro-big">'+won(tot)+'</div><div class="ro-sub">종부세 + 농어촌특별세 추정액 (재산세 공제·세부담상한 미반영)</div>'+
         row('공시가격 합계',won(p))+row('기본공제',won(ded))+row('과세표준 (×'+(ratio*100).toFixed(0)+'%)',won(base))+
         '<div class="ro-line"></div>'+
         row('산출세액',won(tax))+(credit>0?row('1주택 세액공제('+Math.round(credit*100)+'%)','-'+won(cut)):'')+
@@ -405,6 +412,7 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
       var live=Math.max(0,parseInt(document.getElementById('h-live').value||'0',10));
       var type=document.getElementById('h-type').value;
       var heavy=parseFloat(document.getElementById('h-heavy').value||'0')/100;
+      if(live>hold || (type==='one' && heavy>0)){return '<div class="ro-sub">보유·거주기간과 주택 구분을 확인해 주세요. 거주기간은 보유기간을 초과할 수 없고, 1세대 1주택과 다주택 중과를 동시에 선택할 수 없습니다.</div>';}
       var gain=sale-buy-cost;
       if(gain<=0){return '<div class="ro-big">'+won(0)+'</div><div class="ro-sub">양도차익이 없어 납부세액이 없습니다</div>'+row('양도차익',won(gain));}
       var taxableGain=gain,note='';
@@ -413,11 +421,11 @@ description: 종합소득세·법인세·4대보험료·연봉 실수령액 계�
         taxableGain=gain*(sale-1200000000)/sale;note='고가주택 · 12억 초과분 과세';
       }
       var ltrate=0;
-      if(type==='one'){
-        var rh=hold>=3?Math.min(hold,10)*0.04:0;
-        var rl=live>=2?Math.min(live,10)*0.04:0;
-        ltrate=Math.min(0.8,rh+rl);
-      } else if(heavy===0 && hold>=3){ ltrate=Math.min(0.30,Math.min(hold,15)*0.02); }
+      if(heavy===0 && hold>=3){
+        if(type==='one' && live>=2){
+          ltrate=Math.min(0.8,(Math.min(hold,10)+Math.min(live,10))*0.04);
+        } else { ltrate=Math.min(0.30,hold*0.02); }
+      }
       var ltd=taxableGain*ltrate;
       var incomeAmt=taxableGain-ltd;
       var base=Math.max(0,incomeAmt-2500000);
