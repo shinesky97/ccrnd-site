@@ -434,6 +434,19 @@ footer.site{border-top:2px solid var(--ink);padding:36px 0 48px;font-size:.83rem
 .cbot-chip{border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:16px;
   padding:6px 13px;font-size:.83rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .15s,color .15s}
 .cbot-chip:hover{background:var(--blue);color:#fff}
+.cbot-panel{max-height:calc(100vh - 96px);max-height:calc(100dvh - 96px)}
+.cbot-log{flex:1 1 auto;min-height:0}
+.cbot-quick{flex:none;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.cbot-quick::-webkit-scrollbar{display:none}
+.cbot-chip{flex:none;white-space:nowrap}
+.cbot-src{display:block;margin-top:6px;font-size:.78rem;color:var(--muted)}
+.cbot .cbot-form{display:flex;flex-direction:row;gap:8px;padding:0 16px 14px;margin:0}
+.cbot .cbot-form input{flex:1;min-width:0;width:auto;padding:9px 12px;border:1px solid var(--rule);border-radius:18px;
+  font:inherit;font-size:.88rem;background:#fff;color:var(--ink)}
+.cbot .cbot-form input:focus{outline:none;border-color:var(--blue)}
+.cbot .cbot-form button{flex:none;width:36px;height:36px;border:none;border-radius:50%;cursor:pointer;
+  background:var(--blue);color:#fff;font-size:1rem;font-weight:700}
+.cbot .cbot-form button:hover{background:var(--blue-soft)}
 .cbot-foot{padding:11px 16px;border-top:1px solid var(--rule);font-size:.72rem;color:var(--muted);background:var(--paper-deep)}
 .cbot-foot a{color:var(--blue);font-weight:700}
 @media(max-width:480px){.cbot-panel{width:calc(100vw - 32px)}}
