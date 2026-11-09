@@ -2,7 +2,7 @@
 title: Numbers & Insight
 tagline: 손슬기 공인회계사 · 회계감사·세무·정산
 description: >-
-  Numbers & Insight — 공인회계사 손슬기. 회계감사와 세무기장·신고를 중심으로,
+  Numbers & Insight - 공인회계사 손슬기. 회계감사와 세무기장·신고를 중심으로,
   국고보조금·연구개발비 사업비 정산검증에 강점을 가진 스페셜리스트입니다.
   숫자를 넘어, 더 나은 내일을 봅니다.
 author: 손슬기 공인회계사
@@ -11,10 +11,10 @@ url: "https://www.ccrnd.com"
 lang: ko
 timezone: Asia/Seoul
 
-# 검색 노출용 키워드 (SEO) — 검색량·전환의도·경쟁강도를 함께 고려해 우선순위 배치
+# 검색 노출용 키워드 (SEO) - 검색량·전환의도·경쟁강도를 함께 고려해 우선순위 배치
 keywords: 공동주택 회계감사, 아파트 외부회계감사, 아파트 회계감사 비용, 세무기장, 기장료, 종합소득세 신고, 부가가치세 신고, 법인세 신고, 사업비 정산, 국고보조금 정산, 연구개발비 정산검증, 입주자대표회의 세무, 공인회계사 손슬기, 손슬기 회계사
 
-# 검색엔진 소유확인 코드 — 발급받은 뒤 아래 두 줄의 주석(#)을 풀고 코드를 채워 넣으세요.
+# 검색엔진 소유확인 코드 - 발급받은 뒤 아래 두 줄의 주석(#)을 풀고 코드를 채워 넣으세요.
 #   구글:  https://search.google.com/search-console  → 'HTML 태그' 방식 content 값
 #   네이버: https://searchadvisor.naver.com          → '사이트 소유확인' meta content 값
 # google_site_verification: 여기에_구글_코드_붙여넣기
@@ -35,7 +35,7 @@ contact:
   email: seulgison@atcc.co.kr
   tel: "02-518-3675"
   address: 서울특별시 강남구 선릉로131길 16, 7층
-  hours: 평일 09:00 – 18:00
+  hours: 평일 09:00-18:00
   kakao: "https://open.kakao.com/o/sKkBp9Oi"
 
 # ───────────────────────── 콘텐츠 분류 ─────────────────────────
@@ -114,6 +114,7 @@ defaults:
       image: /assets/img/og/default.png
 
 exclude:
+  - CLAUDE.md
   - DESIGN.md
   - README.md
   - Gemfile

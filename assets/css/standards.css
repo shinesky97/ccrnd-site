@@ -1,4 +1,4 @@
-/* 회계기준서 열람 (관리자 전용) — cpawork standards.css 를 사이트 색상 체계로 옮김 */
+/* 회계기준서 열람 (관리자 전용) - cpawork standards.css 를 사이트 색상 체계로 옮김 */
 .std-app{--std-border:var(--rule);--std-card:#fff;--std-primary:var(--blue);--std-primary-dark:var(--ink);--std-text:var(--ink);
   max-width:1320px;margin:0 auto;padding:28px 24px 80px;font-size:15px;line-height:1.6}
 .std-app h1{font-size:1.5rem;font-weight:800;margin:0}

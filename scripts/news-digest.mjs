@@ -53,7 +53,7 @@ function parseItems(xml) {
       return mm ? mm[1] : '';
     };
     const source = decode(pick('source'));
-    let title = decode(pick('title'));
+    let title = decode(pick('title')).replace(/\s*[—–]\s*/g, ' - '); // 긴 줄표는 쓰지 않음(하이픈 하나로)
     // Google News 제목 끝의 " - 매체명" 제거
     if (source && title.endsWith(` - ${source}`)) title = title.slice(0, -(source.length + 3)).trim();
     const link = decode(pick('link'));
@@ -109,7 +109,7 @@ for (const cat of CATEGORIES) {
     '',
     '## 주요 소식',
     '',
-    ...fresh.map((it) => `- **[${it.title}](${it.link})**${it.source ? ` — ${it.source}` : ''}`),
+    ...fresh.map((it) => `- **[${it.title}](${it.link})**${it.source ? ` - ${it.source}` : ''}`),
     '',
     '<div class="callout" markdown="1">',
     '본 브리핑은 외부 뉴스를 자동 수집한 것으로, 개별 사안의 판단은 최신 법령과 원문을 확인하시기 바랍니다. 구체적인 상담은 [문의](/contact/)를 이용해 주세요.',
