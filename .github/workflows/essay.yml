@@ -38,7 +38,7 @@ jobs:
             _posts/**
             scripts/essay-topics.json
           commit-message: "에세이 초안 자동 생성 (AI)"
-          title: "✍️ 에세이 초안 — 검토 후 병합하세요"
+          title: "✍️ 에세이 초안 - 검토 후 병합하세요"
           body: |
             테마 백로그에서 다음 주제를 골라 AI가 작성한 **에세이 초안**입니다.
 

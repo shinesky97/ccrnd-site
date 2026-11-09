@@ -27,6 +27,7 @@ const SYSTEM = `당신은 한국의 공인회계사 "손슬기"의 블로그에 
 - 실무에 바로 도움이 되는 예시·체크포인트를 포함하되, 과장·홍보성 표현은 쓰지 않습니다.
 - 구체적인 세율·금액·연도별 수치는 "변동될 수 있다"는 전제 없이는 단정하지 않습니다.
 - 글 말미에 상담을 부드럽게 안내하는 한 문장을 포함할 수 있습니다.
+- 긴 줄표(—, –)는 쓰지 마세요. 구분이 필요하면 하이픈 하나(-)를 씁니다.
 
 출력 형식(반드시 지킬 것):
 첫 줄에 "SUMMARY: <목록에 보일 한 줄 요약>"
@@ -44,7 +45,7 @@ function buildUserPrompt(topic) {
 async function generate(topic) {
   if (process.env.ESSAY_FIXTURE) {
     return {
-      summary: `${topic.title} — 핵심을 실무 관점에서 정리했습니다. (테스트)`,
+      summary: `${topic.title} - 핵심을 실무 관점에서 정리했습니다. (테스트)`,
       body: `## 들어가며\n\n(테스트 픽스처) ${topic.outline}\n\n## 핵심 포인트\n\n- 항목 1\n- 항목 2\n\n<div class="callout" markdown="1">\n개별 사안은 최신 법령과 함께 확인하시기 바랍니다.\n</div>`,
     };
   }
@@ -66,7 +67,8 @@ async function generate(topic) {
   const summary = firstLine.replace(/^SUMMARY:\s*/i, '').trim();
   const body = (nl === -1 ? '' : text.slice(nl + 1)).replace(/^\s*\n/, '').trim();
   if (!summary || !body) throw new Error('생성 결과 형식이 올바르지 않습니다.');
-  return { summary, body };
+  const dash = (s) => s.replace(/[ \t]*[—–][ \t]*/g, ' - '); // 긴 줄표가 섞여 나와도 하이픈 하나로
+  return { summary: dash(summary), body: dash(body) };
 }
 
 async function main() {

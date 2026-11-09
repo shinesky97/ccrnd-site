@@ -1,4 +1,4 @@
-// 회계기준서 열람 (관리자 전용) — cpawork webapp/standards 를 정적 사이트용으로 옮긴 것.
+// 회계기준서 열람 (관리자 전용) - cpawork webapp/standards 를 정적 사이트용으로 옮긴 것.
 // 원문 데이터는 Firebase Firestore(std_docs·std_meta)에 있고, 관리자 로그인 계정만 읽을 수 있다.
 // 북마크·형광펜은 std_marks 에 저장된다. 화면은 해시 라우팅(#/, #/search, #/v/..., #/marks).
 
@@ -204,12 +204,12 @@ export function startStandardsApp(root, store, opts = {}) {
       <div class="std-grid2">${Object.entries(FRAMEWORKS).map(([fw, label]) => `
         <div class="std-card"><h2>${label} <span class="std-muted">(${groups[fw].length})</span></h2>
           <table class="std-list">${groups[fw].map((s) => `<tr>
-            <td class="std-code">${/^\d+$/.test(s.code) ? esc(s.code) : '—'}</td>
+            <td class="std-code">${/^\d+$/.test(s.code) ? esc(s.code) : '-'}</td>
             <td><a href="${viewHash(s.framework, s.code)}">${esc(s.title)}</a><div class="std-muted std-ver">${esc(s.version || '개정 표기 없음')}</div></td>
           </tr>`).join('')}</table></div>`).join('')}
       </div>
       <details class="std-card std-admin-upload"${items.length ? '' : ' open'}>
-        <summary>데이터 올리기 · 현황 <span class="std-muted">${meta.updated ? '— 기준일 ' + esc(meta.updated) : ''} · ${items.length}건</span></summary>
+        <summary>데이터 올리기 · 현황 <span class="std-muted">${meta.updated ? '- 기준일 ' + esc(meta.updated) : ''} · ${items.length}건</span></summary>
         <p class="std-muted">cpawork의 <code>webapp/app/standards_data</code>를 <code>scripts/build_standards_bundle.py</code>로 묶은 번들 파일을 고르세요. 같은 기준서는 새 내용으로 교체됩니다.</p>
         <input type="file" accept=".json,application/json" data-bundle>
         <div class="std-progress" data-progress hidden><div></div></div>
@@ -268,7 +268,7 @@ export function startStandardsApp(root, store, opts = {}) {
       }
     }
     let last = null;
-    box.innerHTML = `<h2>“${esc(q)}” 검색 결과 ${rows.length}건${rows.length >= 200 ? ' <span class="std-muted">(앞 200건만 표시 — 검색어를 더 구체적으로 입력하세요)</span>' : ''}</h2>
+    box.innerHTML = `<h2>“${esc(q)}” 검색 결과 ${rows.length}건${rows.length >= 200 ? ' <span class="std-muted">(앞 200건만 표시 - 검색어를 더 구체적으로 입력하세요)</span>' : ''}</h2>
       ${rows.length ? '' : '<p class="std-muted">결과가 없습니다. 띄어쓰기를 바꾸거나 기준서 용어로 다시 검색해 보세요.</p>'}
       ${rows.map(([u, d]) => {
         const s = d.meta;
@@ -276,7 +276,7 @@ export function startStandardsApp(root, store, opts = {}) {
         if (last !== s) { head = `<h3 class="std-result-std">${FRAMEWORKS[s.framework]} ${esc(displayName(s.framework, s.code, s.title))}</h3>`; last = s; }
         const body = u.no && u.plain.startsWith(u.no + ' ') ? u.plain.slice(u.no.length + 1) : u.plain;
         return head + `<a class="std-result" href="${viewHash(s.framework, s.code, u.anchor, !u.auth)}">
-          <span class="std-result-no">${esc(u.no || (u.kind === 'h' ? '제목' : '—'))}</span>
+          <span class="std-result-no">${esc(u.no || (u.kind === 'h' ? '제목' : '-'))}</span>
           ${u.auth ? '' : `<span class="std-tag">${esc(u.part)}</span>`}
           <span class="std-result-text">${snippet(body, terms)}</span></a>`;
       }).join('')}`;
@@ -316,7 +316,7 @@ export function startStandardsApp(root, store, opts = {}) {
     for (const u of units) {
       if (u.part !== part) {
         part = u.part;
-        body.push(`<div class="std-part ${u.auth ? '' : 'ref'}">${esc(u.part)}${u.auth ? '' : ' <span>— 기준서를 구성하지 않는 참고자료</span>'}</div>`);
+        body.push(`<div class="std-part ${u.auth ? '' : 'ref'}">${esc(u.part)}${u.auth ? '' : ' <span>- 기준서를 구성하지 않는 참고자료</span>'}</div>`);
       }
       if (u.kind === 'h') { body.push(`<h3 class="std-h" id="p-${esc(u.anchor)}">${esc(u.plain)}</h3>`); continue; }
       const blocks = u.blocks.map((b) => b.t === 'table'
@@ -514,7 +514,7 @@ export function startStandardsApp(root, store, opts = {}) {
     const para = (m) => { const d = loaded[m.fw + '/' + m.code]; return d ? d.units.find((u) => u.anchor === m.anchor) : null; };
     const row = (m, inner) => {
       const s = lib.find(m.fw, m.code);
-      if (!s) return `<div class="std-result"><span class="std-result-text std-muted">${esc(FRAMEWORKS[m.fw] || m.fw)} ${esc(m.code)} ${esc(m.anchor)} — 기준서가 아직 올라와 있지 않습니다</span></div>`;
+      if (!s) return `<div class="std-result"><span class="std-result-text std-muted">${esc(FRAMEWORKS[m.fw] || m.fw)} ${esc(m.code)} ${esc(m.anchor)} - 기준서가 아직 올라와 있지 않습니다</span></div>`;
       const u = m.type === 'bm' ? para(m) : null;
       return `<a class="std-result" href="${viewHash(m.fw, m.code, m.anchor, u ? !u.auth : false)}">
         <span class="std-result-no">${esc(m.code)} · ${esc((u && u.no) || m.anchor)}</span>
@@ -525,7 +525,7 @@ export function startStandardsApp(root, store, opts = {}) {
         ${bms.length ? '' : '<p class="std-muted">기준서 문단 오른쪽의 ★ 를 누르면 여기에 모입니다.</p>'}
         ${bms.map((m) => row(m, (s, u) => {
           const t = u ? (u.no && u.plain.startsWith(u.no + ' ') ? u.plain.slice(u.no.length + 1) : u.plain) : '';
-          return `<strong>${esc(displayName(s.framework, s.code, s.title))}</strong> — ${u ? esc(t.slice(0, 180)) + (t.length > 180 ? '…' : '') : '(문단을 찾을 수 없음 — 개정으로 문단번호가 바뀌었을 수 있습니다)'}`;
+          return `<strong>${esc(displayName(s.framework, s.code, s.title))}</strong> - ${u ? esc(t.slice(0, 180)) + (t.length > 180 ? '…' : '') : '(문단을 찾을 수 없음 - 개정으로 문단번호가 바뀌었을 수 있습니다)'}`;
         })).join('')}</div>
       <div class="std-card"><h2>형광펜 ${hls.length}</h2>
         ${hls.length ? '' : '<p class="std-muted">기준서 본문에서 글자를 드래그하고 색을 고르면 여기에 모입니다.</p>'}

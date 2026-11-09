@@ -55,7 +55,7 @@ about.md           소개
 contact.html       문의 폼
 downloads.md       자료실
 insights/          인사이트 목록(전체 + 카테고리별)
-_posts/            ★ 글(.md) — 여기에 파일만 추가하면 게시
+_posts/            ★ 글(.md) - 여기에 파일만 추가하면 게시
 _layouts/          페이지 템플릿
 _includes/         머리글·바닥글·직인·글카드 조각
 assets/css/        스타일시트
@@ -140,7 +140,7 @@ Workflow permissions** 에서:
   "title": "...", "outline": "..." }` 추가 (category: `tax`/`accounting`/`settlement`)
 - 주기 변경: 워크플로우의 `cron` 값 수정
 
-### ⚠️ 최초 1회 설정 (필수) — Anthropic API 키
+### ⚠️ 최초 1회 설정 (필수) - Anthropic API 키
 
 에세이 생성에는 Anthropic API 키가 필요합니다. 저장소
 **Settings → Secrets and variables → Actions → New repository secret** 에서:
