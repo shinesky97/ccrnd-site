@@ -11,6 +11,9 @@
 - url: /insights/external-audit-criteria/
   label: 외부감사 대상 판정 기준
   tag: 회계
+- url: /insights/public-interest-corporation-audit/
+  label: 공익법인 외부회계감사 대상
+  tag: 회계
 - url: /insights/reading-financial-statements/
   label: 비회계인을 위한 재무제표 읽는 법
   tag: 회계

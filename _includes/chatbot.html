@@ -99,7 +99,7 @@
     });
     POSTS.forEach(function (p) {
       (p.faq || []).forEach(function (f) {
-        var s = overlap(qg, f.q) * 4 + keyScore(nq, p.tags) * 0.8;
+        var s = overlap(qg, f.q) * 4.5 + keyScore(nq, p.tags) * 0.5;
         if (!best || s > best.s) best = { s: s, kind: 'faq', f: f, p: p };
       });
     });
