@@ -1,0 +1,49 @@
+name: 검색엔진 색인 요청 (IndexNow)
+
+# 인사이트 글이 main 에 올라오면 네이버·빙 등 IndexNow 참여 검색엔진에 새/수정 주소를 바로 알립니다.
+# (구글은 IndexNow 를 쓰지 않으므로 사이트맵과 Search Console 로 수집됩니다.)
+on:
+  push:
+    branches: [main]
+    paths: ['_posts/**', 'about.md', 'index.html', 'calculators.html', 'real-estate-tax.md']
+  workflow_dispatch: {}
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    env:
+      KEY: ae151a60923e54808e75b02d0a48a79c
+      HOST: www.ccrnd.com
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: 바뀐 주소 모으기 (자동 브리핑·검색 제외 글은 빼고)
+        id: urls
+        run: |
+          urls=""
+          for f in $(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- _posts); do
+            grep -q '^noindex: true' "$f" && continue
+            slug=$(basename "$f" .md | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}-//')
+            urls="$urls https://$HOST/insights/$slug/"
+          done
+          for p in about.md:/about/ index.html:/ calculators.html:/calculators/ real-estate-tax.md:/real-estate-tax/; do
+            git diff --quiet HEAD~1 HEAD -- "${p%%:*}" || urls="$urls https://$HOST${p#*:}"
+          done
+          echo "list=$(echo $urls)" >> "$GITHUB_OUTPUT"
+          echo "대상: $urls"
+
+      - name: GitHub Pages 배포 대기
+        if: steps.urls.outputs.list != ''
+        run: sleep 90
+
+      - name: IndexNow 전송 (네이버 · indexnow.org)
+        if: steps.urls.outputs.list != ''
+        run: |
+          list=$(printf '"%s",' ${{ steps.urls.outputs.list }}); list="[${list%,}]"
+          body="{\"host\":\"$HOST\",\"key\":\"$KEY\",\"keyLocation\":\"https://$HOST/$KEY.txt\",\"urlList\":$list}"
+          for ep in https://searchadvisor.naver.com/indexnow https://api.indexnow.org/indexnow; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$ep" -H 'Content-Type: application/json; charset=utf-8' -d "$body")
+            echo "$ep -> $code"
+          done
